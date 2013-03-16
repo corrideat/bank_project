@@ -49,24 +49,24 @@ public abstract class User implements AccountHolder {
 	}
 
 	@Override
-	public String getFirstName() {
+	final public String getFirstName() {
 		return m_sFirstName;
 	}
 
 	@Override
-	public String getLastName() {
+	final public String getLastName() {
 		// TODO Auto-generated method stub
 		return m_sLastName;
 	}
 
 	@Override
-	public int getAge() {
+	final public int getAge() {
 		Time t = RuntimeAPI.now().subtract(m_dtBirthday);
 		return (int) Math.floor(((double)t.getDays())/365.25);
 	}
 
 	@Override
-	public int getSSN() {
+	final public int getSSN() {
 		return m_iSSN;
 	}	
 
