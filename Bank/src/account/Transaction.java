@@ -27,7 +27,7 @@ public class Transaction {
 	
 	public final void flagAsFraudulent() {
 		if (this.flaggable()) {
-			// TODO: Do stuff.
+			m_dtReportedFraudulent = RuntimeAPI.now();
 		}
 	}
 }

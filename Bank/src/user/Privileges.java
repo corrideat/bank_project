@@ -4,6 +4,7 @@ import java.util.Map;
 
 import date.DateTime;
 import backend.Agent;
+import backend.GlobalParameters;
 import backend.InsufficientCreditAvailableException;
 import account.Account;
 import account.AccountHolder;
@@ -100,6 +101,28 @@ public enum Privileges {
 		if (canTriggerTimeShift) {
 			// TODO: Do stuff
 		} else throw new SecurityException();
+	}
+	
+	// TODO: Create a Statistics class for statistics?
+	
+	public void sendNotice(Message m) {
+		// TODO: Do stuff
+	}
+	
+	public void adjustGlobalParameter(GlobalParameters gp, double value) {
+		// TODO: Do stuff
+	}
+	
+	public DateTime reportedFraudulent(Transaction t) {
+		return null; // TODO: Do stuff
+	}
+	
+	public boolean employeeFlag(Account t) {
+		return false; // TODO: Do stuff
+	}
+	
+	public void overturnTransaction(Transaction t) {
+		// TODO: Do stuff
 	}
 	
 	// TODO: Implement all transactions
