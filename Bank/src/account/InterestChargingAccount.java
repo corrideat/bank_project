@@ -15,5 +15,9 @@ abstract public class InterestChargingAccount extends InterestAccount {
 		super.onUpdate();
 		// TODO: Charge interest
 	}
-
+	
+	@Override
+	public boolean debtInstrument() {
+		return true;
+	}
 }

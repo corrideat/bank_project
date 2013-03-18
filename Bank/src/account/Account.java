@@ -133,4 +133,8 @@ public abstract class Account {
 	public void setupAutomatedTransaction(AutomatedTransaction at) {
 		m_aatAutomatedTransactions.add(at);
 	}
+	
+	public boolean debtInstrument() {
+		return false;
+	}
 }
