@@ -1,5 +1,6 @@
 package backend;
 
 public interface Agent {
- // TODO: Methods
+	public boolean isInternal();
+	public String describe();
 }

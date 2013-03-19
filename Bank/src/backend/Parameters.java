@@ -1,7 +1,8 @@
 package backend;
 
 public enum Parameters {
-	ACCOUNT("Account", Types.LONG);
+	ACCOUNT("Account", Types.LONG),
+	ACCOUNT_HOLDER("Account Holder", Types.ACCOUNT_HOLDER);
 	
 	final Types m_tType;
 	final String m_sDescription;

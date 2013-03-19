@@ -7,7 +7,7 @@ public class LineOfCredit extends InterestChargingAccount {
 	double m_dCreditLimit;
 
 	public LineOfCredit(double offset, double creditLimit, long number, AccountHolder owner) throws InsufficientCreditAvailableException {
-		super(RuntimeAPI.InterestRate.LOC, offset, number, owner, false);
+		super(AccountType.LOC, RuntimeAPI.InterestRate.LOC, offset, number, owner, false);
 		m_dCreditLimit = 0D;
 		this.setLimit(creditLimit);
 		m_dCreditLimit = creditLimit;

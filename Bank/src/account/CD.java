@@ -16,13 +16,17 @@ public class CD extends InterestBearingAccount {
 		public InterestRate getRate(){
 			return this.m_eRate;
 		}
+		
+		public short getDuration() {
+			return 0; // TODO
+		}
 	}
 	
 	final CD_type m_eType;
 	boolean m_bHasMatured;
 
 	public CD(CD_type type, long number, AccountHolder owner) {
-		super(type.m_eRate, number, owner, true);
+		super(AccountType.CD, type.m_eRate, number, owner, true);
 		m_eType = type;
 		m_bHasMatured = false;
 	}

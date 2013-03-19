@@ -4,8 +4,8 @@ import backend.RuntimeAPI.InterestRate;
 
 public abstract class InterestBearingAccount extends InterestAccount {
 
-	public InterestBearingAccount(InterestRate rate, long number, AccountHolder owner, boolean fix_rate) {
-		super(rate, 0, number, owner, fix_rate);
+	public InterestBearingAccount(AccountType at, InterestRate rate, long number, AccountHolder owner, boolean fix_rate) {
+		super(at, rate, 0, number, owner, fix_rate);
 		// TODO Auto-generated constructor stub
 	}
 

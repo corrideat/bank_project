@@ -5,7 +5,7 @@ import backend.RuntimeAPI;
 public class Checking extends Account {
 
 	public Checking(long number, AccountHolder owner) {
-		super(number, owner);
+		super(AccountType.CHECKING, number, owner);
 		// TODO Auto-generated constructor stub
 	}
 

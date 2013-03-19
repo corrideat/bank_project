@@ -9,4 +9,16 @@ public class Teller extends Employee implements Agent {
 		super(firstName, lastName, birthday, ssn, Privileges.TELLER);
 	}
 
+	@Override
+	public boolean isInternal() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String describe() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

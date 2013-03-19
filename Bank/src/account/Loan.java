@@ -7,7 +7,7 @@ public class Loan extends InterestChargingAccount {
 	final double minimumMonthlyPayment;
 
 	public Loan(double principal, short installments, double offset, long number, AccountHolder owner) throws InsufficientCreditAvailableException {
-		super(RuntimeAPI.InterestRate.LOAN, offset, number, owner, true);
+		super(AccountType.LOAN, RuntimeAPI.InterestRate.LOAN, offset, number, owner, true);
 		this.getAccountRate();
 		if (installments<1) throw new IllegalArgumentException();
 		if (principal<0) throw new IllegalArgumentException();
