@@ -13,8 +13,8 @@ public class Loan extends InterestChargingAccount {
 		if (principal<0) throw new IllegalArgumentException();
 		RuntimeAPI.adjustCap(-principal);
 		new InternalTransaction(-principal, "Principal");
-		// TODO: Calculate the minimum monthly payment appropriately
-		minimumMonthlyPayment = 1L;
+		// Formula from: http://ncalculators.com/loan/installment-loan-payoff-calculator.htm
+		minimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D), -1D) * 100D)/100D;
 	}
 
 
