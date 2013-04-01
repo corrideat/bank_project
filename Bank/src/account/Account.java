@@ -4,6 +4,7 @@ import java.util.List;
 import backend.Agent;
 import backend.RuntimeAPI;
 import date.DateTime;
+import date.Time;
 
 public abstract class Account {
 	public final DateTime m_dtOpened;
@@ -43,12 +44,21 @@ public abstract class Account {
 			} catch (TransactionValidationException e) {
 			}
 		}
+
+		public InternalTransaction(final Account target, final double amount, final String description) {
+			super(ms_agent, Account.this, amount, description);
+			try {
+				target.postTransaction(this);
+			} catch (TransactionValidationException e) {
+			}
+		}
 		
 		@Override
 		public boolean flaggable() {
 			return false;
 		}
 	}
+	
 	
 
 	public Account(final AccountType at, final long number, final AccountHolder owner) {
@@ -135,10 +145,70 @@ public abstract class Account {
 	protected abstract void transactionValidator(final Transaction t) throws TransactionValidationException;
 	
 	protected final void update() {
-		this.m_dtLastUpdated=RuntimeAPI.now();
-		// Prepare statements, etc?
-		// Effect Automated Transactions
+		DateTime current = RuntimeAPI.now();
+		Time difference = current.subtract(this.m_dtLastUpdated);
+		
+		if (current.getDay() == 1 || difference.getDays() >= 31) {
+			if (this.m_bToBeClosed) {
+				Account[] accounts = this.m_ahOwner.getAccounts();
+				boolean transferred = false;
+				if (accounts.length>1) {
+					for(Account a:accounts) {
+						if (a != this && a.m_atType==AccountType.CHECKING) {
+							new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+							transferred = true;
+							break;
+						}
+					}
+					if (!transferred) {
+						for(Account a:accounts) {
+							if (a != this && a.m_atType==AccountType.SAVINGS) {
+								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+								transferred = true;
+								break;
+							}
+						}
+					}
+					if (!transferred) {
+						for(Account a:accounts) {
+							if (a != this && a.m_atType==AccountType.LOC) {
+								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+								transferred = true;
+								break;
+							}
+						}
+					}
+					if (!transferred) {
+						for(Account a:accounts) {
+							if (a != this && a.m_atType==AccountType.LOAN) {
+								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+								transferred = true;
+								break;
+							}
+						}
+					}
+				}
+				// TODO: What is !transferred?
+				this.m_dBalance = 0L;
+				this.m_dtClosed = current;
+			}
+			this.prepareStatement();
+			for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {
+				Account target = null;
+				if ((target = RuntimeAPI.getAccount(trans.m_lTargetAccount)) != null) {
+					try {
+						this.postTransaction(new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription)));
+						new InternalTransaction(target, Math.abs(trans.m_dAmount), String.format("Automated Transaction for %.02d from %s, %s", Math.abs(trans.m_dAmount), this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+					} catch (TransactionValidationException e) {
+						// TODO: Should we charge customer a fee?
+						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
+					}
+				}
+			}
+		}
+		
 		onUpdate();
+		this.m_dtLastUpdated=RuntimeAPI.now();
 	}
 	
 	protected void onUpdate() {
@@ -164,5 +234,6 @@ public abstract class Account {
 	}
 	
 	final public void prepareStatement() {
+		// TODO: Do stuff
 	}
 }

@@ -1,5 +1,6 @@
 package backend;
 
+import account.Account;
 import date.DateTime;
 
 public final class RuntimeAPI {
@@ -95,5 +96,10 @@ public final class RuntimeAPI {
 
 	public static double getCap() {
 		return 0D;
+	}
+
+	public static Account getAccount(long m_lTargetAccount) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
