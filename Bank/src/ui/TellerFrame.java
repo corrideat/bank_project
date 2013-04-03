@@ -88,11 +88,13 @@ public class TellerFrame extends JFrame {
 		scrollPane.setViewportView(textPane);
 		
 		textField_1 = new JTextField();
+		textField_1.setText("0.00");
 		textField_1.setBounds(15, 168, 91, 20);
 		contentPane.add(textField_1);
 		textField_1.setColumns(10);
 		
 		textField_2 = new JTextField();
+		textField_2.setText("0.00");
 		textField_2.setColumns(10);
 		textField_2.setBounds(15, 200, 91, 20);
 		contentPane.add(textField_2);
@@ -113,7 +115,7 @@ public class TellerFrame extends JFrame {
 		rdbtnWavieServiceCharge.setBounds(15, 283, 139, 23);
 		contentPane.add(rdbtnWavieServiceCharge);
 		
-		JLabel lblAutomaticTransaction = new JLabel("Automatic Transaction:");
+		JLabel lblAutomaticTransaction = new JLabel("Automatic Transaction");
 		lblAutomaticTransaction.setBounds(15, 231, 116, 14);
 		contentPane.add(lblAutomaticTransaction);
 		
