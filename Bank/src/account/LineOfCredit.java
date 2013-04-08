@@ -1,5 +1,6 @@
 package account;
 
+import date.DateTime;
 import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 
@@ -22,8 +23,8 @@ public class LineOfCredit extends InterestChargingAccount {
 	}
 	
 	@Override
-	protected void onUpdate() {
-		super.onUpdate(); // Charge Interest, etc.
+	protected void onUpdate(DateTime cycle) {
+		super.onUpdate(cycle); // Charge Interest, etc.
 		// TODO: Charge penalty whenever a monthly payment was missed or did not meet the minimum 
 	}
 	

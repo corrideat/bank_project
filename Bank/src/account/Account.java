@@ -1,5 +1,6 @@
 package account;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import backend.Agent;
 import backend.RuntimeAPI;
@@ -16,6 +17,8 @@ public abstract class Account {
 	private final AccountHolder m_ahOwner;
 	private final long m_lAccountNumber;
 	private DateTime m_dtLastUpdated;
+	private Integer m_iLastUpdatedTransactionIndex;
+	private Double m_dLastUpdatedBalance;
 	private final List<AutomatedTransaction> m_aatAutomatedTransactions;
 	
 	private static class InternalAgent implements Agent {
@@ -205,14 +208,16 @@ public abstract class Account {
 					}
 				}
 			}
+			onUpdate(RuntimeAPI.now(), averageCycleBalance(RuntimeAPI.now()));
+			this.m_dtLastUpdated=RuntimeAPI.now();
 		}
 		
 		onUpdate();
-		this.m_dtLastUpdated=RuntimeAPI.now();
+		
 	}
 	
-	protected void onUpdate() {
-	}
+	abstract protected void onUpdate(DateTime cycle, double average_balance);
+	abstract protected void onUpdate();
 	
 	public void overturnTransaction(int transaction_index) {
 		Transaction t = m_atHistory.get(transaction_index);
@@ -235,5 +240,37 @@ public abstract class Account {
 	
 	final public void prepareStatement() {
 		// TODO: Do stuff
+	}
+	
+	// Assume that m_dtLastUpdated to be accurate
+	final private double averageCycleBalance(DateTime cutoff) {
+		if (m_atHistory.size() > 0) {
+			if (m_iLastUpdatedTransactionIndex==null) m_iLastUpdatedTransactionIndex = 0;
+			Iterator<Transaction> i = m_atHistory.listIterator(m_iLastUpdatedTransactionIndex);
+			Transaction temp;
+			double temp_amount = 0D;
+			double temp_transaction = 0D;
+			
+			DateTime last = m_dtLastUpdated;		
+			while(i.hasNext()) {
+				temp = i.next();
+				if (cutoff.subtract(temp.m_dtTime).getRawCountInMillis()>0) {
+					temp_amount = temp.m_dAmount * temp.m_dtTime.subtract(last).getRawCountInMillis();
+					temp_transaction += temp.m_dAmount;
+					last = temp.m_dtTime;
+					m_iLastUpdatedTransactionIndex++;
+				} else {
+					break;
+				}
+			}
+			temp_amount /= cutoff.subtract(m_dtLastUpdated).getRawCountInMillis();
+			temp_amount += ((m_dLastUpdatedBalance!=null)?m_dLastUpdatedBalance:0);
+			
+			m_dLastUpdatedBalance += temp_transaction;
+			
+			return temp_amount;
+		} else {
+			return 0D;
+		}
 	}
 }
