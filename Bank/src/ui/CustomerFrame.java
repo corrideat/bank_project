@@ -12,6 +12,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
+import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CustomerFrame extends JFrame {
 
@@ -43,22 +46,22 @@ public class CustomerFrame extends JFrame {
 		setTitle("Customer");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 289, 463);
+		setBounds(100, 100, 301, 496);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel label = new JLabel("Account Information");
-		label.setBounds(10, 45, 106, 14);
+		label.setBounds(10, 45, 154, 14);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel("Account:");
-		label_1.setBounds(10, 14, 46, 14);
+		label_1.setBounds(10, 15, 85, 14);
 		contentPane.add(label_1);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(64, 11, 139, 20);
+		comboBox.setBounds(75, 12, 139, 20);
 		contentPane.add(comboBox);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -102,15 +105,15 @@ public class CustomerFrame extends JFrame {
 		scrollPane_1.setViewportView(textPane_1);
 		
 		JLabel lblTransferFunds = new JLabel("Transfer Funds");
-		lblTransferFunds.setBounds(10, 294, 73, 14);
+		lblTransferFunds.setBounds(10, 294, 117, 14);
 		contentPane.add(lblTransferFunds);
 		
 		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(41, 319, 91, 20);
+		comboBox_1.setBounds(49, 319, 91, 20);
 		contentPane.add(comboBox_1);
 		
 		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setBounds(41, 350, 91, 20);
+		comboBox_2.setBounds(49, 350, 91, 20);
 		contentPane.add(comboBox_2);
 		
 		JLabel lblFrom = new JLabel("From:");
@@ -122,21 +125,21 @@ public class CustomerFrame extends JFrame {
 		contentPane.add(lblTo);
 		
 		JLabel lblAmount = new JLabel("Amount: ");
-		lblAmount.setBounds(142, 322, 46, 14);
+		lblAmount.setBounds(150, 322, 71, 14);
 		contentPane.add(lblAmount);
 		
 		textField_2 = new JTextField();
 		textField_2.setText("0.00");
-		textField_2.setBounds(193, 319, 79, 20);
+		textField_2.setBounds(204, 319, 79, 20);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		
 		JButton btnTransfer = new JButton("Transfer");
-		btnTransfer.setBounds(164, 349, 79, 23);
+		btnTransfer.setBounds(164, 349, 108, 23);
 		contentPane.add(btnTransfer);
 		
 		JLabel lblMarkFradulentTransaction = new JLabel("Mark Fradulent Transaction");
-		lblMarkFradulentTransaction.setBounds(10, 381, 139, 14);
+		lblMarkFradulentTransaction.setBounds(10, 381, 190, 14);
 		contentPane.add(lblMarkFradulentTransaction);
 		
 		JComboBox comboBox_3 = new JComboBox();
@@ -146,5 +149,21 @@ public class CustomerFrame extends JFrame {
 		JButton btnMark = new JButton("Mark");
 		btnMark.setBounds(164, 403, 89, 23);
 		contentPane.add(btnMark);
+		
+		JButton btnNewButton = new JButton();
+		btnNewButton.setIcon(new ImageIcon(CustomerFrame.class.getResource("/com/sun/java/swing/plaf/windows/icons/NewFolder.gif")));
+		btnNewButton.setBounds(236, 11, 36, 23);
+		contentPane.add(btnNewButton);
+		
+		JButton btnLogout = new JButton("Logout");
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame loginFrame = new MainFrame();
+				loginFrame.setVisible(true);
+				dispose();
+			}
+		});
+		btnLogout.setBounds(97, 438, 89, 23);
+		contentPane.add(btnLogout);
 	}
 }

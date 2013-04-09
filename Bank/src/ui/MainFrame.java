@@ -49,35 +49,39 @@ public class MainFrame extends JFrame {
 		setTitle("Banking");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 217, 135);
+		setBounds(100, 100, 232, 135);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		textField = new JTextField();
-		textField.setBounds(67, 11, 132, 20);
+		textField.setBounds(78, 11, 132, 20);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
 		JLabel lblUsername = new JLabel("Username:");
-		lblUsername.setBounds(10, 14, 59, 14);
+		lblUsername.setBounds(10, 14, 94, 14);
 		contentPane.add(lblUsername);
 		
 		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(10, 45, 59, 14);
+		lblPassword.setBounds(10, 45, 94, 14);
 		contentPane.add(lblPassword);
 		
 		JButton btnNewButton = new JButton("Login");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				JFrame userFrame = new TellerFrame();
+				userFrame.setVisible(true);
+				dispose();
 			}
 		});
-		btnNewButton.setBounds(67, 73, 89, 23);
+		btnNewButton.setBounds(68, 73, 89, 23);
 		contentPane.add(btnNewButton);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(67, 42, 132, 20);
+		passwordField.setBounds(78, 42, 132, 20);
 		contentPane.add(passwordField);
 	}
 }
