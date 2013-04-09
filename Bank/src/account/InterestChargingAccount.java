@@ -1,5 +1,6 @@
 package account;
 
+import date.DateTime;
 import backend.RuntimeAPI.InterestRate;
 
 abstract public class InterestChargingAccount extends InterestAccount {
@@ -11,8 +12,8 @@ abstract public class InterestChargingAccount extends InterestAccount {
 	}
 	
 	@Override
-	protected void onUpdate() {
-		super.onUpdate();
+	protected void onUpdate(DateTime cycle) {
+		super.onUpdate(cycle);
 		// TODO: Charge interest
 	}
 	

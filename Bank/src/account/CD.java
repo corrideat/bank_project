@@ -1,5 +1,6 @@
 package account;
 
+import date.DateTime;
 import backend.RuntimeAPI;
 import backend.RuntimeAPI.InterestRate;
 
@@ -18,7 +19,22 @@ public class CD extends InterestBearingAccount {
 		}
 		
 		public short getDuration() {
-			return 0; // TODO
+			switch(this) {
+			case CD_6M:
+				return 6;
+			case CD_1Y:
+				return 12;
+			case CD_2Y:
+				return 24;
+			case CD_3Y:
+				return 36;
+			case CD_4Y:
+				return 48;
+			case CD_5Y:
+				return 60;
+			default:
+				return 0;
+			}
 		}
 	}
 	
@@ -41,8 +57,8 @@ public class CD extends InterestBearingAccount {
 	}
 	
 	@Override
-	protected void onUpdate() {
-		super.onUpdate();
+	protected void onUpdate(DateTime cycle) {
+		super.onUpdate(cycle);
 		if (this.getBalance() < RuntimeAPI.CDMinimumBalance()) {
 			this.close();
 		}

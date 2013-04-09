@@ -1,5 +1,6 @@
 package account;
 
+import date.DateTime;
 import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 
@@ -31,8 +32,8 @@ public class Loan extends InterestChargingAccount {
 	}
 	
 	@Override
-	protected void onUpdate() {
-		super.onUpdate();
+	protected void onUpdate(DateTime cycle) {
+		super.onUpdate(cycle);
 		if (this.getBalance() >= 0) { // Greater than is a safety check
 			this.close();			
 		}

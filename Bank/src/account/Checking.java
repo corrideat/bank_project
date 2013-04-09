@@ -1,6 +1,7 @@
 package account;
 
-import backend.RuntimeAPI;
+import date.DateTime;
+import backend.GlobalParameters;
 
 public class Checking extends Account {
 
@@ -12,13 +13,22 @@ public class Checking extends Account {
 	@Override
 	protected void transactionValidator(Transaction t) throws TransactionValidationException {
 		// Do not allow balance to go below 0
-		if (t.m_dAmount<0D && (this.getBalance()+t.m_dAmount) < RuntimeAPI.CheckingMinimumBalance()) {
-			new InternalTransaction(RuntimeAPI.CheckingOverdraftFee(), "Overdraft Fee");
+		if (t.m_dAmount<0D && (this.getBalance()+t.m_dAmount) < GlobalParameters.CHECKING_MINIMUM_BALANCE.get()) {
+			new InternalTransaction(GlobalParameters.CHECKING_OVERDRAFT_FEE.get(), GlobalParameters.CHECKING_OVERDRAFT_FEE.describe());
 			throw new InsufficientFundsException();
 		}		
 	}
 	
-	protected void onUpdate() {
-		// TODO: Do stuff, charge service fees
+	@Override
+	protected void onUpdate(DateTime cycle, double average_balance) {
+		if (average_balance < GlobalParameters.CHECKING_MINIMUM_FREE_BALANCE.get()) {
+			// TODO: If the account hasn't been 
+			new InternalTransaction(GlobalParameters.CHECKING_FEE.get(), GlobalParameters.CHECKING_FEE.describe());
+		}
 	}
+	
+	@Override
+	protected void onUpdate() {
+	}
+
 }
