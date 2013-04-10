@@ -20,8 +20,8 @@ public class Checking extends Account {
 	}
 	
 	@Override
-	protected void onUpdate(DateTime cycle, double average_balance) {
-		if (average_balance < GlobalParameters.CHECKING_MINIMUM_FREE_BALANCE.get()) {
+	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
+		if (pb.average_balance < GlobalParameters.CHECKING_MINIMUM_FREE_BALANCE.get()) {
 			// TODO: If the account hasn't been 
 			new InternalTransaction(GlobalParameters.CHECKING_FEE.get(), GlobalParameters.CHECKING_FEE.describe());
 		}

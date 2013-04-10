@@ -1,6 +1,5 @@
 package account;
 
-import date.DateTime;
 import backend.RuntimeAPI.InterestRate;
 
 abstract public class InterestChargingAccount extends InterestAccount {
@@ -9,12 +8,6 @@ abstract public class InterestChargingAccount extends InterestAccount {
 		long number, AccountHolder owner, boolean fix_rate) {
 		super(at, rate, offset, number, owner, fix_rate);
 		// TODO Auto-generated constructor stub
-	}
-	
-	@Override
-	protected void onUpdate(DateTime cycle) {
-		super.onUpdate(cycle);
-		// TODO: Charge interest
 	}
 	
 	@Override

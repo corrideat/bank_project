@@ -18,8 +18,32 @@ public abstract class Account {
 	private final long m_lAccountNumber;
 	private DateTime m_dtLastUpdated;
 	private Integer m_iLastUpdatedTransactionIndex;
-	private Double m_dLastUpdatedBalance;
+	private double m_dLastUpdatedBalance;
 	private final List<AutomatedTransaction> m_aatAutomatedTransactions;
+	
+	protected class PeriodBalance {
+		final double starting_balance;
+		final double ending_balance;
+		final double average_balance;
+		final double credits;
+		final double debits;
+		
+		public PeriodBalance(final double starting, final double average, final double credits, final double debits) {
+			this.starting_balance = starting;
+			this.ending_balance = starting + credits - debits;
+			this.average_balance = average;
+			this.credits = credits;
+			this.debits = debits;			
+		}
+		
+		public PeriodBalance() {
+			starting_balance = 0D;
+			ending_balance = 0D;
+			average_balance = 0D;
+			this.credits = 0D;
+			this.debits = 0D;
+		}
+	}
 	
 	private static class InternalAgent implements Agent {
 
@@ -72,7 +96,8 @@ public abstract class Account {
 		this.m_ahOwner =  owner;
 		this.m_dtOpened =  RuntimeAPI.now();
 		this.m_lAccountNumber = number;
-		m_aatAutomatedTransactions = new ArrayList<AutomatedTransaction>();
+		this.m_aatAutomatedTransactions = new ArrayList<AutomatedTransaction>();
+		this.m_dLastUpdatedBalance = 0.0D;
 	}
 	
 	protected final void close() {
@@ -208,7 +233,7 @@ public abstract class Account {
 					}
 				}
 			}
-			onUpdate(RuntimeAPI.now(), averageCycleBalance(RuntimeAPI.now()));
+			onUpdate(RuntimeAPI.now(), getMonthlyBalance(RuntimeAPI.now()));
 			this.m_dtLastUpdated=RuntimeAPI.now();
 		}
 		
@@ -216,7 +241,7 @@ public abstract class Account {
 		
 	}
 	
-	abstract protected void onUpdate(DateTime cycle, double average_balance);
+	abstract protected void onUpdate(DateTime cycle, PeriodBalance pb);
 	abstract protected void onUpdate();
 	
 	public void overturnTransaction(int transaction_index) {
@@ -243,34 +268,40 @@ public abstract class Account {
 	}
 	
 	// Assume that m_dtLastUpdated to be accurate
-	final private double averageCycleBalance(DateTime cutoff) {
+	final private PeriodBalance getMonthlyBalance(DateTime cutoff) {
 		if (m_atHistory.size() > 0) {
 			if (m_iLastUpdatedTransactionIndex==null) m_iLastUpdatedTransactionIndex = 0;
 			Iterator<Transaction> i = m_atHistory.listIterator(m_iLastUpdatedTransactionIndex);
 			Transaction temp;
 			double temp_amount = 0D;
-			double temp_transaction = 0D;
+			double temp_cred = 0D;
+			double temp_deb = 0D;
 			
 			DateTime last = m_dtLastUpdated;		
 			while(i.hasNext()) {
 				temp = i.next();
 				if (cutoff.subtract(temp.m_dtTime).getRawCountInMillis()>0) {
 					temp_amount = temp.m_dAmount * temp.m_dtTime.subtract(last).getRawCountInMillis();
-					temp_transaction += temp.m_dAmount;
+					if (temp.m_dAmount > 0D) {
+						temp_cred += temp.m_dAmount;
+					} else {
+						temp_deb -= temp.m_dAmount;
+					}
 					last = temp.m_dtTime;
 					m_iLastUpdatedTransactionIndex++;
 				} else {
 					break;
 				}
 			}
+			
 			temp_amount /= cutoff.subtract(m_dtLastUpdated).getRawCountInMillis();
-			temp_amount += ((m_dLastUpdatedBalance!=null)?m_dLastUpdatedBalance:0);
 			
-			m_dLastUpdatedBalance += temp_transaction;
+			PeriodBalance pd = new PeriodBalance(m_dLastUpdatedBalance, m_dLastUpdatedBalance+temp_amount, temp_cred, temp_deb);
 			
-			return temp_amount;
-		} else {
-			return 0D;
+			m_dLastUpdatedBalance = pd.ending_balance;
+			
+			return pd;
 		}
+		return new PeriodBalance();
 	}
 }

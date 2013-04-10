@@ -57,10 +57,11 @@ public class CD extends InterestBearingAccount {
 	}
 	
 	@Override
-	protected void onUpdate(DateTime cycle) {
-		super.onUpdate(cycle);
+	protected void onUpdate() {
+		super.onUpdate();
 		if (this.getBalance() < RuntimeAPI.CDMinimumBalance()) {
 			this.close();
 		}
 	}
+	
 }

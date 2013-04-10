@@ -32,11 +32,15 @@ public class Loan extends InterestChargingAccount {
 	}
 	
 	@Override
-	protected void onUpdate(DateTime cycle) {
-		super.onUpdate(cycle);
+	protected void onUpdate() {
+		super.onUpdate();
 		if (this.getBalance() >= 0) { // Greater than is a safety check
-			this.close();			
-		}
-		// TODO: Charge penalty whenever a monthly payment was missed or did not meet the minimum 
+			this.close();
+		} 
+	}
+	
+	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
+		// TODO: Charge penalty whenever a monthly payment was missed or did not meet the minimum
+		super.onUpdate(cycle, pb);
 	}
 }

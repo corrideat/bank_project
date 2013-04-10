@@ -1,5 +1,6 @@
 package account;
 
+import date.DateTime;
 import backend.RuntimeAPI.InterestRate;
 
 abstract public class InterestAccount extends Account {
@@ -24,4 +25,16 @@ abstract public class InterestAccount extends Account {
 			return m_dInterestOffset;
 		}
 	}
+	
+	@Override
+	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
+		if (this.debtInstrument() && pb.average_balance < 0D) {
+			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Charge");
+		} else if (!this.debtInstrument() && pb.average_balance > 0D) {
+			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Payment");
+		}
+	}
+	
+	@Override
+	protected void onUpdate() {	}
 }

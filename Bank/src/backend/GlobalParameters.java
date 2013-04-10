@@ -17,7 +17,10 @@ public enum GlobalParameters {
 	CHECKING_MINIMUM_FREE_BALANCE(0D, ""),
 	CD_MINIMUM_BALANCE(0D, ""),
 	CHECKING_OVERDRAFT_FEE(-1D, ""), // Fees are negative
-	LOC_MAXIMUM_BALANCE(1D, "");
+	LOC_MAXIMUM_BALANCE(1D, ""),
+	LOC_MINIMUM_PAYMENT(0D, ""),
+	LOC_MINIMUM_PAYMENT_FRACTION(0D, ""),
+	LOC_LATE_PENALTY(0D, "");
 	
 	private double m_dValue;
 	private final String m_sDescription;	
