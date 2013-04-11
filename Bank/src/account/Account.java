@@ -66,10 +66,7 @@ public abstract class Account {
 	protected class InternalTransaction extends Transaction {
 		public InternalTransaction(final double amount, final String description) {
 			super(ms_agent, Account.this, amount, description);
-			try {
-				Account.this.postTransaction(this);
-			} catch (TransactionValidationException e) {
-			}
+			Account.this.forcePostTransaction(this);
 		}
 
 		public InternalTransaction(final Account target, final double amount, final String description) {
@@ -156,11 +153,23 @@ public abstract class Account {
 	}
 	
 	public final void postTransaction(final Transaction t) throws TransactionValidationException {
+		this.simulateTransaction(t);
+		this.forcePostTransaction(t);
+	}
+	
+	private final void forcePostTransaction(final Transaction t)  {
+		if (this.m_atHistory.add(t)) {
+			this.m_dBalance += t.m_dAmount;
+			this.update();
+		} else {
+			throw new IllegalStateException();
+		}
+	}
+
+	
+	protected final void simulateTransaction(final Transaction t) throws TransactionValidationException {
 		securityTransactionValidator(t);
 		if (t.m_agAgent!=ms_agent) transactionValidator(t);
-		this.m_atHistory.add(t);
-		this.m_dBalance += t.m_dAmount;
-		this.update();
 	}
 	
 	private final void securityTransactionValidator(Transaction t) {
@@ -225,8 +234,12 @@ public abstract class Account {
 				Account target = null;
 				if ((target = RuntimeAPI.getAccount(trans.m_lTargetAccount)) != null) {
 					try {
-						this.postTransaction(new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription)));
-						new InternalTransaction(target, Math.abs(trans.m_dAmount), String.format("Automated Transaction for %.02d from %s, %s", Math.abs(trans.m_dAmount), this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+						Transaction local = new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction: %s", trans.m_sDescription));
+						Transaction outgoing =new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+						target.simulateTransaction(local);
+						target.simulateTransaction(outgoing);
+						this.forcePostTransaction(local);
+						target.forcePostTransaction(outgoing);
 					} catch (TransactionValidationException e) {
 						// TODO: Should we charge customer a fee?
 						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
