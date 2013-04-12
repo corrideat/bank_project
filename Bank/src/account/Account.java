@@ -224,6 +224,9 @@ public abstract class Account {
 							}
 						}
 					}
+					if (!transferred) {
+						new InternalTransaction(this.m_dBalance, String.format("Account %d Close Check Mailed for %.02d", this.m_lAccountNumber, this.m_dBalance));
+					}
 				}
 				// TODO: What is !transferred?
 				this.m_dBalance = 0L;
