@@ -30,4 +30,8 @@ public class Transaction {
 			m_dtReportedFraudulent = RuntimeAPI.now();
 		}
 	}
+	
+	public final String toString() {
+		return m_sDescription;
+	}
 }

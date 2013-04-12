@@ -24,25 +24,146 @@ public abstract class User implements AccountHolder, Comparable<User> {
 	final public Privileges m_ePrivileges;
 	final Mailbox m_mbMailbox;
 	static Random random = new SecureRandom();
-	private String m_sUsername;
-	private byte[] m_baSaltedPassword;
-	private byte[] m_baPasswordSalt;
+	final private Authentication m_oAuthObject;
 	
+	final private class Authentication implements Comparable<Authentication> {
+	
+		private String m_sUsername;
+		private byte[] m_baSaltedPassword;
+		private byte[] m_baPasswordSalt;
+		
+		protected Authentication(final String username, final String password) {
+			this.setUsername(username, password);
+		}
+		
+		final public void setUsername(final String username, final String password) {
+			// Important: this does not guard against overlaps.
+			String old = m_sUsername;
+			try {
+				m_sUsername = username;
+				setPassword(password);
+			} catch(IllegalStateException e) {
+				m_sUsername = old;
+				throw e;
+			}
+		}
+		
+		final public void setPassword(final String password) {
+			byte[] salt = new byte[16];
+			User.random.nextBytes(salt);
+			
+			try {
+				byte[] temp =  hmac(m_sUsername, salt);
+				
+				m_baSaltedPassword = hmac(password, temp);
+				m_baPasswordSalt = salt;
+			} catch (NoSuchAlgorithmException e) {
+				throw new IllegalStateException();
+			}
+		}
+		
+		final public boolean authenticate(final String username, final String password) {
+			if (m_sUsername.compareTo(username) != 0) return false;
+			try {
+				byte[] temp =  this.hmac(m_sUsername, m_baPasswordSalt);
+				
+				byte[] saltedPassword = this.hmac(password, temp);
+				
+				if (saltedPassword.length != m_baSaltedPassword.length) return false;
+				
+				for(int i=0;i<saltedPassword.length;i++) {
+					if (m_baSaltedPassword[i] != saltedPassword[i]) return false;
+				}
+				
+				return true;			
+			} catch (NoSuchAlgorithmException e) {
+				throw new IllegalStateException();
+			}
+		}
+		
+		final private byte[] byteHash(final byte[] message) throws NoSuchAlgorithmException {
+			MessageDigest md = null;
+			try {
+				md = MessageDigest.getInstance("SHA-256");			
+			} catch (NoSuchAlgorithmException e) {
+				md = MessageDigest.getInstance("RIPEMD160");
+			}
+			md.update(message);
+			
+			return md.digest();
+		}
+		
+		final private byte[] hmac(final String message, byte[] bKey) throws NoSuchAlgorithmException {
+			if (bKey.length > 64) {
+				bKey = this.byteHash(bKey);
+			} else if (bKey.length < 64) {
+				byte[] temp = new byte[64];
+				int i=0;
+				for (;i<bKey.length;i++) {
+					temp[i] = bKey[i];
+				}			
+				for (;i<64;i++) {
+					temp[i] = 0;
+				}
+				bKey = temp;
+			}
+			
+			byte[] o_key_pad = new byte[64];
+			byte[] i_key_pad = new byte[64];
+			
+			for(int i=0;i<64;i++) {
+				o_key_pad[i] = (byte) (0x5c ^ bKey[i]);
+				i_key_pad[i] = (byte) (0x36 ^ bKey[i]);
+			}
+
+			byte[] temp = message.getBytes();
+			byte[] partA = new byte[i_key_pad.length + temp.length];
+
+			
+			for(int i=0;i<i_key_pad.length;i++) {
+				partA[i] = i_key_pad[i];
+			}
+			
+			for(int i=0;i<temp.length;i++) {
+				partA[i_key_pad.length+i] = temp[i];
+			}
+			
+			partA = this.byteHash(partA);
+			
+			temp = new byte[partA.length+o_key_pad.length];
+			
+			for(int i=0;i<o_key_pad.length;i++) {
+				temp[i] = o_key_pad[i];
+			}
+			
+			for(int i=0;i<partA.length;i++) {
+				temp[o_key_pad.length+i] = partA[i];
+			}
+			
+			return this.byteHash(temp);
+		}
+
+		
+		@Override
+		final public int compareTo(Authentication o) {
+			return this.m_sUsername.compareTo(o.m_sUsername);
+		}
+	}
+		
 	final private boolean validateSSN(final int ssn) {
 		String sSSN = Integer.toString(ssn);
 		 // Based on http://ssa-custhelp.ssa.gov/app/answers/detail/a_id/425 and http://stackoverflow.com/questions/4087468/ssn-regex-for-123-45-6789-or-xxx-xx-xxxx
 		 Pattern pSSN = Pattern.compile("^(?!(000|666))[0-8]\\d{2}(?!00)\\d{2}(?!0000)\\d{4}$");
 		 Matcher m = pSSN.matcher(sSSN);
-		 boolean b = m.matches();
-		 return (b && sSSN.substring(0, 3).compareTo("000")!=0 && sSSN.substring(3, 5).compareTo("00")!=0 && sSSN.substring(5, 9).compareTo("0000")!=0);
+		 return m.matches();
 	}
 	
 	// Important: customers must have at least one account opened.
 	// It is not possible to ensure this at creation time, but this must be enforced externally (i.e.,
 	// a new customer may be created only during account creation time) 
-	public User(final String firstName, final String lastName, final DateTime birthday, final int ssn, final Privileges p) {
+	public User(final String firstName, final String lastName, final DateTime birthday, final int ssn, final Privileges p, final String username, final String password) {
 		// TODO: Validate birthday as well (impose a 18 age)
-		if (firstName != null && lastName != null && ssn > 10010001 && validateSSN(ssn)) {
+		if (firstName != null && lastName != null && validateSSN(ssn)) {
 			m_sFirstName = firstName;
 			m_sLastName = lastName;
 			m_dtBirthday = birthday;
@@ -50,6 +171,8 @@ public abstract class User implements AccountHolder, Comparable<User> {
 			m_dtRecordCreationDate = RuntimeAPI.now();
 			m_ePrivileges = p;
 			m_mbMailbox = new Mailbox();
+			
+			this.m_oAuthObject = new Authentication(username, password);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -81,122 +204,24 @@ public abstract class User implements AccountHolder, Comparable<User> {
 	@Override
 	public boolean isEmployee() {
 		return false;
-	}
-	
-	final public void setUsername(final String username, final String password) {
-		// Important: this does not guard against overlaps.
-		String old = m_sUsername;
-		try {
-			m_sUsername = username;
-			setPassword(password);
-		} catch(IllegalStateException e) {
-			m_sUsername = old;
-			throw e;
-		}
-	}
-	
-	final public String getUsername(final String username) {
-		return m_sUsername;
-	}
-
-
-	final public void setPassword(final String password) {
-		byte[] salt = new byte[16];
-		User.random.nextBytes(salt);
-		
-		try {
-			byte[] temp =  hmac(m_sUsername, salt);
-			
-			m_baSaltedPassword = hmac(password, temp);
-			m_baPasswordSalt = salt;
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException();
-		}
-	}
-	
-	final public boolean checkPassword(final String password) {
-		try {
-			byte[] temp =  hmac(m_sUsername, m_baPasswordSalt);
-			
-			byte[] saltedPassword = hmac(password, temp);
-			
-			if (saltedPassword.length != m_baSaltedPassword.length) return false;
-			
-			for(int i=0;i<saltedPassword.length;i++) {
-				if (m_baSaltedPassword[i] != saltedPassword[i]) return false;
-			}
-			
-			return true;			
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException();
-		}
-	}
-	
-	final private static byte[] byteHash(final byte[] message) throws NoSuchAlgorithmException {
-		MessageDigest md = null;
-		try {
-			md = MessageDigest.getInstance("SHA-256");			
-		} catch (NoSuchAlgorithmException e) {
-			md = MessageDigest.getInstance("RIPEMD160");
-		}
-		md.update(message);
-		
-		return md.digest();
-	}
-	
-	final private static byte[] hmac(final String message, byte[] bKey) throws NoSuchAlgorithmException {
-		if (bKey.length > 64) {
-			bKey = User.byteHash(bKey);
-		} else if (bKey.length < 64) {
-			byte[] temp = new byte[64];
-			int i=0;
-			for (;i<bKey.length;i++) {
-				temp[i] = bKey[i];
-			}			
-			for (;i<64;i++) {
-				temp[i] = 0;
-			}
-			bKey = temp;
-		}
-		
-		byte[] o_key_pad = new byte[64];
-		byte[] i_key_pad = new byte[64];
-		
-		for(int i=0;i<64;i++) {
-			o_key_pad[i] = (byte) (0x5c ^ bKey[i]);
-			i_key_pad[i] = (byte) (0x36 ^ bKey[i]);
-		}
-
-		byte[] temp = message.getBytes();
-		byte[] partA = new byte[i_key_pad.length + temp.length];
-
-		
-		for(int i=0;i<i_key_pad.length;i++) {
-			partA[i] = i_key_pad[i];
-		}
-		
-		for(int i=0;i<temp.length;i++) {
-			partA[i_key_pad.length+i] = temp[i];
-		}
-		
-		partA = User.byteHash(partA);
-		
-		temp = new byte[partA.length+o_key_pad.length];
-		
-		for(int i=0;i<o_key_pad.length;i++) {
-			temp[i] = o_key_pad[i];
-		}
-		
-		for(int i=0;i<partA.length;i++) {
-			temp[o_key_pad.length+i] = partA[i];
-		}
-		
-		return User.byteHash(temp);
-	}
+	}	
 
 	@Override
 	public int compareTo(User o) {
-		return this.m_sUsername.compareTo(o.m_sUsername);
+		return this.m_oAuthObject.compareTo(o.m_oAuthObject);
 	}
+	
+	public void setUsername(final String username, final String password) {
+		this.m_oAuthObject.setUsername(username, password);
+	}
+	
+	public void setPassword(final String password) {
+		this.m_oAuthObject.setPassword(password);
+	}
+	
+	public boolean authenticate(final String username, final String password) {
+		return this.m_oAuthObject.authenticate(username, password);
+	}
+	
 }
 

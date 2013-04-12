@@ -7,7 +7,7 @@ import backend.RuntimeAPI;
 import date.DateTime;
 import date.Time;
 
-public abstract class Account {
+public abstract class Account implements Comparable<Account> {
 	public final DateTime m_dtOpened;
 	public final AccountType m_atType;
 	private double m_dBalance;
@@ -319,5 +319,11 @@ public abstract class Account {
 			return pd;
 		}
 		return new PeriodBalance();
+	}
+
+	@Override
+	public int compareTo(Account o) {
+		long diff = this.m_lAccountNumber-o.m_lAccountNumber;
+		return ((diff<0)?(-1):((diff>0)?1:0));
 	}
 }

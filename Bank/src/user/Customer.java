@@ -10,9 +10,9 @@ import date.DateTime;
 public class Customer extends User {
 	protected final List<Account> m_aAccounts;
 	
-	public Customer(String firstName, String lastName, DateTime birthday,
-			int ssn) {
-		super(firstName, lastName, birthday, ssn, Privileges.CUSTOMER);
+	public Customer(final String firstName, final String lastName, final DateTime birthday,
+			final int ssn, final String username, final String password) {
+		super(firstName, lastName, birthday, ssn, Privileges.CUSTOMER, username, password);
 		m_aAccounts = new ArrayList<Account>();
 	}
 
