@@ -19,12 +19,10 @@ public abstract class User implements AccountHolder {
 	final public Privileges m_ePrivileges;
 	final Mailbox m_mbMailbox;
 	
-	
-	// Credit to Breaking Par Consulting for the regular expression
-	// http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256F6A0072B54C
 	private boolean validateSSN(final int ssn) {
 		String sSSN = Integer.toString(ssn);
-		Pattern pSSN = Pattern.compile("^([0-6]\\d{2}|7[0-6]\\d|77[0-2])(\\d{2})(\\d{4})$");
+		 // Based on http://ssa-custhelp.ssa.gov/app/answers/detail/a_id/425 and http://stackoverflow.com/questions/4087468/ssn-regex-for-123-45-6789-or-xxx-xx-xxxx
+		 Pattern pSSN = Pattern.compile("^(?!(000|666))[0-8]\\d{2}(?!00)\\d{2}(?!0000)\\d{4}$");
 		 Matcher m = pSSN.matcher(sSSN);
 		 boolean b = m.matches();
 		 return (b && sSSN.substring(0, 3).compareTo("000")!=0 && sSSN.substring(3, 5).compareTo("00")!=0 && sSSN.substring(5, 9).compareTo("0000")!=0);
