@@ -1,7 +1,12 @@
 package user;
 
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import backend.RuntimeAPI;
 
@@ -18,6 +23,10 @@ public abstract class User implements AccountHolder {
 	final int m_iSSN;
 	final public Privileges m_ePrivileges;
 	final Mailbox m_mbMailbox;
+	static Random random = new SecureRandom();
+	private String m_sUsername;
+	private byte[] m_baSaltedPassword;
+	private byte[] m_baPasswordSalt;
 	
 	private boolean validateSSN(final int ssn) {
 		String sSSN = Integer.toString(ssn);
@@ -73,5 +82,106 @@ public abstract class User implements AccountHolder {
 	public boolean isEmployee() {
 		return false;
 	}
+	
+	public void setUsername(final String username) {
+		// Important: this does not guard against overlaps.
+		m_sUsername = username;
+	}
+	
+	public String getUsername(final String username) {
+		return m_sUsername;
+	}
+
+	
+	public void changePassword(final String password) {
+		byte[] salt = new byte[8];
+		User.random.nextBytes(salt);
+		
+		try {
+			m_baSaltedPassword = hmac(password, salt);
+			m_baPasswordSalt = salt;
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	public boolean checkPassword(final String password) {
+		try {
+			byte[] saltedPassword = hmac(password, m_baPasswordSalt);
+			
+			if (saltedPassword.length != m_baSaltedPassword.length) return false;
+			
+			for(int i=0;i<saltedPassword.length;i++) {
+				if (m_baSaltedPassword[i] != saltedPassword[i]) return false;
+			}
+			
+			return true;			
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	private static byte[] byteHash(final byte[] message) throws NoSuchAlgorithmException {
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA-256");			
+		} catch (NoSuchAlgorithmException e) {
+			md = MessageDigest.getInstance("RIPEMD160");
+		}
+		md.update(message);
+		
+		return md.digest();
+	}
+	
+	private static byte[] hmac(final String message, byte[] bKey) throws NoSuchAlgorithmException {
+		if (bKey.length > 64) {
+			bKey = User.byteHash(bKey);
+		} else if (bKey.length < 64) {
+			byte[] temp = new byte[64];
+			int i=0;
+			for (;i<bKey.length;i++) {
+				temp[i] = bKey[i];
+			}			
+			for (;i<64;i++) {
+				temp[i] = 0;
+			}
+			bKey = temp;
+		}
+		
+		byte[] o_key_pad = new byte[64];
+		byte[] i_key_pad = new byte[64];
+		
+		for(int i=0;i<64;i++) {
+			o_key_pad[i] = (byte) (0x5c ^ bKey[i]);
+			i_key_pad[i] = (byte) (0x36 ^ bKey[i]);
+		}
+
+		byte[] temp = message.getBytes();
+		byte[] partA = new byte[i_key_pad.length + temp.length];
+
+		
+		for(int i=0;i<i_key_pad.length;i++) {
+			partA[i] = i_key_pad[i];
+		}
+		
+		for(int i=0;i<temp.length;i++) {
+			partA[i_key_pad.length+i] = temp[i];
+		}
+		
+		partA = User.byteHash(partA);
+		
+		temp = new byte[partA.length+o_key_pad.length];
+		
+		for(int i=0;i<o_key_pad.length;i++) {
+			temp[i] = o_key_pad[i];
+		}
+		
+		for(int i=0;i<partA.length;i++) {
+			temp[o_key_pad.length+i] = partA[i];
+		}
+		
+		return User.byteHash(temp);
+	}
 
 }
+
