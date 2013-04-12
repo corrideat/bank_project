@@ -15,7 +15,7 @@ import account.AccountHolder;
 import date.DateTime;
 import date.Time;
 
-public abstract class User implements AccountHolder {
+public abstract class User implements AccountHolder, Comparable<User> {
 	final String m_sFirstName;
 	final String m_sLastName;
 	final DateTime m_dtBirthday;
@@ -28,7 +28,7 @@ public abstract class User implements AccountHolder {
 	private byte[] m_baSaltedPassword;
 	private byte[] m_baPasswordSalt;
 	
-	private boolean validateSSN(final int ssn) {
+	final private boolean validateSSN(final int ssn) {
 		String sSSN = Integer.toString(ssn);
 		 // Based on http://ssa-custhelp.ssa.gov/app/answers/detail/a_id/425 and http://stackoverflow.com/questions/4087468/ssn-regex-for-123-45-6789-or-xxx-xx-xxxx
 		 Pattern pSSN = Pattern.compile("^(?!(000|666))[0-8]\\d{2}(?!00)\\d{2}(?!0000)\\d{4}$");
@@ -83,31 +83,42 @@ public abstract class User implements AccountHolder {
 		return false;
 	}
 	
-	public void setUsername(final String username) {
+	final public void setUsername(final String username, final String password) {
 		// Important: this does not guard against overlaps.
-		m_sUsername = username;
+		String old = m_sUsername;
+		try {
+			m_sUsername = username;
+			setPassword(password);
+		} catch(IllegalStateException e) {
+			m_sUsername = old;
+			throw e;
+		}
 	}
 	
-	public String getUsername(final String username) {
+	final public String getUsername(final String username) {
 		return m_sUsername;
 	}
 
-	
-	public void changePassword(final String password) {
-		byte[] salt = new byte[8];
+
+	final public void setPassword(final String password) {
+		byte[] salt = new byte[16];
 		User.random.nextBytes(salt);
 		
 		try {
-			m_baSaltedPassword = hmac(password, salt);
+			byte[] temp =  hmac(m_sUsername, salt);
+			
+			m_baSaltedPassword = hmac(password, temp);
 			m_baPasswordSalt = salt;
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException();
 		}
 	}
 	
-	public boolean checkPassword(final String password) {
+	final public boolean checkPassword(final String password) {
 		try {
-			byte[] saltedPassword = hmac(password, m_baPasswordSalt);
+			byte[] temp =  hmac(m_sUsername, m_baPasswordSalt);
+			
+			byte[] saltedPassword = hmac(password, temp);
 			
 			if (saltedPassword.length != m_baSaltedPassword.length) return false;
 			
@@ -121,7 +132,7 @@ public abstract class User implements AccountHolder {
 		}
 	}
 	
-	private static byte[] byteHash(final byte[] message) throws NoSuchAlgorithmException {
+	final private static byte[] byteHash(final byte[] message) throws NoSuchAlgorithmException {
 		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("SHA-256");			
@@ -133,7 +144,7 @@ public abstract class User implements AccountHolder {
 		return md.digest();
 	}
 	
-	private static byte[] hmac(final String message, byte[] bKey) throws NoSuchAlgorithmException {
+	final private static byte[] hmac(final String message, byte[] bKey) throws NoSuchAlgorithmException {
 		if (bKey.length > 64) {
 			bKey = User.byteHash(bKey);
 		} else if (bKey.length < 64) {
@@ -183,5 +194,9 @@ public abstract class User implements AccountHolder {
 		return User.byteHash(temp);
 	}
 
+	@Override
+	public int compareTo(User o) {
+		return this.m_sUsername.compareTo(o.m_sUsername);
+	}
 }
 
