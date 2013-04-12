@@ -42,7 +42,7 @@ public class AccountantFrame extends JFrame {
 	 */
 	public AccountantFrame() {
 		setTitle("Accountant");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 303, 340);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -66,6 +66,7 @@ public class AccountantFrame extends JFrame {
 		contentPane.add(scrollPane);
 		
 		JTextPane textPane = new JTextPane();
+		textPane.setEditable(false);
 		scrollPane.setViewportView(textPane);
 		
 		JButton button = new JButton("Logout");
@@ -84,16 +85,16 @@ public class AccountantFrame extends JFrame {
 		contentPane.add(separator);
 		
 		JLabel lblLoanCap = new JLabel("Loan Cap:");
-		lblLoanCap.setBounds(10, 239, 74, 14);
+		lblLoanCap.setBounds(21, 239, 74, 14);
 		contentPane.add(lblLoanCap);
 		
 		textField = new JTextField();
-		textField.setBounds(87, 236, 86, 20);
+		textField.setBounds(87, 236, 101, 20);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
 		JButton btnSet = new JButton("Set");
-		btnSet.setBounds(200, 235, 59, 23);
+		btnSet.setBounds(200, 235, 71, 23);
 		contentPane.add(btnSet);
 		
 		JSeparator separator_1 = new JSeparator();

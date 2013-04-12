@@ -45,85 +45,78 @@ public class AccountManagerFrame extends JFrame {
 	public AccountManagerFrame() {
 		setTitle("Account Manager");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 294, 328);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 336, 328);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		textField = new JTextField();
+		textField.setBounds(86, 12, 139, 20);
 		textField.setColumns(10);
-		textField.setBounds(64, 13, 139, 20);
 		contentPane.add(textField);
 		
-		JLabel label = new JLabel("Customer:");
-		label.setBounds(10, 16, 50, 14);
-		contentPane.add(label);
+		JLabel lblCustomer = new JLabel("Customer #:");
+		lblCustomer.setBounds(10, 15, 85, 14);
+		contentPane.add(lblCustomer);
 		
 		JButton button = new JButton("Access");
-		button.setBounds(213, 12, 65, 23);
+		button.setBounds(235, 11, 85, 23);
 		contentPane.add(button);
 		
 		JLabel label_1 = new JLabel("Account Information");
-		label_1.setBounds(10, 77, 106, 14);
+		label_1.setBounds(10, 77, 152, 14);
 		contentPane.add(label_1);
 		
 		JLabel label_2 = new JLabel("Account:");
-		label_2.setBounds(10, 50, 46, 14);
+		label_2.setBounds(10, 49, 66, 14);
 		contentPane.add(label_2);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(64, 47, 139, 20);
+		comboBox.setBounds(86, 46, 139, 20);
 		contentPane.add(comboBox);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 96, 262, 64);
-		contentPane.add(scrollPane);
-		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
-		
 		JButton btnNewButton = new JButton("New");
-		btnNewButton.setBounds(213, 46, 65, 23);
+		btnNewButton.setBounds(235, 45, 85, 23);
 		contentPane.add(btnNewButton);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(0, 203, 297, 2);
+		separator.setBounds(0, 203, 352, 2);
 		contentPane.add(separator);
 		
 		JButton btnNewButton_1 = new JButton("New Customer");
-		btnNewButton_1.setBounds(10, 216, 106, 23);
+		btnNewButton_1.setBounds(10, 218, 131, 23);
 		contentPane.add(btnNewButton_1);
 		
 		textField_1 = new JTextField();
-		textField_1.setBounds(192, 217, 79, 20);
+		textField_1.setBounds(241, 219, 79, 20);
 		contentPane.add(textField_1);
 		textField_1.setColumns(10);
 		
 		JLabel lblLoanLimit = new JLabel("Loan Cap:");
-		lblLoanLimit.setBounds(131, 220, 56, 14);
+		lblLoanLimit.setBounds(163, 222, 56, 14);
 		contentPane.add(lblLoanLimit);
 		
 		textField_2 = new JTextField();
-		textField_2.setBounds(76, 172, 86, 20);
+		textField_2.setBounds(108, 173, 86, 20);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		
 		JButton btnChange = new JButton("Change");
-		btnChange.setBounds(172, 171, 89, 23);
+		btnChange.setBounds(214, 172, 89, 23);
 		contentPane.add(btnChange);
 		
 		JLabel lblCreditLimit = new JLabel("Credit Limit:");
-		lblCreditLimit.setBounds(10, 175, 65, 14);
+		lblCreditLimit.setBounds(32, 176, 89, 14);
 		contentPane.add(lblCreditLimit);
 		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(0, 255, 297, 2);
+		separator_1.setBounds(0, 255, 352, 2);
 		contentPane.add(separator_1);
 		
 		JButton btnLogout = new JButton("Logout");
+		btnLogout.setBounds(120, 268, 89, 23);
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
@@ -131,7 +124,14 @@ public class AccountManagerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnLogout.setBounds(99, 268, 89, 23);
 		contentPane.add(btnLogout);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 96, 310, 66);
+		contentPane.add(scrollPane);
+		
+		JTextPane textPane = new JTextPane();
+		textPane.setEditable(false);
+		scrollPane.setViewportView(textPane);
 	}
 }

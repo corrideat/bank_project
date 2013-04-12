@@ -20,6 +20,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
+import account.*;
+import backend.*;
+import date.*;
+import user.*;
+import javax.swing.JSeparator;
+
+
 public class MainFrame extends JFrame {
 
 	private JPanel contentPane;
@@ -48,8 +55,8 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setTitle("Banking");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 232, 135);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 232, 179);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -72,7 +79,25 @@ public class MainFrame extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				JFrame userFrame = new TellerFrame();
+				
+				
+				
+//				DateTime birthday = null;
+//				try {
+//					birthday = new DateTime();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//				Teller user = new Teller("Phillip","Riley",birthday,304839550);
+				
+				JFrame userFrame = new CustomerFrame();
+				
+//				if (user instanceof Teller){
+//					userFrame = new TellerFrame();
+//				}
+				
 				userFrame.setVisible(true);
 				dispose();
 			}
@@ -83,5 +108,19 @@ public class MainFrame extends JFrame {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(78, 42, 132, 20);
 		contentPane.add(passwordField);
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(0, 106, 226, 2);
+		contentPane.add(separator);
+		
+		JButton btnTestFrames = new JButton("Test Frames");
+		btnTestFrames.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame testFrame = new TestFrame();
+				testFrame.setVisible(true);
+			}
+		});
+		btnTestFrames.setBounds(47, 119, 132, 23);
+		contentPane.add(btnTestFrames);
 	}
 }
