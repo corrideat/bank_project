@@ -38,14 +38,16 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		}
 		
 		final public void setUsername(final String username, final String password) {
-			// Important: this does not guard against overlaps.
-			String old = m_sUsername;
-			try {
-				m_sUsername = username;
-				setPassword(password);
-			} catch(IllegalStateException e) {
-				m_sUsername = old;
-				throw e;
+			if (username != null && password != null) {
+				// Important: this does not guard against overlaps.
+				String old = m_sUsername;
+				try {
+					m_sUsername = username;
+					setPassword(password);
+				} catch(IllegalStateException e) {
+					m_sUsername = old;
+					throw e;
+				}
 			}
 		}
 		

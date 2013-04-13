@@ -11,7 +11,7 @@ abstract public class InterestAccount extends Account {
 		super(at, number, owner);
 		if (fix_rate) {
 			m_eRate = null;
-			m_dInterestOffset = offset + rate.getRate();
+			m_dInterestOffset = Math.max(offset + rate.getRate(), 0);
 		} else {
 			m_eRate = rate;
 			m_dInterestOffset = offset;
@@ -20,7 +20,7 @@ abstract public class InterestAccount extends Account {
 	
 	public double getAccountRate() {
 		if (m_eRate != null) {
-			return m_eRate.getRate()+m_dInterestOffset;
+			return Math.max(m_eRate.getRate()+m_dInterestOffset, 0);
 		} else {
 			return m_dInterestOffset;
 		}

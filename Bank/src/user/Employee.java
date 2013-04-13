@@ -7,7 +7,7 @@ public abstract class Employee extends User {
 	public class EmployeeCustomer extends Customer {
 
 		public EmployeeCustomer() {
-			super(Employee.this.m_sFirstName, Employee.this.m_sLastName, Employee.this.m_dtBirthday, Employee.this.m_iSSN);
+			super(Employee.this.m_sFirstName, Employee.this.m_sLastName, Employee.this.m_dtBirthday, Employee.this.m_iSSN, null, null);
 		}
 		
 		@Override
@@ -19,8 +19,8 @@ public abstract class Employee extends User {
 	
 	final EmployeeCustomer m_cCustomerProfile;
 
-	public Employee(String firstName, String lastName, DateTime birthday, int ssn, Privileges p) {
-		super(firstName, lastName, birthday, ssn, p);
+	public Employee(String firstName, String lastName, DateTime birthday, int ssn, Privileges p, String username, String password) {
+		super(firstName, lastName, birthday, ssn, p, username, password);
 		m_cCustomerProfile = new EmployeeCustomer();
 	}
 	

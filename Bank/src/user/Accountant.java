@@ -5,8 +5,8 @@ import date.DateTime;
 public class Accountant extends Employee {
 
 	public Accountant(String firstName, String lastName, DateTime birthday,
-			int ssn) {
-		super(firstName, lastName, birthday, ssn, Privileges.ACCOUNTANT);
+			int ssn, String username, String password) {
+		super(firstName, lastName, birthday, ssn, Privileges.ACCOUNTANT, username, password);
 	}
 
 }
