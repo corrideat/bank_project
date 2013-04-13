@@ -37,6 +37,6 @@ public enum AccountType {
 			throw new RuntimeException();
 		} else {
 			return a;
-		}		
+		}
 	}
 }

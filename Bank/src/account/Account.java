@@ -5,7 +5,6 @@ import java.util.List;
 import backend.Agent;
 import backend.RuntimeAPI;
 import date.DateTime;
-import date.Time;
 
 public abstract class Account implements Comparable<Account> {
 	public final DateTime m_dtOpened;
@@ -82,9 +81,7 @@ public abstract class Account implements Comparable<Account> {
 		public boolean flaggable() {
 			return false;
 		}
-	}
-	
-	
+	}	
 
 	public Account(final AccountType at, final long number, final AccountHolder owner) {
 		this.m_atType = at;
@@ -249,8 +246,11 @@ public abstract class Account implements Comparable<Account> {
 					}
 				}
 			}
-			onUpdate(RuntimeAPI.now(), getMonthlyBalance(RuntimeAPI.now()));
-			this.m_dtLastUpdated=RuntimeAPI.now();
+			DateTime cutoff = new DateTime(current.getYear(), current.getMonth(), 1);
+			PeriodBalance pb = getMonthlyBalance(cutoff);
+			m_dLastUpdatedBalance = pb.ending_balance;
+			this.m_dtLastUpdated=cutoff;
+			onUpdate(cutoff, pb);
 		}
 		
 		onUpdate();
@@ -353,9 +353,7 @@ public abstract class Account implements Comparable<Account> {
 			
 			PeriodBalance pd = new PeriodBalance(m_dLastUpdatedBalance, m_dLastUpdatedBalance+temp_amount, temp_cred, temp_deb);
 			
-			transactions.add("----------------");
-		
-			m_dLastUpdatedBalance = pd.ending_balance;
+			transactions.add("----------------");			
 			
 			if (this.debtInstrument()) {
 				transactions.add(String.format("Average balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(pd.average_balance)*1E3)/1E3));
