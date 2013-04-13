@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 
 import backend.RuntimeAPI;
 
+import account.Account;
 import account.AccountHolder;
 
 import date.DateTime;
@@ -49,11 +50,21 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		}
 		
 		final public void setPassword(final String password) {
-			byte[] salt = new byte[16];
+			byte[] salt = new byte[64];
 			User.random.nextBytes(salt);
 			
 			try {
 				byte[] temp =  hmac(m_sUsername, salt);
+				
+				// Make computation more expensive, and hence, harder to attack
+				for(int i=0;i<2000;i++) {
+					if (i%2==0) {
+						temp =  hmac(m_sUsername, temp);
+					}
+					else {
+						temp =  hmac(password, temp);
+					}
+				}
 				
 				m_baSaltedPassword = hmac(password, temp);
 				m_baPasswordSalt = salt;
@@ -66,6 +77,17 @@ public abstract class User implements AccountHolder, Comparable<User> {
 			if (m_sUsername.compareTo(username) != 0) return false;
 			try {
 				byte[] temp =  this.hmac(m_sUsername, m_baPasswordSalt);
+				
+				// Make computation more expensive, and hence, harder to attack
+				for(int i=0;i<2000;i++) {
+					if (i%2==0) {
+						temp =  hmac(m_sUsername, temp);
+					}
+					else {
+						temp =  hmac(password, temp);
+					}
+				}
+
 				
 				byte[] saltedPassword = this.hmac(password, temp);
 				
@@ -209,6 +231,12 @@ public abstract class User implements AccountHolder, Comparable<User> {
 	@Override
 	public int compareTo(User o) {
 		return this.m_oAuthObject.compareTo(o.m_oAuthObject);
+	}
+	
+	@Override
+	public void sendNotification(Account a, String message) {
+		Message m = new Message(message, a);
+		this.m_mbMailbox.send(m);
 	}
 	
 	public void setUsername(final String username, final String password) {

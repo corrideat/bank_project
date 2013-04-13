@@ -82,16 +82,16 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 
-	public Customer canCreateCustomer(String firstName, String lastName, DateTime birthday,	int ssn, AccountType type , Map<String, Object> params) throws InsufficientCreditAvailableException {
+	public Customer canCreateCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (canListTransactions) {
-			Customer c = new Customer(lastName, lastName, birthday, ssn);
+			Customer c = new Customer(lastName, lastName, birthday, ssn, username, password);
 			Account a = type.open(c, params);
 			c.assignAccount(a);
 			return c;
 		} else throw new SecurityException();
 	}
 	
-	public Account canCreateAccount(AccountHolder ah, AccountType type, Map<String, Object> params) throws InsufficientCreditAvailableException {
+	public Account canCreateAccount(AccountHolder ah, AccountType type, Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (canListTransactions) {
 			return type.open(ah, params);
 		} else throw new SecurityException();

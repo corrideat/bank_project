@@ -34,4 +34,5 @@ public class Transaction {
 	public final String toString() {
 		return m_sDescription;
 	}
+
 }

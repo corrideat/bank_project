@@ -8,5 +8,6 @@ public interface AccountHolder {
 	public void assignAccount(Account a);
 	public boolean isEmployee();
 	public Account[] getAccounts();
+	public void sendNotification(Account a, String message);
 	// TODO: get Customer?
 }

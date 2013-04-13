@@ -20,6 +20,7 @@ public abstract class Account implements Comparable<Account> {
 	private Integer m_iLastUpdatedTransactionIndex;
 	private double m_dLastUpdatedBalance;
 	private final List<AutomatedTransaction> m_aatAutomatedTransactions;
+	private final List<String> m_asPendingStatements;
 	
 	protected class PeriodBalance {
 		final double starting_balance;
@@ -95,6 +96,7 @@ public abstract class Account implements Comparable<Account> {
 		this.m_lAccountNumber = number;
 		this.m_aatAutomatedTransactions = new ArrayList<AutomatedTransaction>();
 		this.m_dLastUpdatedBalance = 0.0D;
+		this.m_asPendingStatements = new ArrayList<String>();
 	}
 	
 	protected final void close() {
@@ -183,9 +185,8 @@ public abstract class Account implements Comparable<Account> {
 	
 	protected final void update() {
 		DateTime current = RuntimeAPI.now();
-		Time difference = current.subtract(this.m_dtLastUpdated);
 		
-		if (current.getDay() == 1 || difference.getDays() >= 31) {
+		if ((current.getYear()*12+current.getMonth()) != (this.m_dtLastUpdated.getYear()*12+this.m_dtLastUpdated.getMonth())) {
 			if (this.m_bToBeClosed) {
 				Account[] accounts = this.m_ahOwner.getAccounts();
 				boolean transferred = false;
@@ -280,7 +281,11 @@ public abstract class Account implements Comparable<Account> {
 	}
 	
 	final public void prepareStatement() {
-		// TODO: Do stuff
+		Iterator<String> i= this.m_asPendingStatements.listIterator();
+		while(i.hasNext()) {
+			this.m_ahOwner.sendNotification(this, i.next());
+			i.remove();			
+		}
 	}
 	
 	// Assume that m_dtLastUpdated to be accurate
@@ -293,11 +298,33 @@ public abstract class Account implements Comparable<Account> {
 			double temp_cred = 0D;
 			double temp_deb = 0D;
 			
-			DateTime last = m_dtLastUpdated;		
+			DateTime last = m_dtLastUpdated;
+			
+			ArrayList<String> transactions = new ArrayList<String>();
+			
+			transactions.add(String.format("ACCOUNT STATEMENT"));
+			transactions.add(String.format("Customer: %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+			transactions.add(String.format("Account: %d", this.m_lAccountNumber));
+			transactions.add(String.format("Period: %d/%d/%d - %d/%d/%d", this.m_dtLastUpdated.getMonth(), this.m_dtLastUpdated.getDay(), this.m_dtLastUpdated.getYear(), cutoff.getMonth(), cutoff.getDay(), cutoff.getYear()));
+			if (this.debtInstrument()) {
+				transactions.add(String.format("Starting balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
+			} else {
+				transactions.add(String.format("Starting balance: %c%d", (this.m_dLastUpdatedBalance>0)?' ':'-', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));				
+			}
+			
+			transactions.add("----------------");
+			if (this.debtInstrument()) {
+				transactions.add("Date\tDescription\tAmount\tRunning Balance");
+			} else {
+				transactions.add("Date\tDescription\tCredits\tDebits");
+			}			
+			
+			
 			while(i.hasNext()) {
 				temp = i.next();
 				if (cutoff.subtract(temp.m_dtTime).getRawCountInMillis()>0) {
 					temp_amount = temp.m_dAmount * temp.m_dtTime.subtract(last).getRawCountInMillis();
+					
 					if (temp.m_dAmount > 0D) {
 						temp_cred += temp.m_dAmount;
 					} else {
@@ -305,6 +332,19 @@ public abstract class Account implements Comparable<Account> {
 					}
 					last = temp.m_dtTime;
 					m_iLastUpdatedTransactionIndex++;
+
+					
+					if (this.debtInstrument()) {
+						double runningBalance = Math.round(Math.abs(this.m_dLastUpdatedBalance + temp_cred - temp_deb)*1E3)/1E3;
+						
+						transactions.add(String.format("%d/%d/%d\t%s\t%c%d\t%c%d", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, (temp.m_dAmount>0)?'+':' ', Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3, (runningBalance>0)?'+':' ', runningBalance));
+					} else {
+						if (temp.m_dAmount > 0D) {
+							transactions.add(String.format("%d/%d/%d\t%s\t%d\t", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3));
+						} else {
+							transactions.add(String.format("%d/%d/%d\t%s\t\t%d", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3));
+						}
+					}					
 				} else {
 					break;
 				}
@@ -314,7 +354,23 @@ public abstract class Account implements Comparable<Account> {
 			
 			PeriodBalance pd = new PeriodBalance(m_dLastUpdatedBalance, m_dLastUpdatedBalance+temp_amount, temp_cred, temp_deb);
 			
+			transactions.add("----------------");
+		
 			m_dLastUpdatedBalance = pd.ending_balance;
+			
+			if (this.debtInstrument()) {
+				transactions.add(String.format("Average balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(pd.average_balance)*1E3)/1E3));
+				transactions.add(String.format("Ending balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
+			} else {
+				transactions.add(String.format("Average balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(pd.average_balance)*1E3)/1E3));
+				transactions.add(String.format("Ending balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));			
+			}
+			
+			String statement = "";
+			for(String t:transactions) {
+				statement += t+"\n";
+			}
+			m_asPendingStatements.add(statement);
 			
 			return pd;
 		}
