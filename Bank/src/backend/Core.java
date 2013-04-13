@@ -1,7 +1,7 @@
 package backend;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import user.User;
 
@@ -9,8 +9,8 @@ import account.Account;
 
 public class Core {
 	
-	public static Set<Account> m_aaAccounts = new TreeSet<Account>();
-	public static Set<User> m_auUsers  = new TreeSet<User>();
+	public static Map<Long, Account> m_aaAccounts = new HashMap<Long, Account>();
+	public static Map<String, User> m_auUsers  = new HashMap<String, User>();
 
 	public static void main(String[] args) {
 	}

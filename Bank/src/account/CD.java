@@ -1,6 +1,7 @@
 package account;
 
 import date.DateTime;
+import backend.GlobalParameters;
 import backend.RuntimeAPI;
 import backend.RuntimeAPI.InterestRate;
 
@@ -59,7 +60,7 @@ public class CD extends InterestBearingAccount {
 	@Override
 	protected void onUpdate() {
 		super.onUpdate();
-		if (this.getBalance() < RuntimeAPI.CDMinimumBalance()) {
+		if (this.getBalance() < GlobalParameters.CD_MINIMUM_BALANCE.get()) {
 			this.close();
 		}
 	}
