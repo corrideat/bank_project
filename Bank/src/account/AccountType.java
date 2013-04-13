@@ -1,6 +1,8 @@
 package account;
 
 import java.util.Map;
+import java.util.Random;
+
 import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 import account.CD.CD_type;
@@ -8,8 +10,16 @@ import account.CD.CD_type;
 public enum AccountType {
 	CHECKING, SAVINGS, CD, LOC, LOAN;
 	
+	private static Random random = new Random();
+	
 	protected long generateAccountNumber() {
-		return 0;
+		long temp;
+		do {
+			temp = Math.abs(random.nextLong());
+			if (RuntimeAPI.getAccount(temp) == null) {
+				return temp;
+			}
+		} while (true);
 	}
 	
 	public Account open(AccountHolder ah, Map<AccountParameters, Object> params) throws InsufficientCreditAvailableException {

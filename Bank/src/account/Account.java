@@ -49,14 +49,12 @@ public abstract class Account implements Comparable<Account> {
 
 		@Override
 		public boolean isInternal() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
 		public String describe() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Internal Agent";
 		}
 		
 	}
@@ -89,11 +87,12 @@ public abstract class Account implements Comparable<Account> {
 		this.m_bToBeClosed = false;
 		this.m_atHistory = new ArrayList<Transaction>();
 		this.m_ahOwner =  owner;
-		this.m_dtOpened =  RuntimeAPI.now();
+		this.m_dtLastUpdated = this.m_dtOpened =  RuntimeAPI.now();
 		this.m_lAccountNumber = number;
 		this.m_aatAutomatedTransactions = new ArrayList<AutomatedTransaction>();
 		this.m_dLastUpdatedBalance = 0.0D;
 		this.m_asPendingStatements = new ArrayList<String>();
+		this.m_dtClosed = null;
 	}
 	
 	protected final void close() {
@@ -127,7 +126,7 @@ public abstract class Account implements Comparable<Account> {
 	 * @return the m_bClosed
 	 */
 	public final boolean isClosed() {
-		return (this.m_dtClosed == null);
+		return (this.m_dtClosed != null);
 	}
 	
 	/**
@@ -180,8 +179,10 @@ public abstract class Account implements Comparable<Account> {
 	
 	protected abstract void transactionValidator(final Transaction t) throws TransactionValidationException;
 	
-	protected final void update() {
+	public final void update() {	
 		DateTime current = RuntimeAPI.now();
+		
+		if (this.isClosed()) return;
 		
 		if ((current.getYear()*12+current.getMonth()) != (this.m_dtLastUpdated.getYear()*12+this.m_dtLastUpdated.getMonth())) {
 			if (this.m_bToBeClosed) {
@@ -229,28 +230,31 @@ public abstract class Account implements Comparable<Account> {
 				this.m_dBalance = 0L;
 				this.m_dtClosed = current;
 			}
-			this.prepareStatement();
-			for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {
-				Account target = null;
-				if ((target = RuntimeAPI.getAccount(trans.m_lTargetAccount)) != null) {
-					try {
-						Transaction local = new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction: %s", trans.m_sDescription));
-						Transaction outgoing =new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
-						target.simulateTransaction(local);
-						target.simulateTransaction(outgoing);
-						this.forcePostTransaction(local);
-						target.forcePostTransaction(outgoing);
-					} catch (TransactionValidationException e) {
-						// TODO: Should we charge customer a fee?
-						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
-					}
-				}
-			}
+
 			DateTime cutoff = new DateTime(current.getYear(), current.getMonth(), 1);
 			PeriodBalance pb = getMonthlyBalance(cutoff);
 			m_dLastUpdatedBalance = pb.ending_balance;
 			this.m_dtLastUpdated=cutoff;
 			onUpdate(cutoff, pb);
+			
+			for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {
+				Account target = null;
+				if ((target = RuntimeAPI.getAccount(trans.m_lTargetAccount)) != null && !target.isClosed()) {
+					try {
+						Transaction local = new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction: %s", trans.m_sDescription));
+						Transaction outgoing = new Transaction(ms_agent, target, Math.abs(trans.m_dAmount), String.format("Automated Transaction from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+						this.simulateTransaction(local);
+						target.simulateTransaction(outgoing);
+						this.forcePostTransaction(local);
+						target.forcePostTransaction(outgoing);
+						System.out.println("Apparently everything went fine.");
+					} catch (TransactionValidationException | SecurityException e) {
+						// TODO: Should we charge customer a fee?
+						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
+					}
+				}
+			}
+			
 		}
 		
 		onUpdate();
@@ -306,9 +310,9 @@ public abstract class Account implements Comparable<Account> {
 			transactions.add(String.format("Account: %d", this.m_lAccountNumber));
 			transactions.add(String.format("Period: %d/%d/%d - %d/%d/%d", this.m_dtLastUpdated.getMonth(), this.m_dtLastUpdated.getDay(), this.m_dtLastUpdated.getYear(), cutoff.getMonth(), cutoff.getDay(), cutoff.getYear()));
 			if (this.debtInstrument()) {
-				transactions.add(String.format("Starting balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
+				transactions.add(String.format("Starting balance: %c%f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
 			} else {
-				transactions.add(String.format("Starting balance: %c%d", (this.m_dLastUpdatedBalance>0)?' ':'-', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));				
+				transactions.add(String.format("Starting balance: %c%f", (this.m_dLastUpdatedBalance>0)?' ':'-', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));				
 			}
 			
 			transactions.add("----------------");
@@ -336,12 +340,12 @@ public abstract class Account implements Comparable<Account> {
 					if (this.debtInstrument()) {
 						double runningBalance = Math.round(Math.abs(this.m_dLastUpdatedBalance + temp_cred - temp_deb)*1E3)/1E3;
 						
-						transactions.add(String.format("%d/%d/%d\t%s\t%c%d\t%c%d", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, (temp.m_dAmount>0)?'+':' ', Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3, (runningBalance>0)?'+':' ', runningBalance));
+						transactions.add(String.format("%d/%d/%d\t%s\t%c%.03f\t%c%.03f", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, (temp.m_dAmount>0)?'+':' ', Math.abs(temp.m_dAmount), (runningBalance>0)?'+':' ', Math.abs(runningBalance)));
 					} else {
 						if (temp.m_dAmount > 0D) {
-							transactions.add(String.format("%d/%d/%d\t%s\t%d\t", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3));
+							transactions.add(String.format("%d/%d/%d\t%s\t%.03f\t", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.abs(temp.m_dAmount)));
 						} else {
-							transactions.add(String.format("%d/%d/%d\t%s\t\t%d", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.round(Math.abs(temp.m_dAmount)*1E3)/1E3));
+							transactions.add(String.format("%d/%d/%d\t%s\t\t%.03f", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, Math.abs(temp.m_dAmount)));
 						}
 					}					
 				} else {
@@ -356,11 +360,11 @@ public abstract class Account implements Comparable<Account> {
 			transactions.add("----------------");			
 			
 			if (this.debtInstrument()) {
-				transactions.add(String.format("Average balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(pd.average_balance)*1E3)/1E3));
-				transactions.add(String.format("Ending balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
+				transactions.add(String.format("Average balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
+				transactions.add(String.format("Ending balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));
 			} else {
-				transactions.add(String.format("Average balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(pd.average_balance)*1E3)/1E3));
-				transactions.add(String.format("Ending balance: %c%d", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));			
+				transactions.add(String.format("Average balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
+				transactions.add(String.format("Ending balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));			
 			}
 			
 			String statement = "";

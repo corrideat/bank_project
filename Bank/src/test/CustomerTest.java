@@ -1,7 +1,6 @@
 package test;
 
 import static org.junit.Assert.*;
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -15,19 +14,18 @@ public class CustomerTest {
 	
 	@Test
 	public void login() {
-		Assert.assertTrue(u.authenticate("user", "pass"));
+		assertTrue(u.authenticate("user", "pass"));
 	}
 	
 	@Test
 	public void wrongLogin() {
-		Assert.assertFalse(u.authenticate("user", "password"));
+		assertFalse(u.authenticate("user", "password"));
 	}
 	
 	@Test
 	public void age() {
-		Assert.assertEquals(u.getAge(), 19);
+		assertEquals(u.getAge(), 19);
 	}
-
 	
 	
 }

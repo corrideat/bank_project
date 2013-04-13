@@ -33,6 +33,6 @@ public class Customer extends User {
 	// We want actual reference values
 	@Override
 	public Account[] getAccounts() {
-		return null;
+		return m_aAccounts.toArray(new Account[0]);
 	}
 }

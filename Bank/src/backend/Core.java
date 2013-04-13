@@ -3,11 +3,14 @@ package backend;
 import java.util.HashMap;
 import java.util.Map;
 
+import date.DateTime;
+
 import user.User;
 
 import account.Account;
 
 public class Core {
+	protected static DateTime m_dtCurrentTime = new DateTime();
 	
 	protected static Map<Long, Account> m_aaAccounts = new HashMap<Long, Account>();
 	protected static Map<String, User> m_auUsers  = new HashMap<String, User>();
@@ -27,8 +30,10 @@ public class Core {
 	}
 
 	public static void timeShiftNotification() {
-		// TODO Auto-generated method stub
-		
+		System.out.println(Core.m_dtCurrentTime);
+		for (Account a:Core.m_aaAccounts.values()) {
+			a.update();
+		}
 	}
 
 }

@@ -6,27 +6,26 @@ import date.DateTime;
 import date.Time;
 
 public final class RuntimeAPI {
-	private static DateTime m_dtCurrentTime = new DateTime();
 	
 	public static DateTime now() {
-		return m_dtCurrentTime;
+		return Core.m_dtCurrentTime;
 	}
 	
 	public static void shiftTime(final long millis) {
 		Time diff = new Time(Math.abs(millis));
-		DateTime finalTime = m_dtCurrentTime.add(diff);
+		DateTime finalTime = Core.m_dtCurrentTime.add(diff);
 		
-		int start = m_dtCurrentTime.getYear()*12+m_dtCurrentTime.getMonth();
+		int start = Core.m_dtCurrentTime.getYear()*12+Core.m_dtCurrentTime.getMonth();
 		int end = finalTime.getYear()*12+finalTime.getMonth();
 		
 		// Shift time ensuring that the first of that month is always reached
 		for(int i=start;i<(end-1);i++) {
 			DateTime temp = new DateTime(i/12, (i%12)+1, 1, 0, 0, 0);
-			m_dtCurrentTime = temp;
+			Core.m_dtCurrentTime = temp;
 			Core.timeShiftNotification();
 		}
 		
-		m_dtCurrentTime = finalTime;
+		Core.m_dtCurrentTime = finalTime;
 		Core.timeShiftNotification();
 	}
 	

@@ -82,8 +82,8 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 
-	public Customer canCreateCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
-		if (canListTransactions) {
+	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
+		if (canCreateCustomer) {
 			Customer c = new Customer(lastName, lastName, birthday, ssn, username, password);
 			Account a = type.open(c, params);
 			c.assignAccount(a);
@@ -91,8 +91,8 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 	
-	public Account canCreateAccount(AccountHolder ah, AccountType type, Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
-		if (canListTransactions) {
+	public Account createAccount(AccountHolder ah, AccountType type, Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
+		if (canCreateAccount) {
 			return type.open(ah, params);
 		} else throw new SecurityException();
 	}
