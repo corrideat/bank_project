@@ -129,7 +129,7 @@ public class CheckingTest {
 		int expectedCycles =  dt_final.getYear()*12+dt_final.getMonth()-dt_orig.getYear()*12-dt_orig.getMonth();
 		
 		assertEquals(1000000.00 - 1000 * expectedCycles, u0a[0].getBalance(), 0);
-		assertEquals(1000 * expectedCycles - 7*3, u1a[0].getBalance(), 0);
+		assertEquals(1000 * expectedCycles - 7*2, u1a[0].getBalance(), 0);
 	}
 
 }
