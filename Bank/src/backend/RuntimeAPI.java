@@ -11,8 +11,8 @@ public final class RuntimeAPI {
 		return Core.m_dtCurrentTime;
 	}
 	
-	public static void shiftTime(final long millis) {
-		Time diff = new Time(Math.abs(millis));
+	public static void shiftTime(final long secs) {
+		Time diff = new Time(Math.abs(secs));
 		DateTime finalTime = Core.m_dtCurrentTime.add(diff);
 		
 		int start = Core.m_dtCurrentTime.getYear()*12+Core.m_dtCurrentTime.getMonth();

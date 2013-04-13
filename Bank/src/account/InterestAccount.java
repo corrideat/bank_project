@@ -31,7 +31,7 @@ abstract public class InterestAccount extends Account {
 		if (this.debtInstrument() && pb.average_balance < 0D) {
 			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Charge");
 		} else if (!this.debtInstrument() && pb.average_balance > 0D) {
-			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Payment");
+//			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Payment");
 		}
 	}
 	

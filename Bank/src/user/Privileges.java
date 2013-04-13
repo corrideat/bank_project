@@ -84,7 +84,7 @@ public enum Privileges {
 
 	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (canCreateCustomer) {
-			Customer c = new Customer(lastName, lastName, birthday, ssn, username, password);
+			Customer c = new Customer(firstName, lastName, birthday, ssn, username, password);
 			Account a = type.open(c, params);
 			c.assignAccount(a);
 			return c;

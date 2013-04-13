@@ -95,7 +95,7 @@ public abstract class Account implements Comparable<Account> {
 		this.m_dtClosed = null;
 	}
 	
-	protected final void close() {
+	public final void close() {
 		this.m_bToBeClosed = true;
 		// TODO: Zero balance?, it should still function for a the remaining of a month
 	}	
@@ -158,6 +158,11 @@ public abstract class Account implements Comparable<Account> {
 	private final void forcePostTransaction(final Transaction t)  {
 		if (this.m_atHistory.add(t)) {
 			this.m_dBalance += t.m_dAmount;
+			if (t.m_dAmount > 0D) {
+				System.out.println(String.format("%d/%d/%d\t%s\t%.03f\t", t.m_dtTime.getMonth(), t.m_dtTime.getDay(), t.m_dtTime.getYear(), t.m_sDescription, Math.abs(t.m_dAmount)));
+			} else {
+				System.out.println(String.format("%d/%d/%d\t%s\t\t%.03f", t.m_dtTime.getMonth(), t.m_dtTime.getDay(), t.m_dtTime.getYear(), t.m_sDescription, Math.abs(t.m_dAmount)));
+			}
 			this.update();
 		} else {
 			throw new IllegalStateException();
@@ -230,9 +235,11 @@ public abstract class Account implements Comparable<Account> {
 				this.m_dBalance = 0L;
 				this.m_dtClosed = current;
 			}
-
+			
+			
 			DateTime cutoff = new DateTime(current.getYear(), current.getMonth(), 1);
 			PeriodBalance pb = getMonthlyBalance(cutoff);
+			System.out.println(this.m_lAccountNumber+" "+m_dBalance+"\t"+pb.starting_balance+"\t"+pb.average_balance+"\t"+pb.ending_balance);
 			m_dLastUpdatedBalance = pb.ending_balance;
 			this.m_dtLastUpdated=cutoff;
 			onUpdate(cutoff, pb);
@@ -247,10 +254,9 @@ public abstract class Account implements Comparable<Account> {
 						target.simulateTransaction(outgoing);
 						this.forcePostTransaction(local);
 						target.forcePostTransaction(outgoing);
-						System.out.println("Apparently everything went fine.");
 					} catch (TransactionValidationException | SecurityException e) {
 						// TODO: Should we charge customer a fee?
-						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02d: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
+						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02f: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
 					}
 				}
 			}
@@ -297,7 +303,7 @@ public abstract class Account implements Comparable<Account> {
 			if (m_iLastUpdatedTransactionIndex==null) m_iLastUpdatedTransactionIndex = 0;
 			Iterator<Transaction> i = m_atHistory.listIterator(m_iLastUpdatedTransactionIndex);
 			Transaction temp;
-			double temp_amount = 0D;
+			double temp_avg = 0D;
 			double temp_cred = 0D;
 			double temp_deb = 0D;
 			
@@ -325,21 +331,22 @@ public abstract class Account implements Comparable<Account> {
 			
 			while(i.hasNext()) {
 				temp = i.next();
-				if (cutoff.subtract(temp.m_dtTime).getRawCountInMillis()>0) {
-					temp_amount = temp.m_dAmount * temp.m_dtTime.subtract(last).getRawCountInMillis();
-					
+				if (cutoff.subtract(temp.m_dtTime).getRawCountInMillis()>0) {					
 					if (temp.m_dAmount > 0D) {
 						temp_cred += temp.m_dAmount;
 					} else {
 						temp_deb -= temp.m_dAmount;
 					}
+
+					double runningBalance = this.m_dLastUpdatedBalance + temp_cred - temp_deb;
+					
+					temp_avg += (m_dLastUpdatedBalance + temp_cred - temp_deb) * temp.m_dtTime.subtract(last).getRawCountInMillis();
+					
 					last = temp.m_dtTime;
 					m_iLastUpdatedTransactionIndex++;
 
 					
-					if (this.debtInstrument()) {
-						double runningBalance = Math.round(Math.abs(this.m_dLastUpdatedBalance + temp_cred - temp_deb)*1E3)/1E3;
-						
+					if (this.debtInstrument()) {						
 						transactions.add(String.format("%d/%d/%d\t%s\t%c%.03f\t%c%.03f", temp.m_dtTime.getMonth(), temp.m_dtTime.getDay(), temp.m_dtTime.getYear(), temp.m_sDescription, (temp.m_dAmount>0)?'+':' ', Math.abs(temp.m_dAmount), (runningBalance>0)?'+':' ', Math.abs(runningBalance)));
 					} else {
 						if (temp.m_dAmount > 0D) {
@@ -353,9 +360,11 @@ public abstract class Account implements Comparable<Account> {
 				}
 			}
 			
-			temp_amount /= cutoff.subtract(m_dtLastUpdated).getRawCountInMillis();
+			temp_avg += (m_dLastUpdatedBalance + temp_cred - temp_deb) * cutoff.subtract(last).getRawCountInMillis();
 			
-			PeriodBalance pd = new PeriodBalance(m_dLastUpdatedBalance, m_dLastUpdatedBalance+temp_amount, temp_cred, temp_deb);
+			temp_avg /= cutoff.subtract(m_dtLastUpdated).getRawCountInMillis();
+			
+			PeriodBalance pd = new PeriodBalance(m_dLastUpdatedBalance, temp_avg, temp_cred, temp_deb);
 			
 			transactions.add("----------------");			
 			
