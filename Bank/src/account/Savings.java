@@ -1,8 +1,6 @@
 package account;
 
 import date.DateTime;
-import account.Account.InternalTransaction;
-import account.Account.PeriodBalance;
 import backend.GlobalParameters;
 import backend.RuntimeAPI.InterestRate;
 

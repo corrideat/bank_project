@@ -28,10 +28,12 @@ abstract public class InterestAccount extends Account {
 	
 	@Override
 	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
-		if (this.debtInstrument() && pb.average_balance < 0D) {
-			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Charge");
-		} else if (!this.debtInstrument() && pb.average_balance > 0D) {
-//			new InternalTransaction(pb.average_balance * (1+this.getAccountRate()), "Interest Payment");
+		if (this.getAccountRate()>0) {
+			if (this.debtInstrument() && pb.average_balance < 0D) {
+				new InternalTransaction(pb.average_balance * (this.getAccountRate()/12), "Interest Charge");
+			} else if (!this.debtInstrument() && pb.average_balance > 0D) {
+				new InternalTransaction(pb.average_balance * (this.getAccountRate()/12), "Interest Payment");
+			}
 		}
 	}
 	
