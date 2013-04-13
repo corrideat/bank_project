@@ -23,4 +23,9 @@ public class Core {
 		
 	}
 
+	public static void timeShiftNotification() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

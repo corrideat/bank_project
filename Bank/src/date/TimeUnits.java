@@ -5,5 +5,5 @@ public enum TimeUnits {
 	DAY,
 	HOUR,
 	MINUTE,
-	SECOND
+	SECOND;
 }

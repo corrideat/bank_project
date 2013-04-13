@@ -1,41 +1,38 @@
 package backend;
 
+import user.User;
 import account.Account;
 import date.DateTime;
+import date.Time;
 
 public final class RuntimeAPI {
-	static double savings_rate = 0.1;
+	private static DateTime m_dtCurrentTime = new DateTime();
 	
-	
-	static double savings_fee = 1;
-	static double savings_minimum = 1;
-	
-
-	public RuntimeAPI() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public static double CDMinimumBalance() {
-		return 1D;
-	}
-	
-	public static double CheckingMinimumBalance() {
-		return -1D;
-	}
-	
-	// Fees are negative
-	public static double CheckingOverdraftFee() {
-		return -1D;
-	}
-
 	public static DateTime now() {
-		// TODO Auto-generated method stub
-		return null;
+		return m_dtCurrentTime;
+	}
+	
+	public static void shiftTime(final long millis) {
+		Time diff = new Time(Math.abs(millis));
+		DateTime finalTime = m_dtCurrentTime.add(diff);
+		
+		int start = m_dtCurrentTime.getYear()*12+m_dtCurrentTime.getMonth();
+		int end = finalTime.getYear()*12+finalTime.getMonth();
+		
+		// Shift time ensuring that the first of that month is always reached
+		for(int i=start;i<(end-1);i++) {
+			DateTime temp = new DateTime(i/12, (i%12)+1, 1, 0, 0, 0);
+			m_dtCurrentTime = temp;
+			Core.timeShiftNotification();
+		}
+		
+		m_dtCurrentTime = finalTime;
+		Core.timeShiftNotification();
 	}
 	
 	public static enum InterestRate {
 		SAVINGS, CD_6M, CD_1Y, CD_2Y, CD_3Y, CD_4Y, CD_5Y, LOAN, LOC;
-		
+
 		public double getRate() {
 			switch(this) {
 			case SAVINGS:
@@ -62,33 +59,6 @@ public final class RuntimeAPI {
 		}		
 	}
 	
-	public static enum ServiceCharge {
-		CHECKING, SAVINGS;
-		
-		public double getServiceFee(final double accountBalance) {
-			switch(this) {
-			case SAVINGS:
-				if (accountBalance < savings_minimum) {
-					return 0D;
-				} else {
-					return savings_fee;
-				}
-			case CHECKING:
-				if (accountBalance < savings_minimum) {
-					return 0D;
-				} else {
-					return savings_fee;
-				}
-			default:
-				return 0D;
-			}
-		}
-	}
-
-	public static double LOCMaximumBalance() {
-		return 0D;
-	}
-
 	// Negative: reduce from current cap (e.g., new loan), positive: increase from current cap
 	public static void adjustCap(double d) throws InsufficientCreditAvailableException {
 		// TODO Auto-generated method stub		
@@ -102,4 +72,10 @@ public final class RuntimeAPI {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public static User getUser(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

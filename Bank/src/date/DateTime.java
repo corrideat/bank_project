@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 public class DateTime {
 	private Calendar m_calendar; 
 	
-	public DateTime(final int ... args) throws Exception {
+	public DateTime(final int ... args) {
 		if (args.length > TimeUnits.values().length) throw new IllegalArgumentException("Too many arguments");
 		if (args.length == 0) {
 			m_calendar = new GregorianCalendar();
@@ -17,6 +17,16 @@ public class DateTime {
 			}
 			m_calendar = new GregorianCalendar(params[0], params[1]-1, params[2], params[3], params[4], params[5]);
 		}
+	}
+	
+	public DateTime() {
+		m_calendar = new GregorianCalendar();
+	}
+	
+
+	public DateTime(final long millis) {
+		m_calendar = new GregorianCalendar();
+		m_calendar.setTimeInMillis(millis);
 	}
 	
 	protected DateTime(Calendar calendar) throws Exception {
@@ -55,6 +65,10 @@ public class DateTime {
 			break;
 		}
 		return m_calendar.get(itype);		 
+	}
+	
+	public long getEpoch() {
+		return m_calendar.getTimeInMillis();
 	}
 	
 	public int getYear() {

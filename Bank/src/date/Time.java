@@ -11,7 +11,7 @@ public class Time {
 	};
 	
 	
-	public Time(final int ... args) throws Exception {
+	public Time(final int ... args) {
 		if (args.length > 4) throw new IllegalArgumentException();
 		else {
 			seconds=0L;
