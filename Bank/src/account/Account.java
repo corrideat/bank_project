@@ -229,7 +229,6 @@ public abstract class Account implements Comparable<Account> {
 						new InternalTransaction(this.m_dBalance, String.format("Account %d Close Check Mailed for %.02d", this.m_lAccountNumber, this.m_dBalance));
 					}
 				}
-				// TODO: What is !transferred?
 				this.m_dBalance = 0L;
 				this.m_dtClosed = current;
 			}

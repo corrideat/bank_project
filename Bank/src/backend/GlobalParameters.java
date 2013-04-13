@@ -10,8 +10,8 @@ public enum GlobalParameters {
 	RATE_CD_5Y(0D, "Interest Rate for Savings Accounts"),
 	RATE_LOAN(0D, "Interest Rate for Savings Accounts"),
 	RATE_LOC(0D, "Interest Rate for Savings Accounts"),
-	SAVINGS_FEE(0D, "Interest Rate for Savings Accounts"),
-	CHECKING_FEE(0D, ""),
+	SAVINGS_FEE(0D, "Interest Rate for Savings Accounts"), // Fees are negative
+	CHECKING_FEE(0D, ""), // Fees are negative
 	SAVINGS_MINIMUM_BALANCE(0D, ""),
 	CHECKING_MINIMUM_BALANCE(0D, ""),
 	CHECKING_MINIMUM_FREE_BALANCE(0D, ""),
@@ -20,7 +20,8 @@ public enum GlobalParameters {
 	LOC_MAXIMUM_BALANCE(1D, ""),
 	LOC_MINIMUM_PAYMENT(0D, ""),
 	LOC_MINIMUM_PAYMENT_FRACTION(0D, ""),
-	LOC_LATE_PENALTY(0D, "");
+	LOC_LATE_PENALTY(0D, ""), // Fees are negative
+	LOAN_LATE_PENALTY(0D, ""); // Fees are negative
 	
 	private double m_dValue;
 	private final String m_sDescription;	

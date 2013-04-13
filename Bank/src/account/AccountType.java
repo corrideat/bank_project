@@ -2,6 +2,7 @@ package account;
 
 import java.util.Map;
 import backend.InsufficientCreditAvailableException;
+import backend.RuntimeAPI;
 import account.CD.CD_type;
 
 public enum AccountType {
@@ -12,19 +13,30 @@ public enum AccountType {
 	}
 	
 	public Account open(AccountHolder ah, Map<AccountParameters, Object> params) throws InsufficientCreditAvailableException {
+		Account a = null;
 		switch(this) {
 		case CHECKING:
-			return new Checking(generateAccountNumber(), ah);
+			a = new Checking(generateAccountNumber(), ah);
+			break;
 		case SAVINGS:
-			return new Savings(generateAccountNumber(), ah);
+			a = new Savings(generateAccountNumber(), ah);
+			break;
 		case CD:
-			return new CD((CD_type) params.get(AccountParameters.CD_TYPE), generateAccountNumber(), ah);
+			a = new CD((CD_type) params.get(AccountParameters.CD_TYPE), generateAccountNumber(), ah);
+			break;
 		case LOC:
-			return new LineOfCredit((Double) params.get(AccountParameters.OFFSET), (Double) params.get(AccountParameters.LIMIT), generateAccountNumber(), ah);
+			a = new LineOfCredit((Double) params.get(AccountParameters.OFFSET), (Double) params.get(AccountParameters.LIMIT), generateAccountNumber(), ah);
+			break;
 		case LOAN:
-			return new Loan((Double) params.get(AccountParameters.PRINCIPAL), (Short) params.get(AccountParameters.INSTALLMENTS), (Double) params.get(AccountParameters.OFFSET), generateAccountNumber(), ah);
-		default:
-			throw new IllegalArgumentException();
-		}
+			a = new Loan((Double) params.get(AccountParameters.PRINCIPAL), (Short) params.get(AccountParameters.INSTALLMENTS), (Double) params.get(AccountParameters.OFFSET), generateAccountNumber(), ah);
+			break;
+		}		
+
+		if (a == null) throw new IllegalArgumentException();
+		if (!RuntimeAPI.registerAccount(a)) {
+			throw new RuntimeException();
+		} else {
+			return a;
+		}		
 	}
 }

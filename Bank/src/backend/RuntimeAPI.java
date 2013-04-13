@@ -60,22 +60,47 @@ public final class RuntimeAPI {
 	}
 	
 	// Negative: reduce from current cap (e.g., new loan), positive: increase from current cap
+	public static void forcefulAdjustCap(double d) {
+		Core.currentCap += d;
+	}
+	
+	// Negative: reduce from current cap (e.g., new loan), positive: increase from current cap
 	public static void adjustCap(double d) throws InsufficientCreditAvailableException {
-		// TODO Auto-generated method stub		
+		if (d >= 0D || (Core.currentCap + d) > 0) {
+			Core.currentCap += d;
+		} else {
+			throw new InsufficientCreditAvailableException();
+		}
 	}
 
 	public static double getCap() {
-		return 0D;
+		return Core.currentCap;
 	}
 
-	public static Account getAccount(long m_lTargetAccount) {
-		// TODO Auto-generated method stub
-		return null;
+	public static Account getAccount(final long account_number) {
+		return Core.m_aaAccounts.get(account_number);
 	}
 	
-	public static User getUser(String username) {
-		// TODO Auto-generated method stub
-		return null;
+	public static User getUser(final String username) {
+		return Core.m_auUsers.get(username);
 	}
-
+	
+	public static boolean registerAccount(final Account a) {
+		if (a != null && !Core.m_aaAccounts.containsKey(a.getAccountNumber()) && !Core.m_aaAccounts.containsValue(a)) {
+			Core.m_aaAccounts.put(a.getAccountNumber(), a);
+			return Core.m_aaAccounts.containsKey(a.getAccountNumber());
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean registerUser(final String username, final User u) {
+		if (u != null && !Core.m_auUsers.containsKey(username) && !Core.m_auUsers.containsValue(u)) {
+			Core.m_auUsers.put(username, u);
+			return Core.m_auUsers.containsKey(username);
+		} else {
+			return false;
+		}
+	}
+	
 }
