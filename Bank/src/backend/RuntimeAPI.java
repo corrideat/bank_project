@@ -15,8 +15,8 @@ public final class RuntimeAPI {
 		Time diff = new Time(Math.abs(secs));
 		DateTime finalTime = Core.m_dtCurrentTime.add(diff);
 		
-		int start = Core.m_dtCurrentTime.getYear()*12+Core.m_dtCurrentTime.getMonth();
-		int end = finalTime.getYear()*12+finalTime.getMonth();
+		int start = Core.m_dtCurrentTime.getYearMonth();
+		int end = finalTime.getYearMonth();
 		
 		// Shift time ensuring that the first of that month is always reached
 		for(int i=start;i<(end-1);i++) {

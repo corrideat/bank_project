@@ -11,7 +11,7 @@ abstract public class InterestChargingAccount extends InterestAccount {
 	}
 	
 	@Override
-	public boolean debtInstrument() {
+	final public boolean debtInstrument() {
 		return true;
 	}
 }
