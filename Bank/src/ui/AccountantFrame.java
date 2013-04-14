@@ -56,9 +56,16 @@ public class AccountantFrame extends JFrame {
 		lblAccountType.setBounds(13, 14, 112, 14);
 		contentPane.add(lblAccountType);
 		
-		JComboBox comboBox = new JComboBox();
+		JComboBox<String> comboBox = new JComboBox();
 		comboBox.setBounds(132, 11, 139, 20);
 		contentPane.add(comboBox);
+		comboBox.addItem("All");
+		comboBox.addItem("Saving");
+		comboBox.addItem("CD");
+		comboBox.addItem("Loan");
+		comboBox.addItem("Checking");
+		comboBox.addItem("LOC");
+		
 		
 		JLabel lblAccountStatistics = new JLabel("Account Statistics");
 		lblAccountStatistics.setBounds(13, 41, 106, 14);

@@ -14,10 +14,14 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.ImageIcon;
 
+import account.Account;
+
 import user.User;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class CustomerFrame extends JFrame {
 
@@ -26,6 +30,7 @@ public class CustomerFrame extends JFrame {
 	private JTextField textField_1;
 	private JTextField textField_2;
 	public static User user;
+	public static Account currentAcount;
 
 	/**
 	 * Launch the application.
@@ -65,8 +70,16 @@ public class CustomerFrame extends JFrame {
 		contentPane.add(label_1);
 		
 		JComboBox comboBox = new JComboBox();
+		comboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				
+			}
+		});
 		comboBox.setBounds(75, 12, 139, 20);
 		contentPane.add(comboBox);
+		for (int i = 0; i < user.getAccounts().length; i++){
+			comboBox.addItem(user.getAccounts()[i].getAccountNumber());
+		}
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 64, 262, 64);
