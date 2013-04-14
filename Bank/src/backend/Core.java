@@ -25,7 +25,7 @@ public class Core {
 		//need to instantiate default users and add to HashMap
 		DateTime bday1 = new DateTime();
 		Customer cust1 = new Customer("Phillip","Riley",bday1,123456789,"PhillipR","password1");
-		AccountType.SAVINGS.open(cust1, m_aaAccounts);
+		AccountType.SAVINGS.open(cust1, m_aaAccounts);	//not working because of parameter types
 		
 		
 		JFrame loginFrame = new MainFrame();
