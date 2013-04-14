@@ -38,7 +38,10 @@ public class Transaction {
 	
 	public final void flagAsFraudulent() {
 		if (this.flaggable()) {
-			m_dtReportedFraudulent = RuntimeAPI.now();
+			DateTime current = RuntimeAPI.now();
+			if ((current.getYearMonth() - this.m_dtTime.getYearMonth())<=2) {
+				m_dtReportedFraudulent = RuntimeAPI.now();
+			}
 		}
 	}
 	
