@@ -158,7 +158,6 @@ public class LOCTest {
 		u1a[0].getBalance();
 		
 		
-		
 	}
 	
 	@Test
