@@ -101,7 +101,6 @@ public class MainFrame extends JFrame {
 					JOptionPane.showMessageDialog(null, "Login unsuccessful. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
 				}else{
 				
-						
 					JFrame userFrame = new CustomerFrame();
 					
 					if (user instanceof Teller){					// Teller
