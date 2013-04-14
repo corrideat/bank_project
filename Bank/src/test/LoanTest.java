@@ -6,12 +6,10 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import test.SavingsTest.Benefactor;
+import test.CDTest.Benefactor;
 import user.AccountManager;
 import user.Customer;
 import user.User;
@@ -19,15 +17,15 @@ import account.Account;
 import account.AccountParameters;
 import account.AccountType;
 import account.AutomatedTransaction;
-import account.CD.CD_type;
 import account.Transaction;
 import account.TransactionValidationException;
+import account.CD.CD_type;
 import backend.Agent;
 import backend.GlobalParameters;
 import backend.RuntimeAPI;
 import date.DateTime;
 
-public class CDTest {
+public class LoanTest {
 	class Benefactor implements Agent {
 
 		@Override
@@ -62,9 +60,12 @@ public class CDTest {
 		
 		Map<AccountParameters, Object> params = new EnumMap<AccountParameters, Object>(AccountParameters.class);
 		
-		params.put(AccountParameters.CD_TYPE, CD_type.CD_6M);
+		params.put(AccountParameters.PRINCIPAL, (Double)9E4);
+		params.put(AccountParameters.INSTALLMENTS, (Short)(short)3);
+		params.put(AccountParameters.OFFSET, (Double)0D);
+		RuntimeAPI.adjustCap(+1E7);
 		
-		u[1] = accountManager.m_ePrivileges.createCustomer("Deborah", "Sweeny", new DateTime(1973, 10, 11), "Begadd", "eiZaegh4ATh", 775442720, AccountType.CD, params);
+		u[1] = accountManager.m_ePrivileges.createCustomer("Deborah", "Sweeny", new DateTime(1973, 10, 11), "Begadd", "eiZaegh4ATh", 775442720, AccountType.LOAN, params);
 		
 		
 		Account[] u0a = u[0].getAccounts();
@@ -124,7 +125,7 @@ public class CDTest {
 		//assertEquals(1000 * expectedCycles, u1a[0].getBalance(), 0);
 	}
 	
-	@Test
+	/*@Test
 	public void cancelledAutomatedTransactionWithDebit() {
 		Account[] u0a = u[0].getAccounts();
 		Account[] u1a = u[1].getAccounts();
@@ -176,5 +177,4 @@ public class CDTest {
 		// TODO: Verify interest being paid properly
 		assertEquals(1000 * expectedCycles, u1a[0].getBalance(), 0);
 	}*/
-
 }

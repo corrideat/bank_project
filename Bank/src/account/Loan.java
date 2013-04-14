@@ -6,7 +6,7 @@ import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 
 public class Loan extends InterestChargingAccount {
-	final private double minimumMonthlyPayment;
+	final public double minimumMonthlyPayment;
 	final private double principal;
 
 	public Loan(final double principal, final short installments, final double offset, final long number, final AccountHolder owner) throws InsufficientCreditAvailableException {
