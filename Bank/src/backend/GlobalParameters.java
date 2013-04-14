@@ -1,7 +1,7 @@
 package backend;
 
 public enum GlobalParameters {
-	RATE_SAVINGS(0.05D, "Interest for Savings Accounts"),  // Marginal rage. 0.1 means 10% interest.
+	RATE_SAVINGS(0.01D, "Interest for Savings Accounts"),  // Marginal rage. 0.1 means 10% interest.
 	RATE_CD_6M(0.02D, "Interest for 6-Month CD"), 
 	RATE_CD_1Y(0.025D, "Interest for 1-Year CD"),
 	RATE_CD_2Y(0.028D, "Interest for 2-Year CD"),
