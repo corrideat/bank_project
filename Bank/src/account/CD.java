@@ -22,31 +22,25 @@ public class CD extends InterestBearingAccount {
 			switch(this) {
 			case CD_6M:
 				return 6;
-				break;
 			case CD_1Y:
 				return 12;
-				break;
 			case CD_2Y:
 				return 24;
-				break;
 			case CD_3Y:
 				return 36;
-				break;
 			case CD_4Y:
 				return 48;
-				break;
 			case CD_5Y:
 				return 60;
-				break;
 			default:
 				return 0;
 			}
 		}
 	}
 	
-	private final CD_type m_eType;
+	public final CD_type m_eType;
 	private boolean m_bHasMatured;
-	private short m_dDuration;
+	private short m_dDuration;	
 
 	public CD(CD_type type, long number, AccountHolder owner) {
 		super(AccountType.CD, type.m_eRate, number, owner, true);
@@ -66,8 +60,9 @@ public class CD extends InterestBearingAccount {
 	
 	@Override
 	protected void onUpdate(DateTime dt, PeriodBalance pb) {
+		System.out.println("\t\t>>"+m_dDuration);
 		if (!m_bHasMatured) {
-			if (m_dDuration-- < 0) {
+			if (--m_dDuration < 0) {
 				m_bHasMatured = true;
 			} else {
 				super.onUpdate(dt, pb); // Interest operations

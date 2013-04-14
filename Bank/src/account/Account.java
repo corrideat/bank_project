@@ -257,6 +257,7 @@ public abstract class Account implements Comparable<Account> {
 					} catch (TransactionValidationException | SecurityException e) {
 						// TODO: Should we charge customer a fee?
 						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02f: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
+						e.printStackTrace();
 					}
 				}
 			}
@@ -283,6 +284,10 @@ public abstract class Account implements Comparable<Account> {
 	
 	public void setupAutomatedTransaction(AutomatedTransaction at) {
 		m_aatAutomatedTransactions.add(at);
+	}
+	
+	public void cancelAutomatedTransaction(int at_index) {
+		m_aatAutomatedTransactions.remove(at_index);
 	}
 	
 	public boolean debtInstrument() {
