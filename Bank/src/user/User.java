@@ -212,7 +212,7 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		// TODO Auto-generated method stub
 		return m_sLastName;
 	}
-
+	
 	@Override
 	final public int getAge() {
 		Time t = RuntimeAPI.now().subtract(m_dtBirthday);

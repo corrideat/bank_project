@@ -1,39 +1,28 @@
 package ui;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
-import javax.swing.JSplitPane;
 import javax.swing.JLabel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JTextField;
-import javax.swing.BoxLayout;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.Map;
-
 import javax.swing.JPasswordField;
 
-import account.*;
-import backend.*;
-import date.*;
 import user.*;
-import user.Employee.EmployeeCustomer;
-
 import javax.swing.JSeparator;
 
 
 public class MainFrame extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3684777489091088347L;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JPasswordField passwordField;
@@ -84,22 +73,16 @@ public class MainFrame extends JFrame {
 		JButton btnNewButton = new JButton("Login");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				Map<String, User> userMap = backend.Core.m_auUsers;			// get Map of users
-				Object[] userArray = userMap.values().toArray(); 	// convert Map to array
-				
+				String username = new String(textField.getText());
 				String pass = new String(passwordField.getPassword());
 				
+				user = backend.RuntimeAPI.getUser(username);
 				
-				for (int i = 0; i < userArray.length; i++){
-					if(((User)userArray[i]).authenticate(textField.getText(),pass)){	//find
-						user = (User)userArray[i];
-					}
-				}
-				
-				if (user == null){
-					JOptionPane.showMessageDialog(null, "Login unsuccessful. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
-				}else{
+				if (user == null) {
+					JOptionPane.showMessageDialog(null, "Login unsuccessful. User not found.", "Login Error", JOptionPane.ERROR_MESSAGE);
+				} else if (!user.authenticate(username, pass)) {
+					JOptionPane.showMessageDialog(null, "Login unsuccessful. Wrong credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
+				} else {
 				
 					JFrame userFrame = new CustomerFrame();
 					
