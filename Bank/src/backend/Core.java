@@ -27,6 +27,13 @@ public class Core {
 		m_auUsers.put("operationmanager", new AccountManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password"));
 		m_auUsers.put("accountant", new AccountManager("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password"));
 		
+		try {
+			m_auUsers.get("accountmanager").m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "customer1", "password", 218656057, AccountType.CHECKING, null);
+		} catch (InsufficientCreditAvailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		JFrame loginFrame = new MainFrame();
 		loginFrame.setVisible(true);
