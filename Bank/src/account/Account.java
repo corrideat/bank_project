@@ -351,10 +351,10 @@ public abstract class Account implements Comparable<Account> {
 			
 			ArrayList<String> transactions = new ArrayList<String>();
 			
-			transactions.add(String.format("ACCOUNT STATEMENT"));
+			transactions.add(String.format("ACCOUNT STATEMENT %d", this.getAccountNumber()));
 			switch(this.m_atType) {
 			case LOAN:
-				transactions.add(String.format("Loan for $%.03f at %.02f%% in %d installment.", ((Loan)this).m_dPrincipal, ((Loan)this).getAccountRate()*100, ((Loan)this).m_iInstallments));
+				transactions.add(String.format("Loan for $%.03f at %.02f%% in %d installments", ((Loan)this).m_dPrincipal, ((Loan)this).getAccountRate()*100, ((Loan)this).m_iInstallments));
 				break;
 			case LOC:
 				transactions.add(String.format("Line of Credit for $%.03f at %.02f%%", ((LineOfCredit)this).m_dCreditLimit, ((LineOfCredit)this).getAccountRate()*100));
@@ -456,6 +456,27 @@ public abstract class Account implements Comparable<Account> {
 			return pd;
 		}
 		return new PeriodBalance();
+	}
+	
+	final public String toString() {
+		switch(this.m_atType) {
+		case LOAN:
+			return String.format("%d\tLOAN\t$%.03f\t%.02f%%/%d.", this.getAccountNumber(), ((Loan)this).m_dPrincipal, ((Loan)this).getAccountRate()*100, ((Loan)this).m_iInstallments);
+		case LOC:
+			return String.format("%d\tLC\t$%.03f\t%.02f%%.", this.getAccountNumber(), ((LineOfCredit)this).m_dCreditLimit, ((LineOfCredit)this).getAccountRate()*100);
+		case SAVINGS:
+			return String.format("%d\tSAVINGS", this.getAccountNumber());
+		case CD:
+			if (((CD)this).m_eType.getDuration() % 12 == 0) {
+				return String.format("%d\t%dY CD %.02f%%", this.getAccountNumber(), ((CD)this).m_eType.getDuration()/12, ((CD)this).getAccountRate()*100);
+			} else {
+				return String.format("%d\t%dM CD %.02f%%", this.getAccountNumber(), ((CD)this).m_eType.getDuration(), ((CD)this).getAccountRate()*100);
+			}
+		case CHECKING:
+			return String.format("%d\tCHECKING", this.getAccountNumber());
+		default:
+			return String.format("%d\tACCOUNT", this.getAccountNumber());
+		}
 	}
 
 	@Override

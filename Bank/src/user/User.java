@@ -253,5 +253,23 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		return this.m_oAuthObject.authenticate(username, password);
 	}
 	
+	final public String toString() {
+		String pos = "Unknown";
+		if (this instanceof Customer) {
+			pos = "Customer";
+		} else if (this instanceof Accountant) {
+			pos = "Accountant";
+		} else if (this instanceof OperationManager) {
+			pos = "Operation Manager";
+		} else if (this instanceof AccountManager) {
+			pos = "Account Manager";
+		} else if (this instanceof Teller) {
+			pos = "Teller";
+		} else if (this instanceof Auditor) {
+			pos = "Auditor";
+		}
+		return this.m_sLastName+", "+this.m_sFirstName+": "+pos;
+	}
+	
 }
 
