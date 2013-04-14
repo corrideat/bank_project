@@ -10,7 +10,6 @@ public class LineOfCredit extends InterestChargingAccount {
 
 	public LineOfCredit(double offset, double creditLimit, long number, AccountHolder owner) throws InsufficientCreditAvailableException {
 		super(AccountType.LOC, RuntimeAPI.InterestRate.LOC, offset, number, owner, false);
-		m_dCreditLimit = 0D;
 		this.setLimit(creditLimit);
 		m_dCreditLimit = creditLimit;
 	}
@@ -18,7 +17,7 @@ public class LineOfCredit extends InterestChargingAccount {
 	@Override
 	protected void transactionValidator(Transaction t) throws TransactionValidationException {
 		double potential = t.m_dAmount+this.getBalance();
-		if ((t.m_dAmount>0D && potential>GlobalParameters.LOC_MAXIMUM_BALANCE.get()) || (t.m_dAmount<0D && potential<m_dCreditLimit)) {
+		if ((t.m_dAmount>0D && potential>GlobalParameters.LOC_MAXIMUM_BALANCE.get()) || (t.m_dAmount<0D && potential<-m_dCreditLimit)) {
 			throw new IllegalOperationException(); // TODO: Maybe create a specialized Exception for this case?
 		}
 	}
@@ -31,7 +30,7 @@ public class LineOfCredit extends InterestChargingAccount {
 		}
 	}
 	
-	protected void setLimit(double newCreditLimit) throws InsufficientCreditAvailableException {
+	protected void setLimit(final double newCreditLimit) throws InsufficientCreditAvailableException {
 		if (newCreditLimit < 0D) throw new IllegalArgumentException();
 		RuntimeAPI.adjustCap(this.m_dCreditLimit - newCreditLimit);
 		this.m_dCreditLimit = newCreditLimit;
