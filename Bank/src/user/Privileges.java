@@ -1,5 +1,6 @@
 package user;
 
+import java.util.EnumSet;
 import java.util.Map;
 
 import date.DateTime;
@@ -10,65 +11,57 @@ import backend.InsufficientCreditAvailableException;
 import account.Account;
 import account.AccountHolder;
 import account.AccountType;
+import account.AutomatedTransaction;
 import account.Transaction;
 import account.TransactionValidationException;
 
 public enum Privileges {
-	CUSTOMER(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false),
-	TELLER(true, false, true, true, false, false, false, false, false, false, false, false, true, false, false, false),
-	AUDITOR(true, true, false, false, false, false, false, true, false, false, true, true, false, false, false, false),
-	ACCOUNT_MANAGER(false, false, false, false, true, true, false, false, false, false, false, false, false, true, true, false),
-	OPERATION_MANAGER(false, false, false, false, false, false, true, false, true, true, false, false, false, false, false, false),
-	ACCOUNTANT(false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true);
+	CUSTOMER(),
+	TELLER(acos.seeBasicInformation, acos.checkBalance, acos.deposit, acos.withdraw, acos.setupAutomaticTransactions),
+	AUDITOR(acos.seeBasicInformation, acos.listTransactions, acos.seeEmployeeFlags, acos.seeFraudulentFlags, acos.overturnTransactions),
+	ACCOUNT_MANAGER(acos.seeSSN, acos.seeBasicInformation, acos.createAccount, acos.createCustomer, acos.seeCap, acos.adjustLOCLimit),
+	OPERATION_MANAGER(acos.sendNotices, acos.triggerTimeShift, acos.setGlobalParameters),
+	ACCOUNTANT(acos.seeStatistics, acos.seeCap, acos.setCap);
 	
+	private enum acos { // Access Control Objects
+		checkBalance,
+		listTransactions,
+		deposit,
+		withdraw,
+		createCustomer,
+		createAccount,
+		triggerTimeShift,
+		seeStatistics,
+		sendNotices,
+		setGlobalParameters,
+		seeEmployeeFlags,
+		seeFraudulentFlags,
+		overturnTransactions,
+		setupAutomaticTransactions,
+		seeSSN,
+		seeCap,
+		setCap,
+		seeBasicInformation,
+		adjustLOCLimit;
+	}
 	
-	// TODO: Not all possible transactions are covered
+	final private EnumSet<acos> m_esPermissions;
 	
-	final public boolean canCheckBalance;
-	final public boolean canListTransactions;
-	final public boolean canDeposit;
-	final public boolean canWithdraw;
-	final public boolean canCreateCustomer;
-	final public boolean canCreateAccount;
-	final public boolean canTriggerTimeShift;
-	final public boolean canVisualizeStatistics;
-	final public boolean canSendNotices;
-	final public boolean canChangeGlobalParameters;
-	final public boolean canSeeFlags; // Employee, fraudulent
-	final public boolean canOverturnTransactions;
-	final public boolean canSetupAutomaticTransactions;
-	final public boolean canSeeSSN;
-	final public boolean canSeeCap;
-	final public boolean canSetCap;
-	
-	
-	Privileges(final boolean checkBalance, final boolean listTransactions, final boolean deposit, final boolean withdraw, final boolean createCustomer, final boolean createAccount, final boolean triggerTimeShift, final boolean visualizeStatistics, final boolean sendNotices, final boolean changeGlobalParameters, final boolean seeFlags, final boolean overturnTransactions, final boolean setupAutomaticTransactions, final boolean seeSSN, final boolean seeCap, final boolean setCap) {
-		canCheckBalance = checkBalance;
-		canListTransactions = listTransactions;
-		canDeposit = deposit;
-		canWithdraw = withdraw;
-		canCreateCustomer = createCustomer;
-		canCreateAccount = createAccount;
-		canTriggerTimeShift = triggerTimeShift; 
-		canVisualizeStatistics = visualizeStatistics;
-		canSendNotices = sendNotices;
-		canChangeGlobalParameters = changeGlobalParameters;
-		canSeeFlags = seeFlags;
-		canOverturnTransactions = overturnTransactions;
-		canSetupAutomaticTransactions = setupAutomaticTransactions;
-		canSeeSSN = seeSSN;
-		canSeeCap = seeCap;
-		canSetCap = setCap;
+	Privileges(acos ... permissions) {
+		m_esPermissions = EnumSet.noneOf(acos.class);
+		for(acos p:permissions) {
+			m_esPermissions.add(p);
+		}
 	}
 	
 	public double checkBalance(Account a) {
-		if (canCheckBalance) {
+		if (m_esPermissions.contains(acos.checkBalance)) {
 			return a.getBalance();
 		} else throw new SecurityException();
 	}
 	
 	public void deposit(Agent ag, Account a, double amount) throws TransactionValidationException {
-		if (canDeposit) {
+		if (m_esPermissions.contains(acos.deposit)) {
 			if (amount < 0) throw new IllegalArgumentException();
 			Transaction t = new Transaction(ag, a, amount, "Deposit");
 			a.postTransaction(t);
@@ -76,15 +69,22 @@ public enum Privileges {
 	}
 	
 	public void withdraw(Agent ag, Account a, double amount) throws TransactionValidationException {
-		if (canWithdraw) {
+		if (m_esPermissions.contains(acos.withdraw)) {
 			if (amount < 0) throw new IllegalArgumentException();
 			Transaction t = new Transaction(ag, a, -amount, "Withdrawal");
 			a.postTransaction(t);
 		} else throw new SecurityException();
 	}
+	
+	public void transfer(Agent ag, Account origin, long destination, double amount) throws TransactionValidationException {
+		if (m_esPermissions.contains(acos.deposit) && m_esPermissions.contains(acos.withdraw)) {
+			if (amount < 0) throw new IllegalArgumentException();
+			origin.transfer(ag, destination, amount, "Money Transfer to "+destination);
+		} else throw new SecurityException();
+	}
 
 	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
-		if (canCreateCustomer) {
+		if (m_esPermissions.contains(acos.createCustomer)) {
 			Customer c = new Customer(firstName, lastName, birthday, ssn, username, password);
 			Account a = type.open(c, params);
 			c.assignAccount(a);
@@ -93,13 +93,13 @@ public enum Privileges {
 	}
 	
 	public Account createAccount(AccountHolder ah, AccountType type, Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
-		if (canCreateAccount) {
+		if (m_esPermissions.contains(acos.createAccount)) {
 			return type.open(ah, params);
 		} else throw new SecurityException();
 	}
 	
 	public void triggerTimeShift(final long seconds) {
-		if (canTriggerTimeShift) {
+		if (m_esPermissions.contains(acos.triggerTimeShift)) {
 			RuntimeAPI.shiftTime(seconds);
 		} else throw new SecurityException();
 	}
@@ -107,29 +107,82 @@ public enum Privileges {
 	// TODO: Create a Statistics class for statistics?
 	
 	public void sendNotice(Account a, String m) {
-		if (canSendNotices) {
+		if (m_esPermissions.contains(acos.sendNotices)) {
 			a.getAccountHolder().sendNotification(a, m);
 		} else throw new SecurityException();
 	}
 	
-	public void changeGlobalParameter(GlobalParameters gp, double value) {
-		if (canChangeGlobalParameters) {
+	public void setGlobalParameter(GlobalParameters gp, double value) {
+		if (m_esPermissions.contains(acos.setGlobalParameters)) {
 			gp.set(value);
 		} else throw new SecurityException();
 	}
 	
 	public DateTime reportedFraudulent(Transaction t) {
-		return null; // TODO: Do stuff
+		if (m_esPermissions.contains(acos.seeFraudulentFlags)) {
+			return t.m_dtReportedFraudulent;
+		} else throw new SecurityException();
 	}
 	
-	public boolean employeeFlag(Account t) {
-		return false; // TODO: Do stuff
+	public boolean employeeFlag(Account a) {
+		if (m_esPermissions.contains(acos.seeEmployeeFlags)) {
+			return a.getAccountHolder().isEmployee();
+		} else throw new SecurityException();
 	}
 	
 	public void overturnTransaction(Transaction t) {
-		// TODO: Do stuff
+		if (m_esPermissions.contains(acos.overturnTransactions)) {
+			t.m_aTarget.overturnTransaction(t);
+		} else throw new SecurityException();
+	}
+
+	public void overturnTransaction(Account a, int transaction_index) {
+		if (m_esPermissions.contains(acos.overturnTransactions)) {
+			a.overturnTransaction(transaction_index);
+		} else throw new SecurityException();
 	}
 	
-	// TODO: Implement all transactions
+	public void setupAutomaticTransaction(Account origin, long destination, String description, double amount) {
+		if (m_esPermissions.contains(acos.setupAutomaticTransactions)) {
+			AutomatedTransaction at = new AutomatedTransaction(amount, destination, description); 
+			origin.setupAutomatedTransaction(at);
+		} else throw new SecurityException();
+	}
+	
+	public void cancelAutomaticTransaction(Account origin, AutomatedTransaction at) {
+		if (m_esPermissions.contains(acos.setupAutomaticTransactions)) {
+			origin.cancelAutomatedTransaction(at);
+		} else throw new SecurityException();
+	}
+	
+	public void cancelAutomaticTransaction(Account origin, int at_index) {
+		if (m_esPermissions.contains(acos.setupAutomaticTransactions)) {
+			origin.cancelAutomatedTransaction(at_index);
+		} else throw new SecurityException();
+	}
+	
+	public int seeSSN(AccountHolder ah) {
+		if (m_esPermissions.contains(acos.seeSSN)) {
+			return ah.getSSN();
+		} else throw new SecurityException();
+	}
+	
+	public double seeCap() {
+		if (m_esPermissions.contains(acos.seeCap)) {
+			return RuntimeAPI.getCap();
+		} else throw new SecurityException();
+	}
+	
+	public void adjustCap(double delta) {
+		if (m_esPermissions.contains(acos.setCap)) {
+			RuntimeAPI.forcefulAdjustCap(delta);
+		} else throw new SecurityException();
+	}
+	
+	public void setCap(double exactAmount) {
+		if (m_esPermissions.contains(acos.setCap)) {
+			RuntimeAPI.forcefulAdjustCap(exactAmount-RuntimeAPI.getCap());
+		} else throw new SecurityException();
+	}	
 	
 }

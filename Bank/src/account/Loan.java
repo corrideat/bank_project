@@ -31,10 +31,9 @@ final public class Loan extends InterestChargingAccount {
 	@Override
 	protected void transactionValidator(Transaction t) throws TransactionValidationException {
 		// Safety check
-		// Allow withdrawals of positive balances on closed accounts. (However, such a situation should never arise)
 		if (t.m_dAmount<0 && (!this.m_bHasBeenRepaid || (t.m_dAmount+this.getBalance())<0D)) {
 			throw new IllegalOperationException();
-		} else if ((t.m_dAmount+this.getBalance())>0D) { // Too large of a payment. This should avoid most situations that the second part of the if above handles.
+		} else if (this.getBalance() > 0D && (t.m_dAmount+this.getBalance())>0D) { // Too large of a payment. This should avoid most situations that the second part of the if above handles.
 			throw new IllegalOperationException(); // TODO: Maybe create a specialized Exception for this case?
 		}
 	}
@@ -44,7 +43,11 @@ final public class Loan extends InterestChargingAccount {
 		super.onUpdate();
 		if (this.getBalance() >= 0) { // Greater than is a safety check
 			m_bHasBeenRepaid=true;
-			this.close();
+			if (this.getBalance() == 0) {
+				this.immediateClose();
+			} else {
+				this.close();
+			}
 		} 
 	}
 	

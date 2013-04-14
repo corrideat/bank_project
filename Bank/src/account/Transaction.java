@@ -10,7 +10,8 @@ public class Transaction {
 	public final String m_sDescription;	
 	public final double m_dAmount;
 	public final DateTime m_dtTime;
-	public DateTime m_dtReportedFraudulent; 
+	public DateTime m_dtReportedFraudulent;
+	private boolean overturned;
  
 	public Transaction(final Agent agent, final Account target, final double amount, final String description) {
 		 this.m_agAgent = agent;
@@ -19,10 +20,20 @@ public class Transaction {
 		 this.m_sDescription = description;
 		 this.m_dtTime = RuntimeAPI.now();
 		 this.m_dtReportedFraudulent=null;
+		 overturned = false;
 	}
 	
 	public boolean flaggable() {
 		return true;
+	}
+	
+	final public boolean overturn() {
+		if (overturned) {
+			return false;
+		} else {
+			overturned = true;
+			return true;		
+		}
 	}
 	
 	public final void flagAsFraudulent() {
