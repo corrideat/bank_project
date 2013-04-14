@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.JSplitPane;
 import javax.swing.JLabel;
@@ -85,36 +86,43 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				Map<String, User> userMap = backend.Core.m_auUsers;			// get Map of users
-				User[] userArray = (User[]) userMap.values().toArray(); 	// convert Map to array
+				Object[] userArray = userMap.values().toArray(); 	// convert Map to array
 				
 				String pass = new String(passwordField.getPassword());
 				
+				
 				for (int i = 0; i < userArray.length; i++){
-					if(userArray[i].authenticate(textField.getText(),pass)){	//find
-						user = userArray[i];
+					if(((User)userArray[i]).authenticate(textField.getText(),pass)){	//find
+						user = (User)userArray[i];
 					}
 				}
 				
-				JFrame userFrame = new CustomerFrame();
+				if (user == null){
+					JOptionPane.showMessageDialog(null, "Login unsuccessful. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
+				}else{
 				
-				if (user instanceof Teller){			// Teller
-					userFrame = new TellerFrame();
-				}else if (user instanceof Customer){	// Customer
-					userFrame = new CustomerFrame();
-				}else if (user instanceof EmployeeCustomer){		// Customer Employee
-					userFrame = new TellerFrame();
-				}else if (user instanceof Teller){		// Account Manager
-					userFrame = new TellerFrame();
-				}else if (user instanceof Teller){		// Accountant
-					userFrame = new TellerFrame();
-				}else if (user instanceof Teller){		// Auditor
-					userFrame = new TellerFrame();
-				}else if (user instanceof Teller){		// Operation Manager
-					userFrame = new TellerFrame();
+						
+					JFrame userFrame = new CustomerFrame();
+					
+					if (user instanceof Teller){					// Teller
+						userFrame = new TellerFrame();
+					}else if (user instanceof Customer){			// Customer
+						userFrame = new CustomerFrame();
+	//				}else if (user instanceof EmployeeCustomer){	// Customer Employee
+	//					userFrame = new EmployeeCustomerFrame();
+					}else if (user instanceof AccountManager){		// Account Manager
+						userFrame = new AccountManagerFrame();
+					}else if (user instanceof Accountant){			// Accountant
+						userFrame = new AccountantFrame();
+					}else if (user instanceof Auditor){				// Auditor
+						userFrame = new AuditorFrame();
+	//				}else if (user instanceof OperationManager){	// Operation Manager
+	//					userFrame = new OperationManagerFrame();
+					}
+					
+					userFrame.setVisible(true);
+					dispose();
 				}
-				
-				userFrame.setVisible(true);
-				dispose();
 			}
 		});
 		btnNewButton.setBounds(68, 73, 89, 23);
