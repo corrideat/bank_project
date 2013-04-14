@@ -2,7 +2,6 @@ package account;
 
 import date.DateTime;
 import backend.GlobalParameters;
-import backend.RuntimeAPI;
 import backend.RuntimeAPI.InterestRate;
 
 public class CD extends InterestBearingAccount {
@@ -39,13 +38,15 @@ public class CD extends InterestBearingAccount {
 		}
 	}
 	
-	final CD_type m_eType;
-	boolean m_bHasMatured;
+	public final CD_type m_eType;
+	private boolean m_bHasMatured;
+	private short m_dDuration;	
 
 	public CD(CD_type type, long number, AccountHolder owner) {
 		super(AccountType.CD, type.m_eRate, number, owner, true);
 		m_eType = type;
 		m_bHasMatured = false;
+		m_dDuration = type.getDuration();
 	}
 	
 	@Override
@@ -54,6 +55,18 @@ public class CD extends InterestBearingAccount {
 		if (!m_bHasMatured && t.m_dAmount<0D) { // Penalize
 			// TODO: This *might* sink the balance below zero. Is this expected behaviour?
 			new InternalTransaction(-this.getAccountRate()/2 * this.getBalance(), "Withdawal Penalty");
+		}
+	}
+	
+	@Override
+	protected void onUpdate(DateTime dt, PeriodBalance pb) {
+		System.out.println("\t\t>>"+m_dDuration);
+		if (!m_bHasMatured) {
+			if (--m_dDuration < 0) {
+				m_bHasMatured = true;
+			} else {
+				super.onUpdate(dt, pb); // Interest operations
+			}
 		}
 	}
 	
