@@ -46,20 +46,25 @@ public abstract class Account implements Comparable<Account> {
 	}
 	
 	private static class InternalAgent implements Agent {
-
+		final String m_sDescription;
+		
+		protected InternalAgent(final String description) {
+			m_sDescription = description;
+		}
+		
 		@Override
 		public boolean isInternal() {
-			return false;
+			return true;
 		}
 
 		@Override
 		public String describe() {
-			return "Internal Agent";
-		}
-		
+			return this.m_sDescription;
+		}		
 	}
 	
-	private static Agent ms_agent=new InternalAgent();
+	private static Agent ms_agent=new InternalAgent("Internal Agent");
+	private static Agent ms_atAgent=new InternalAgent("Automated Transactions Agent");
 	
 	protected class InternalTransaction extends Transaction {
 		public InternalTransaction(final double amount, final String description) {
@@ -156,7 +161,7 @@ public abstract class Account implements Comparable<Account> {
 	}
 	
 	private final void forcePostTransaction(final Transaction t)  {
-		if (this.m_atHistory.add(t)) {
+		if (!this.isClosed() && this.m_atHistory.add(t)) {
 			this.m_dBalance += t.m_dAmount;
 			if (t.m_dAmount > 0D) {
 				System.out.println(String.format("%d/%d/%d\t%s\t%.03f\t", t.m_dtTime.getMonth(), t.m_dtTime.getDay(), t.m_dtTime.getYear(), t.m_sDescription, Math.abs(t.m_dAmount)));
@@ -178,9 +183,9 @@ public abstract class Account implements Comparable<Account> {
 	private final void securityTransactionValidator(Transaction t) {
 		// TODO: What if the account is closed but has a positive balance?
 		//System.out.println("\t\tSTV: "+this.m_dtClosed+"\t"+t.m_aTarget.hashCode()+"\t"+this.hashCode());
-		if (this.m_dtClosed != null || t.m_aTarget != this)
+		if (this.m_dtClosed != null || t.m_aTarget != this) {
 				throw new SecurityException();
-		//if (t.m_agAgent != this) throw new SecurityException();
+		}
 	}
 	
 	protected abstract void transactionValidator(final Transaction t) throws TransactionValidationException;
@@ -190,7 +195,7 @@ public abstract class Account implements Comparable<Account> {
 		
 		if (this.isClosed()) return;
 		
-		if ((current.getYear()*12+current.getMonth()) != (this.m_dtLastUpdated.getYear()*12+this.m_dtLastUpdated.getMonth())) {
+		if (current.getYearMonth() != this.m_dtLastUpdated.getYearMonth()) {
 			if (this.m_bToBeClosed) {
 				Account[] accounts = this.m_ahOwner.getAccounts();
 				boolean transferred = false;
@@ -248,7 +253,7 @@ public abstract class Account implements Comparable<Account> {
 			if (!this.isClosed()) {				
 				for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {					
 					try {
-						transfer(trans.m_lTargetAccount, trans.m_dAmount, String.format("Automated Transaction: %s", trans.m_sDescription));
+						transfer(Account.ms_atAgent, trans.m_lTargetAccount, trans.m_dAmount, String.format("Automated Transaction: %s", trans.m_sDescription));
 					} catch (TransactionValidationException | SecurityException e) {
 						// TODO: Should we charge customer a fee?
 						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02f: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
@@ -262,11 +267,11 @@ public abstract class Account implements Comparable<Account> {
 		
 	}
 	
-	final public void transfer(long destination, double amount, String description) throws TransactionValidationException {
-		Account target;
-		if ((target = RuntimeAPI.getAccount(destination)) != null && !target.isClosed()) {
-			Transaction local = new Transaction(ms_agent, this, -Math.abs(amount), description);
-			Transaction outgoing = new Transaction(ms_agent, target, Math.abs(amount), String.format("Payment from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+	final public void transfer(final Agent agent, final long destination, final double amount, final String description) throws TransactionValidationException {
+		final Account target = RuntimeAPI.getAccount(destination);
+		if (target != null && !target.isClosed()) {
+			final Transaction local = new Transaction(agent, this, -Math.abs(amount), description);
+			final Transaction outgoing = new Transaction(agent, target, Math.abs(amount), String.format("Payment from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
 			this.simulateTransaction(local);
 			target.simulateTransaction(outgoing);
 			this.forcePostTransaction(local);

@@ -95,6 +95,10 @@ public class DateTime {
 		return get(TimeUnits.SECOND);
 	}
 	
+	public int getYearMonth() {
+		return get(TimeUnits.MONTH)+get(TimeUnits.YEAR)*12;
+	}
+	
 	public DateTime add(Time time) {
 		try {
 			DateTime temp=new DateTime(new GregorianCalendar());			
