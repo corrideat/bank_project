@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import backend.Core;
 import backend.RuntimeAPI;
 
 import account.Account;
@@ -195,8 +196,8 @@ public abstract class User implements AccountHolder, Comparable<User> {
 			m_dtRecordCreationDate = RuntimeAPI.now();
 			m_ePrivileges = p;
 			m_mbMailbox = new Mailbox();
-			
 			this.m_oAuthObject = new Authentication(username, password);
+			Core.m_auUsers.put(username, this);
 		} else {
 			throw new IllegalArgumentException();
 		}

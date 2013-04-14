@@ -21,11 +21,11 @@ public class Core {
 	public static double currentCap = 0D; 
 
 	public static void main(String[] args) {
-		m_auUsers.put("accountmanager", new AccountManager("Patricia", "Rhodes", new DateTime(1951, 1, 17), 202549277, "accountmanager", "password"));
-		m_auUsers.put("teller", new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password"));
-		m_auUsers.put("auditor", new Auditor("Michael", "Schneider", new DateTime(1965, 4, 23), 808960670, "auditor", "password"));
-		m_auUsers.put("operationmanager", new AccountManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password"));
-		m_auUsers.put("accountant", new AccountManager("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password"));
+		new AccountManager("Patricia", "Rhodes", new DateTime(1951, 1, 17), 202549277, "accountmanager", "password");
+		new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+		new Auditor("Michael", "Schneider", new DateTime(1965, 4, 23), 808960670, "auditor", "password");
+		new AccountManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password");
+		new AccountManager("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password");
 		
 		try {
 			m_auUsers.get("accountmanager").m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "customer1", "password", 218656057, AccountType.CHECKING, null);

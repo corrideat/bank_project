@@ -88,9 +88,7 @@ public enum Privileges {
 	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (m_esPermissions.contains(acos.createCustomer)) {
 				if (RuntimeAPI.getUser(username) == null) {
-				Customer c = new Customer(firstName, lastName, birthday, ssn, username, password, type, params);
-				Core.m_auUsers.put(username, c);
-				return c;
+				return new Customer(firstName, lastName, birthday, ssn, username, password, type, params);				
 			} else {
 				throw new IllegalArgumentException();
 			}
