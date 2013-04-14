@@ -21,11 +21,11 @@ public class Core {
 	public static double currentCap = 0D; 
 
 	public static void main(String[] args) {
-		
-		//need to instantiate default users and add to HashMap
-		DateTime bday1 = new DateTime();
-		Customer cust1 = new Customer("Phillip","Riley",bday1,123456789,"PhillipR","password1");
-		AccountType.SAVINGS.open(cust1, m_aaAccounts);	//not working because of parameter types
+		m_auUsers.put("accountmanager", new AccountManager("Patricia", "Rhodes", new DateTime(1951, 1, 17), 202549277, "accountmanager", "password"));
+		m_auUsers.put("teller", new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password"));
+		m_auUsers.put("auditor", new Auditor("Michael", "Schneider", new DateTime(1965, 4, 23), 808960670, "auditor", "password"));
+		m_auUsers.put("operationmanager", new AccountManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password"));
+		m_auUsers.put("accountant", new AccountManager("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password"));
 		
 		
 		JFrame loginFrame = new MainFrame();

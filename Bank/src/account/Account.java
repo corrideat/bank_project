@@ -104,7 +104,58 @@ public abstract class Account implements Comparable<Account> {
 	public final void close() {
 		this.m_bToBeClosed = true;
 		// TODO: Zero balance?, it should still function for a the remaining of a month
+	}
+	
+	public final void immediateClose() {
+		if (!this.isClosed() && this.m_dBalance != 0) {
+			Account[] accounts = this.m_ahOwner.getAccounts();
+			boolean transferred = false;
+			if (accounts.length>1) {
+				for(Account a:accounts) {
+					if (a != this && a.m_atType==AccountType.CHECKING) {
+						new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+						transferred = true;
+						break;
+					}
+				}
+				if (!transferred) {
+					for(Account a:accounts) {
+						if (a != this && a.m_atType==AccountType.SAVINGS) {
+							new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+							transferred = true;
+							break;
+						}
+					}
+				}
+				if (!transferred) {
+					for(Account a:accounts) {
+						if (a != this && a.m_atType==AccountType.LOC) {
+							new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+							transferred = true;
+							break;
+						}
+					}
+				}
+				if (!transferred) {
+					for(Account a:accounts) {
+						if (a != this && a.m_atType==AccountType.LOAN) {
+							new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
+							transferred = true;
+							break;
+						}
+					}
+				}
+				if (!transferred) {
+					new InternalTransaction(this.m_dBalance, String.format("Account %d Close Check Mailed for %.02d", this.m_lAccountNumber, this.m_dBalance));
+				}
+			}
+			this.m_dBalance = 0L;
+		}
+		this.m_bToBeClosed = false;
+		this.m_dtClosed = RuntimeAPI.now();
+		
 	}	
+
 	
 	/**
 	 * @return the m_dBalance
@@ -197,51 +248,8 @@ public abstract class Account implements Comparable<Account> {
 		
 		if (current.getYearMonth() != this.m_dtLastUpdated.getYearMonth()) {
 			if (this.m_bToBeClosed) {
-				Account[] accounts = this.m_ahOwner.getAccounts();
-				boolean transferred = false;
-				if (accounts.length>1) {
-					for(Account a:accounts) {
-						if (a != this && a.m_atType==AccountType.CHECKING) {
-							new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
-							transferred = true;
-							break;
-						}
-					}
-					if (!transferred) {
-						for(Account a:accounts) {
-							if (a != this && a.m_atType==AccountType.SAVINGS) {
-								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
-								transferred = true;
-								break;
-							}
-						}
-					}
-					if (!transferred) {
-						for(Account a:accounts) {
-							if (a != this && a.m_atType==AccountType.LOC) {
-								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
-								transferred = true;
-								break;
-							}
-						}
-					}
-					if (!transferred) {
-						for(Account a:accounts) {
-							if (a != this && a.m_atType==AccountType.LOAN) {
-								new InternalTransaction(this.m_dBalance, String.format("Account %d Close Transfer %.02d", this.m_lAccountNumber, this.m_dBalance));
-								transferred = true;
-								break;
-							}
-						}
-					}
-					if (!transferred) {
-						new InternalTransaction(this.m_dBalance, String.format("Account %d Close Check Mailed for %.02d", this.m_lAccountNumber, this.m_dBalance));
-					}
-				}
-				this.m_dBalance = 0L;
-				this.m_dtClosed = current;
-			}
-			
+				this.immediateClose();
+			}			
 			
 			DateTime cutoff = new DateTime(current.getYear(), current.getMonth(), 1);
 			PeriodBalance pb = getMonthlyBalance(cutoff);
@@ -284,10 +292,18 @@ public abstract class Account implements Comparable<Account> {
 	
 	public void overturnTransaction(int transaction_index) {
 		Transaction t = m_atHistory.get(transaction_index);
-		if (t!=null) {
+		if (t!=null && t.overturn()) {
 			new InternalTransaction(-t.m_dAmount, String.format("Transaction %d overturned. [%s]", transaction_index, t.m_sDescription));
 		} else throw new IllegalArgumentException();
 	}
+	
+	public void overturnTransaction(Transaction t) {
+		int transaction_index = m_atHistory.indexOf(t);
+		if (transaction_index >= 0) {
+			overturnTransaction(transaction_index);
+		} else throw new IllegalArgumentException();
+	}
+
 
 	public AutomatedTransaction[] getAutomatedTransactions() {
 		return m_aatAutomatedTransactions.toArray(new AutomatedTransaction[0]);
@@ -297,8 +313,16 @@ public abstract class Account implements Comparable<Account> {
 		m_aatAutomatedTransactions.add(at);
 	}
 	
+	public void cancelAutomatedTransaction(AutomatedTransaction at) {
+		cancelAutomatedTransaction(m_aatAutomatedTransactions.indexOf(at));
+	}
+	
 	public void cancelAutomatedTransaction(int at_index) {
-		m_aatAutomatedTransactions.remove(at_index);
+		if (at_index < 0 || at_index >= m_aatAutomatedTransactions.size()) {
+			m_aatAutomatedTransactions.remove(at_index);
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 	
 	public boolean debtInstrument() {
