@@ -21,7 +21,8 @@ public enum GlobalParameters {
 	LOC_MINIMUM_PAYMENT(20D, "LOC Minimum Payment per Month"), // The bank asks you to monthly pay 10% of what you have spent 
 	LOC_MINIMUM_PAYMENT_FRACTION(0.2D, "LOC Minimum Payment Fraction per Month"),
 	LOC_LATE_PENALTY(-20D, "LOC Account Late Penalty Fee per Month"), // Fees are negative
-	LOAN_LATE_PENALTY(-25D, "Loan Account Late Penalty Fee per Month"); // Fees are negative
+	LOAN_LATE_PENALTY(-25D, "Loan Account Late Penalty Fee per Month"),  // Fees are negative
+	TELLER_INTERACTION_FEE(-25D, "Teller Interaction Fee"); // Fees are negative
 	
 	private double m_dValue;
 	private final String m_sDescription;	
@@ -40,6 +41,22 @@ public enum GlobalParameters {
 	}
 	
 	public void set(final double v) {
+		/* Enforce interest rate relations */
+		if (this == RATE_SAVINGS) {
+			if (v >= RATE_CD_6M.m_dValue) throw new IllegalArgumentException();
+		} else if (this == RATE_CD_6M) {
+			if (v <= RATE_SAVINGS.m_dValue || v >= RATE_CD_1Y.m_dValue) throw new IllegalArgumentException();
+		}  else if (this == RATE_CD_1Y) {
+			if (v <= RATE_CD_6M.m_dValue || v >= RATE_CD_2Y.m_dValue) throw new IllegalArgumentException();
+		} else if (this == RATE_CD_2Y) {
+			if (v <= RATE_CD_1Y.m_dValue || v >= RATE_CD_3Y.m_dValue) throw new IllegalArgumentException();
+		} else if (this == RATE_CD_3Y) {
+			if (v <= RATE_CD_2Y.m_dValue || v >= RATE_CD_4Y.m_dValue) throw new IllegalArgumentException();
+		} else if (this == RATE_CD_4Y) {
+			if (v <= RATE_CD_3Y.m_dValue || v >= RATE_CD_5Y.m_dValue) throw new IllegalArgumentException();
+		}  else if (this == RATE_CD_5Y) {
+			if (v <= RATE_CD_4Y.m_dValue) throw new IllegalArgumentException();
+		}
 		m_dValue = v;
 	}
 	
