@@ -18,12 +18,16 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Map;
+
 import javax.swing.JPasswordField;
 
 import account.*;
 import backend.*;
 import date.*;
 import user.*;
+import user.Employee.EmployeeCustomer;
+
 import javax.swing.JSeparator;
 
 
@@ -32,6 +36,7 @@ public class MainFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JPasswordField passwordField;
+	public User user;
 
 	/**
 	 * Launch the application.
@@ -79,24 +84,34 @@ public class MainFrame extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
+				Map<String, User> userMap = backend.Core.m_auUsers;			// get Map of users
+				User[] userArray = (User[]) userMap.values().toArray(); 	// convert Map to array
 				
+				String pass = new String(passwordField.getPassword());
 				
-				
-//				DateTime birthday = null;
-//				try {
-//					birthday = new DateTime();
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				
-//				Teller user = new Teller("Phillip","Riley",birthday,304839550);
+				for (int i = 0; i < userArray.length; i++){
+					if(userArray[i].authenticate(textField.getText(),pass)){	//find
+						user = userArray[i];
+					}
+				}
 				
 				JFrame userFrame = new CustomerFrame();
 				
-//				if (user instanceof Teller){
-//					userFrame = new TellerFrame();
-//				}
+				if (user instanceof Teller){			// Teller
+					userFrame = new TellerFrame();
+				}else if (user instanceof Customer){	// Customer
+					userFrame = new CustomerFrame();
+				}else if (user instanceof EmployeeCustomer){		// Customer Employee
+					userFrame = new TellerFrame();
+				}else if (user instanceof Teller){		// Account Manager
+					userFrame = new TellerFrame();
+				}else if (user instanceof Teller){		// Accountant
+					userFrame = new TellerFrame();
+				}else if (user instanceof Teller){		// Auditor
+					userFrame = new TellerFrame();
+				}else if (user instanceof Teller){		// Operation Manager
+					userFrame = new TellerFrame();
+				}
 				
 				userFrame.setVisible(true);
 				dispose();
