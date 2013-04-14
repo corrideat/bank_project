@@ -209,7 +209,6 @@ public abstract class User implements AccountHolder, Comparable<User> {
 
 	@Override
 	final public String getLastName() {
-		// TODO Auto-generated method stub
 		return m_sLastName;
 	}
 	
@@ -270,6 +269,8 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		}
 		return this.m_sLastName+", "+this.m_sFirstName+": "+pos;
 	}
+	
+	abstract AccountHolder getAH();
 	
 }
 

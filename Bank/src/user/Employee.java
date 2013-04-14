@@ -1,13 +1,14 @@
 package user;
 
 import account.Account;
+import account.AccountHolder;
 import date.DateTime;
 
 public abstract class Employee extends User {
 	public class EmployeeCustomer extends Customer {
 
-		public EmployeeCustomer() {
-			super(Employee.this.m_sFirstName, Employee.this.m_sLastName, Employee.this.m_dtBirthday, Employee.this.m_iSSN, null, null);
+		public EmployeeCustomer(String username, String password) {
+			super(Employee.this.m_sFirstName, Employee.this.m_sLastName, Employee.this.m_dtBirthday, Employee.this.m_iSSN, username+"_customer", password);
 		}
 		
 		@Override
@@ -21,7 +22,7 @@ public abstract class Employee extends User {
 
 	public Employee(String firstName, String lastName, DateTime birthday, int ssn, Privileges p, String username, String password) {
 		super(firstName, lastName, birthday, ssn, p, username, password);
-		m_cCustomerProfile = new EmployeeCustomer();
+		m_cCustomerProfile = new EmployeeCustomer(username, password);
 	}
 	
 	final public boolean isEmployee() {
@@ -38,7 +39,12 @@ public abstract class Employee extends User {
 	}
 	
 	@Override
-	public Account[] getAccounts() {
+	final public Account[] getAccounts() {
 		return m_cCustomerProfile.getAccounts();
-	}	
+	}
+	
+	@Override
+	final public AccountHolder getAH() {
+		return m_cCustomerProfile;
+	}
 }

@@ -88,9 +88,7 @@ public enum Privileges {
 	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (m_esPermissions.contains(acos.createCustomer)) {
 				if (RuntimeAPI.getUser(username) == null) {
-				Customer c = new Customer(firstName, lastName, birthday, ssn, username, password);
-				Account a = type.open(c, params);
-				c.assignAccount(a);
+				Customer c = new Customer(firstName, lastName, birthday, ssn, username, password, type, params);
 				Core.m_auUsers.put(username, c);
 				return c;
 			} else {
@@ -101,7 +99,9 @@ public enum Privileges {
 	
 	public Account createAccount(AccountHolder ah, AccountType type, Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (m_esPermissions.contains(acos.createAccount)) {
-			return type.open(ah, params);
+			Account a = type.open(ah, params);
+			ah.assignAccount(a);
+			return a;
 		} else throw new SecurityException();
 	}
 	
@@ -194,7 +194,7 @@ public enum Privileges {
 	
 	public AccountHolder getAccountHolder(final String username) {
 		if (m_esPermissions.contains(acos.seeBasicInformation)) {
-			return Core.m_auUsers.get(username);
+			return Core.m_auUsers.get(username).getAH();
 		} else throw new SecurityException();
 	}
 	
