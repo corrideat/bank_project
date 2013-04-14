@@ -90,6 +90,12 @@ public class AccountManagerFrame extends JFrame {
 		contentPane.add(separator);
 		
 		JButton btnNewButton_1 = new JButton("New Customer");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CreateCustomerFrame userFrame = new CreateCustomerFrame();
+				userFrame.setVisible(true);
+			}
+		});
 		btnNewButton_1.setBounds(10, 218, 131, 23);
 		contentPane.add(btnNewButton_1);
 		

@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.ImageIcon;
 
+import backend.RuntimeAPI;
+
 import account.Account;
 
 import user.User;
@@ -30,7 +32,7 @@ public class CustomerFrame extends JFrame {
 	private JTextField textField_1;
 	private JTextField textField_2;
 	public static User user;
-	public static Account currentAcount;
+	public static Account currentAccount;
 
 	/**
 	 * Launch the application.
@@ -69,10 +71,29 @@ public class CustomerFrame extends JFrame {
 		label_1.setBounds(10, 15, 85, 14);
 		contentPane.add(label_1);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 64, 262, 64);
+		contentPane.add(scrollPane);
+		
+		final JTextPane textPane = new JTextPane();
+		textPane.setEditable(false);
+		scrollPane.setViewportView(textPane);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 219, 262, 64);
+		contentPane.add(scrollPane_1);
+		
+		JTextPane textPane_1 = new JTextPane();
+		textPane_1.setEditable(false);
+		scrollPane_1.setViewportView(textPane_1);
+		
 		JComboBox comboBox = new JComboBox();
-		comboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent arg0) {
-				
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox cb = (JComboBox)e.getSource();
+				currentAccount = RuntimeAPI.getAccount((long)cb.getSelectedItem());
+				textPane.setText(currentAccount.toString());
+				for 
 			}
 		});
 		comboBox.setBounds(75, 12, 139, 20);
@@ -80,14 +101,6 @@ public class CustomerFrame extends JFrame {
 		for (int i = 0; i < user.getAccounts().length; i++){
 			comboBox.addItem(user.getAccounts()[i].getAccountNumber());
 		}
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 64, 262, 64);
-		contentPane.add(scrollPane);
-		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
 		
 		textField = new JTextField();
 		textField.setText("0.00");
@@ -102,6 +115,11 @@ public class CustomerFrame extends JFrame {
 		contentPane.add(textField_1);
 		
 		JButton button = new JButton("Withdraw");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		button.setBounds(111, 136, 89, 23);
 		contentPane.add(button);
 		
@@ -112,14 +130,6 @@ public class CustomerFrame extends JFrame {
 		JLabel lblAccountHistory = new JLabel("Account History");
 		lblAccountHistory.setBounds(10, 200, 106, 14);
 		contentPane.add(lblAccountHistory);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 219, 262, 64);
-		contentPane.add(scrollPane_1);
-		
-		JTextPane textPane_1 = new JTextPane();
-		textPane_1.setEditable(false);
-		scrollPane_1.setViewportView(textPane_1);
 		
 		JLabel lblTransferFunds = new JLabel("Transfer Funds");
 		lblTransferFunds.setBounds(10, 294, 117, 14);

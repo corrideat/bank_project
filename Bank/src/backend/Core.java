@@ -34,7 +34,6 @@ public class Core {
 			e.printStackTrace();
 		}
 		
-		
 		JFrame loginFrame = new MainFrame();
 		loginFrame.setVisible(true);
 	}

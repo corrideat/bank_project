@@ -53,7 +53,7 @@ public class MainFrame extends JFrame {
 		setTitle("Banking");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 232, 179);
+		setBounds(100, 100, 232, 136);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -122,19 +122,5 @@ public class MainFrame extends JFrame {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(78, 42, 132, 20);
 		contentPane.add(passwordField);
-		
-		JSeparator separator = new JSeparator();
-		separator.setBounds(0, 106, 226, 2);
-		contentPane.add(separator);
-		
-		JButton btnTestFrames = new JButton("Test Frames");
-		btnTestFrames.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFrame testFrame = new TestFrame();
-				testFrame.setVisible(true);
-			}
-		});
-		btnTestFrames.setBounds(47, 119, 132, 23);
-		contentPane.add(btnTestFrames);
 	}
 }

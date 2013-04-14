@@ -11,15 +11,18 @@ import javax.swing.JComboBox;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JTable;
 
 import user.User;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 public class AuditorFrame extends JFrame {
 
 	private JPanel contentPane;
+	private JTable table;
 	public static User user;
 
 	/**
@@ -70,14 +73,6 @@ public class AuditorFrame extends JFrame {
 		scrollPane.setViewportView(textPane);
 		textPane.setEditable(false);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 225, 260, 100);
-		contentPane.add(scrollPane_1);
-		
-		JTextPane textPane_1 = new JTextPane();
-		scrollPane_1.setViewportView(textPane_1);
-		textPane_1.setEditable(false);
-		
 		JLabel label_2 = new JLabel("Account History");
 		label_2.setBounds(10, 205, 106, 14);
 		contentPane.add(label_2);
@@ -103,12 +98,15 @@ public class AuditorFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
-				MainFrame.user = user;
 				dispose();
 			}
 		});
 		btnLogout.setBounds(96, 367, 89, 23);
 		contentPane.add(btnLogout);
+		
+		table = new JTable();
+		table.setBackground(Color.GRAY);
+		table.setBounds(10, 318, 260, -87);
+		contentPane.add(table);
 	}
-
 }
