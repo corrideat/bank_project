@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import backend.Agent;
+import backend.GlobalParameters;
 import backend.RuntimeAPI;
 import date.DateTime;
 
@@ -181,7 +182,6 @@ public abstract class Account implements Comparable<Account> {
 	}
 	
 	private final void securityTransactionValidator(Transaction t) {
-		// TODO: What if the account is closed but has a positive balance?
 		//System.out.println("\t\tSTV: "+this.m_dtClosed+"\t"+t.m_aTarget.hashCode()+"\t"+this.hashCode());
 		if (this.m_dtClosed != null || t.m_aTarget != this) {
 				throw new SecurityException();
@@ -328,13 +328,30 @@ public abstract class Account implements Comparable<Account> {
 			ArrayList<String> transactions = new ArrayList<String>();
 			
 			transactions.add(String.format("ACCOUNT STATEMENT"));
+			switch(this.m_atType) {
+			case LOAN:
+				transactions.add(String.format("Loan for $%.03f at %.02f%% in %d installment.", ((Loan)this).m_dPrincipal, ((Loan)this).getAccountRate()*100, ((Loan)this).m_iInstallments));
+				break;
+			case LOC:
+				transactions.add(String.format("Line of Credit for $%.03f at %.02f%%", ((LineOfCredit)this).m_dCreditLimit, ((LineOfCredit)this).getAccountRate()*100));
+				break;
+			case SAVINGS:
+				transactions.add(String.format("Savings Account at %.02f%%", ((Savings)this).getAccountRate()*100));
+				break;
+			case CD:
+				transactions.add(String.format("Certificate of Deposit for %d months at %.02f%%", ((CD)this).m_eType.getDuration(), ((CD)this).getAccountRate()*100));
+				break;
+			case CHECKING:
+				transactions.add(String.format("Checking Account"));
+				break;
+			}
 			transactions.add(String.format("Customer: %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
 			transactions.add(String.format("Account: %d", this.m_lAccountNumber));
 			transactions.add(String.format("Period: %d/%d/%d - %d/%d/%d", this.m_dtLastUpdated.getMonth(), this.m_dtLastUpdated.getDay(), this.m_dtLastUpdated.getYear(), cutoff.getMonth(), cutoff.getDay(), cutoff.getYear()));
 			if (this.debtInstrument()) {
-				transactions.add(String.format("Starting balance: %c%f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
+				transactions.add(String.format("Starting balance: $%c%f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));
 			} else {
-				transactions.add(String.format("Starting balance: %c%f", (this.m_dLastUpdatedBalance>0)?' ':'-', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));				
+				transactions.add(String.format("Starting balance: $%c%f", (this.m_dLastUpdatedBalance>0)?' ':'-', Math.round(Math.abs(this.m_dLastUpdatedBalance)*1E3)/1E3));				
 			}
 			
 			transactions.add("----------------");
@@ -385,11 +402,25 @@ public abstract class Account implements Comparable<Account> {
 			transactions.add("----------------");			
 			
 			if (this.debtInstrument()) {
-				transactions.add(String.format("Average balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
-				transactions.add(String.format("Ending balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));
+				transactions.add(String.format("Average balance: $%c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
+				transactions.add(String.format("Ending balance: $%c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));
+				if (pd.ending_balance>=0) {
+					transactions.add(String.format("Your account has a balance of +$%.03f. No payment is due.", pd.ending_balance));
+				} else {
+					switch(this.m_atType) {
+						case LOAN:
+							transactions.add(String.format("Minimum Payment Due: $%.03f", Math.min(((Loan)this).m_dMinimumMonthlyPayment, -pd.ending_balance)));
+							break;
+						case LOC:
+							transactions.add(String.format("Minimum Payment Due: $%.03f", Math.max(Math.min(GlobalParameters.LOC_MINIMUM_PAYMENT.get(), -pd.ending_balance), -pd.ending_balance*GlobalParameters.LOC_MINIMUM_PAYMENT_FRACTION.get())));
+							break;
+						default:
+							break;
+					}
+				}
 			} else {
-				transactions.add(String.format("Average balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
-				transactions.add(String.format("Ending balance: %c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));			
+				transactions.add(String.format("Average balance: $%c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(pd.average_balance)));
+				transactions.add(String.format("Ending balance: $%c%.03f", (this.m_dLastUpdatedBalance>0)?'+':' ', Math.abs(this.m_dLastUpdatedBalance)));			
 			}
 			
 			String statement = "";

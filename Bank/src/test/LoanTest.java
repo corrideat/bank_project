@@ -79,9 +79,9 @@ public class LoanTest {
 		}
 		
 		System.out.println("Principal: "+(Double)params.get(AccountParameters.PRINCIPAL)+" / "+(Short)params.get(AccountParameters.INSTALLMENTS));
-		System.out.println("MMP: "+((Loan)u1a[0]).minimumMonthlyPayment);
+		System.out.println("MMP: "+((Loan)u1a[0]).m_dMinimumMonthlyPayment);
 		
-		AutomatedTransaction at1 = new AutomatedTransaction(((Loan)u1a[0]).minimumMonthlyPayment, u1a[0].getAccountNumber(), "Some payment");
+		AutomatedTransaction at1 = new AutomatedTransaction(((Loan)u1a[0]).m_dMinimumMonthlyPayment, u1a[0].getAccountNumber(), "Some payment");
 		
 		u0a[0].setupAutomatedTransaction(at1);		
 		

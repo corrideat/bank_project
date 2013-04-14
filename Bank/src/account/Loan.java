@@ -6,10 +6,11 @@ import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 
 final public class Loan extends InterestChargingAccount {
-	final public double minimumMonthlyPayment;
-	final public double principal;
-	private boolean hasGraceElapsed;
-	private boolean hasBeenRepaid;
+	final public double m_dMinimumMonthlyPayment;
+	final public double m_dPrincipal;
+	final public short m_iInstallments;
+	private boolean m_bHasGraceElapsed;
+	private boolean m_bHasBeenRepaid;
 
 	public Loan(final double principal, final short installments, final double offset, final long number, final AccountHolder owner) throws InsufficientCreditAvailableException {
 		super(AccountType.LOAN, RuntimeAPI.InterestRate.LOAN, offset, number, owner, true);
@@ -19,10 +20,11 @@ final public class Loan extends InterestChargingAccount {
 		RuntimeAPI.adjustCap(-principal);
 		new InternalTransaction(-principal, "Principal");
 		// Formula from: http://ncalculators.com/loan/installment-loan-payoff-calculator.htm
-		minimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D*installments), -1D) * 100D)/100D;
-		this.principal = principal;
-		this.hasGraceElapsed = false;
-		this.hasBeenRepaid = false;
+		m_dMinimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D*installments), -1D) * 100D)/100D;
+		this.m_dPrincipal = principal;
+		this.m_iInstallments = installments;
+		this.m_bHasGraceElapsed = false;
+		this.m_bHasBeenRepaid = false;
 	}
 
 
@@ -30,7 +32,7 @@ final public class Loan extends InterestChargingAccount {
 	protected void transactionValidator(Transaction t) throws TransactionValidationException {
 		// Safety check
 		// Allow withdrawals of positive balances on closed accounts. (However, such a situation should never arise)
-		if (t.m_dAmount<0 && (!this.hasBeenRepaid || (t.m_dAmount+this.getBalance())<0D)) {
+		if (t.m_dAmount<0 && (!this.m_bHasBeenRepaid || (t.m_dAmount+this.getBalance())<0D)) {
 			throw new IllegalOperationException();
 		} else if ((t.m_dAmount+this.getBalance())>0D) { // Too large of a payment. This should avoid most situations that the second part of the if above handles.
 			throw new IllegalOperationException(); // TODO: Maybe create a specialized Exception for this case?
@@ -41,20 +43,20 @@ final public class Loan extends InterestChargingAccount {
 	protected void onUpdate() {
 		super.onUpdate();
 		if (this.getBalance() >= 0) { // Greater than is a safety check
-			hasBeenRepaid=true;
+			m_bHasBeenRepaid=true;
 			this.close();
 		} 
 	}
 	
 	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
-		if (hasGraceElapsed || (cycle.getYearMonth() - this.m_dtOpened.getYearMonth() > 1)) { // Give one month grace period
-			if (pb.credits<Math.min(this.minimumMonthlyPayment, -pb.starting_balance)) {
+		if (m_bHasGraceElapsed || (cycle.getYearMonth() - this.m_dtOpened.getYearMonth() > 1)) { // Give one month grace period
+			if (pb.credits<Math.min(this.m_dMinimumMonthlyPayment, -pb.starting_balance)) {
 				new InternalTransaction(GlobalParameters.LOAN_LATE_PENALTY.get(), GlobalParameters.LOAN_LATE_PENALTY.describe());
 			}
 			// TODO: Each payment should probably increase the cap by at least the principal repaid. Right now we are increasing it for the entire repayment. (Not just principal)
 			RuntimeAPI.forcefulAdjustCap(pb.credits);
 			super.onUpdate(cycle, pb);
-			hasGraceElapsed = true;
+			m_bHasGraceElapsed = true;
 		}
 	}
 }
