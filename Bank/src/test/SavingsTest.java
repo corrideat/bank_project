@@ -118,7 +118,7 @@ public class SavingsTest {
 		DateTime dt_orig = RuntimeAPI.now();		
 		RuntimeAPI.shiftTime(22594900L);
 		
-		GlobalParameters.RATE_SAVINGS.set(.01);
+		GlobalParameters.RATE_SAVINGS.set(.02);
 		RuntimeAPI.shiftTime(30000000L);
 		DateTime dt_final = RuntimeAPI.now();
 		
@@ -126,7 +126,7 @@ public class SavingsTest {
 		
 		assertEquals(1000000.00 - 1000 * expectedCycles, u0a[0].getBalance(), 0);
 		// TODO: Verify interest being paid properly
-		//assertEquals(1000 * expectedCycles, u1a[0].getBalance(), 0);
+		// assertEquals(1000 * expectedCycles, u1a[0].getBalance(), 0);
 	}
 
 }

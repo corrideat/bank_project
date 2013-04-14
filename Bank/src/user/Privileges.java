@@ -5,6 +5,7 @@ import java.util.Map;
 import date.DateTime;
 import backend.Agent;
 import backend.GlobalParameters;
+import backend.RuntimeAPI;
 import backend.InsufficientCreditAvailableException;
 import account.Account;
 import account.AccountHolder;
@@ -97,20 +98,24 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 	
-	public void triggerTimeShift() {
+	public void triggerTimeShift(final long seconds) {
 		if (canTriggerTimeShift) {
-			// TODO: Do stuff
+			RuntimeAPI.shiftTime(seconds);
 		} else throw new SecurityException();
 	}
 	
 	// TODO: Create a Statistics class for statistics?
 	
-	public void sendNotice(Message m) {
-		// TODO: Do stuff
+	public void sendNotice(Account a, String m) {
+		if (canSendNotices) {
+			a.getAccountHolder().sendNotification(a, m);
+		} else throw new SecurityException();
 	}
 	
-	public void adjustGlobalParameter(GlobalParameters gp, double value) {
-		// TODO: Do stuff
+	public void changeGlobalParameter(GlobalParameters gp, double value) {
+		if (canChangeGlobalParameters) {
+			gp.set(value);
+		} else throw new SecurityException();
 	}
 	
 	public DateTime reportedFraudulent(Transaction t) {
