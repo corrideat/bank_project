@@ -18,7 +18,7 @@ abstract public class InterestAccount extends Account {
 		}
 	}
 	
-	public double getAccountRate() {
+	final public double getAccountRate() {
 		if (m_eRate != null) {
 			return Math.max(m_eRate.getRate()+m_dInterestOffset, 0);
 		} else {
@@ -28,7 +28,7 @@ abstract public class InterestAccount extends Account {
 	
 	@Override
 	protected void onUpdate(DateTime cycle, PeriodBalance pb) {
-		if (this.getAccountRate()>0) {
+		if (this.getAccountRate()>0 && !this.isClosed()) {
 			if (this.debtInstrument() && pb.average_balance < 0D) {
 				new InternalTransaction(pb.average_balance * (this.getAccountRate()/12), "Interest Charge");
 			} else if (!this.debtInstrument() && pb.average_balance > 0D) {
