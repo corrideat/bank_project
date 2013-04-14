@@ -7,7 +7,7 @@ abstract public class InterestAccount extends Account {
 	final InterestRate m_eRate;
 	final double m_dInterestOffset;
 
-	public InterestAccount(AccountType at, InterestRate rate, double offset, long number, AccountHolder owner, boolean fix_rate) {
+	protected InterestAccount(AccountType at, InterestRate rate, double offset, long number, AccountHolder owner, boolean fix_rate) {
 		super(at, number, owner);
 		if (fix_rate) {
 			m_eRate = null;

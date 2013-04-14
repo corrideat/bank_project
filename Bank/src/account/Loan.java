@@ -12,7 +12,7 @@ final public class Loan extends InterestChargingAccount {
 	private boolean m_bHasGraceElapsed;
 	private boolean m_bHasBeenRepaid;
 
-	public Loan(final double principal, final short installments, final double offset, final long number, final AccountHolder owner) throws InsufficientCreditAvailableException {
+	protected Loan(final double principal, final short installments, final double offset, final long number, final AccountHolder owner) throws InsufficientCreditAvailableException {
 		super(AccountType.LOAN, RuntimeAPI.InterestRate.LOAN, offset, number, owner, true);
 		this.getAccountRate();
 		if (installments<1) throw new IllegalArgumentException();
