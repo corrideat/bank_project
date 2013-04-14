@@ -5,12 +5,10 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import date.DateTime;
-
-import ui.MainFrame;
-import user.User;
-
-import account.Account;
+import date.*;
+import ui.*;
+import user.*;
+import account.*;
 
 public class Core {
 	
@@ -23,6 +21,13 @@ public class Core {
 	public static double currentCap = 0D; 
 
 	public static void main(String[] args) {
+		
+		//need to instantiate default users and add to HashMap
+		DateTime bday1 = new DateTime();
+		Customer cust1 = new Customer("Phillip","Riley",bday1,123456789,"PhillipR","password1");
+		
+		
+		
 		JFrame loginFrame = new MainFrame();
 		loginFrame.setVisible(true);
 	}
