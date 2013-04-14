@@ -19,6 +19,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 
+import user.User;
+
 public class TellerFrame extends JFrame {
 
 	private JPanel contentPane;
@@ -26,6 +28,7 @@ public class TellerFrame extends JFrame {
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -138,6 +141,7 @@ public class TellerFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
+				MainFrame.user = user;
 				dispose();
 			}
 		});

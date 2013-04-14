@@ -11,12 +11,16 @@ import javax.swing.JComboBox;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+
+import user.User;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class AuditorFrame extends JFrame {
 
 	private JPanel contentPane;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -99,6 +103,7 @@ public class AuditorFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
+				MainFrame.user = user;
 				dispose();
 			}
 		});

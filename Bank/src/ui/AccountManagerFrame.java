@@ -13,6 +13,9 @@ import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JSeparator;
+
+import user.User;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -22,6 +25,7 @@ public class AccountManagerFrame extends JFrame {
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -121,6 +125,7 @@ public class AccountManagerFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
+				MainFrame.user = user;
 				dispose();
 			}
 		});

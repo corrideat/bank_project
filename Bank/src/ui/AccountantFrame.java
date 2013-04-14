@@ -16,10 +16,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 
+import user.User;
+
 public class AccountantFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -74,6 +77,7 @@ public class AccountantFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
+				MainFrame.user = user;
 				dispose();
 			}
 		});

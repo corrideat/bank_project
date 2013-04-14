@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
 import user.*;
+import user.Employee.EmployeeCustomer;
+
 import javax.swing.JSeparator;
 
 
@@ -26,7 +28,7 @@ public class MainFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JPasswordField passwordField;
-	public User user;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -84,22 +86,29 @@ public class MainFrame extends JFrame {
 					JOptionPane.showMessageDialog(null, "Login unsuccessful. Wrong credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
 				} else {
 				
-					JFrame userFrame = new CustomerFrame();
+					JFrame userFrame = new AccountantFrame();
 					
 					if (user instanceof Teller){					// Teller
 						userFrame = new TellerFrame();
+						TellerFrame.user = user;
 					}else if (user instanceof Customer){			// Customer
 						userFrame = new CustomerFrame();
-	//				}else if (user instanceof EmployeeCustomer){	// Customer Employee
-	//					userFrame = new EmployeeCustomerFrame();
+						CustomerFrame.user = user;
+					}else if (user instanceof EmployeeCustomer){	// Customer Employee
+						userFrame = new EmployeeCustomerFrame();
+						EmployeeCustomerFrame.user = user;
 					}else if (user instanceof AccountManager){		// Account Manager
 						userFrame = new AccountManagerFrame();
+						AccountManagerFrame.user = user;
 					}else if (user instanceof Accountant){			// Accountant
 						userFrame = new AccountantFrame();
+						AccountantFrame.user = user;
 					}else if (user instanceof Auditor){				// Auditor
 						userFrame = new AuditorFrame();
+						AuditorFrame.user = user;
 	//				}else if (user instanceof OperationManager){	// Operation Manager
 	//					userFrame = new OperationManagerFrame();
+	//					OperationManagerFrame.user = user;
 					}
 					
 					userFrame.setVisible(true);

@@ -13,6 +13,9 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.ImageIcon;
+
+import user.User;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -22,6 +25,7 @@ public class CustomerFrame extends JFrame {
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -160,6 +164,7 @@ public class CustomerFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFrame loginFrame = new MainFrame();
 				loginFrame.setVisible(true);
+				MainFrame.user = user;
 				dispose();
 			}
 		});
