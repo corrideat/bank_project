@@ -87,7 +87,7 @@ public abstract class Account implements Comparable<Account> {
 		}
 	}	
 
-	public Account(final AccountType at, final long number, final AccountHolder owner) {
+	protected Account(final AccountType at, final long number, final AccountHolder owner) {
 		this.m_atType = at;
 		this.m_dBalance = 0.0D;
 		this.m_bToBeClosed = false;

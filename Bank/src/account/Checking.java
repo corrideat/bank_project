@@ -5,7 +5,7 @@ import backend.GlobalParameters;
 
 public class Checking extends Account {
 
-	public Checking(long number, AccountHolder owner) {
+	protected Checking(long number, AccountHolder owner) {
 		super(AccountType.CHECKING, number, owner);
 		// TODO Auto-generated constructor stub
 	}

@@ -1,5 +1,10 @@
 package backend;
 
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.TreeSet;
+
 import user.User;
 import account.Account;
 import date.DateTime;
@@ -100,6 +105,20 @@ public final class RuntimeAPI {
 		} else {
 			return false;
 		}
+	}
+	
+	public static Map<account.AccountType, Collection<Long>> accountTypes() {
+		Map<account.AccountType, Collection<Long>> map = new EnumMap<account.AccountType, Collection<Long>>(account.AccountType.class);
+		for(Account a:Core.m_aaAccounts.values()) {
+			if (map.containsKey(a.m_atType)) {
+				map.get(a.m_atType).add(a.getAccountNumber());
+			} else {
+				TreeSet<Long> c = new TreeSet<Long>();
+				c.add(a.getAccountNumber());
+				map.put(a.m_atType, c);
+			}
+		}
+		return map;
 	}
 	
 }

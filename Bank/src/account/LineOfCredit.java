@@ -30,13 +30,13 @@ public class LineOfCredit extends InterestChargingAccount {
 		}
 	}
 	
-	protected void setLimit(final double newCreditLimit) throws InsufficientCreditAvailableException {
+	public void setLimit(final double newCreditLimit) throws InsufficientCreditAvailableException {
 		if (newCreditLimit < 0D) throw new IllegalArgumentException();
 		RuntimeAPI.adjustCap(this.m_dCreditLimit - newCreditLimit);
 		this.m_dCreditLimit = newCreditLimit;
 	}
 	
-	protected double getLimit() {
+	public double getLimit() {
 		return this.m_dCreditLimit;
 	
 	}

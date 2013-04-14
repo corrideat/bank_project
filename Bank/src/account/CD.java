@@ -42,7 +42,7 @@ public class CD extends InterestBearingAccount {
 	private boolean m_bHasMatured;
 	private short m_dDuration;	
 
-	public CD(CD_type type, long number, AccountHolder owner) {
+	protected CD(CD_type type, long number, AccountHolder owner) {
 		super(AccountType.CD, type.m_eRate, number, owner, true);
 		m_eType = type;
 		m_bHasMatured = false;

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import date.DateTime;
 import backend.Agent;
+import backend.Core;
 import backend.GlobalParameters;
 import backend.RuntimeAPI;
 import backend.InsufficientCreditAvailableException;
@@ -12,6 +13,7 @@ import account.Account;
 import account.AccountHolder;
 import account.AccountType;
 import account.AutomatedTransaction;
+import account.LineOfCredit;
 import account.Transaction;
 import account.TransactionValidationException;
 
@@ -85,10 +87,15 @@ public enum Privileges {
 
 	public Customer createCustomer(String firstName, String lastName, DateTime birthday, String username, String password, int ssn, AccountType type , Map<account.AccountParameters, Object> params) throws InsufficientCreditAvailableException {
 		if (m_esPermissions.contains(acos.createCustomer)) {
-			Customer c = new Customer(firstName, lastName, birthday, ssn, username, password);
-			Account a = type.open(c, params);
-			c.assignAccount(a);
-			return c;
+				if (RuntimeAPI.getUser(username) == null) {
+				Customer c = new Customer(firstName, lastName, birthday, ssn, username, password);
+				Account a = type.open(c, params);
+				c.assignAccount(a);
+				Core.m_auUsers.put(username, c);
+				return c;
+			} else {
+				throw new IllegalArgumentException();
+			}
 		} else throw new SecurityException();
 	}
 	
@@ -183,6 +190,54 @@ public enum Privileges {
 		if (m_esPermissions.contains(acos.setCap)) {
 			RuntimeAPI.forcefulAdjustCap(exactAmount-RuntimeAPI.getCap());
 		} else throw new SecurityException();
-	}	
+	}
 	
+	public AccountHolder getAccountHolder(final String username) {
+		if (m_esPermissions.contains(acos.seeBasicInformation)) {
+			return Core.m_auUsers.get(username);
+		} else throw new SecurityException();
+	}
+	
+	public String getAccountHolderFirstName(AccountHolder ah) {
+		if (m_esPermissions.contains(acos.seeBasicInformation)) {
+			return ah.getFirstName();
+		} else throw new SecurityException();
+	}
+
+	public String getAccountHolderLastName(AccountHolder ah) {
+		if (m_esPermissions.contains(acos.seeBasicInformation)) {
+			return ah.getLastName();
+		} else throw new SecurityException();
+	}
+	
+	public int getAccountHolderAge(AccountHolder ah) {
+		if (m_esPermissions.contains(acos.seeBasicInformation)) {
+			return ah.getAge();
+		} else throw new SecurityException();
+	}
+	
+	public Account[] getAccountHolderAccounts(AccountHolder ah) {
+		if (m_esPermissions.contains(acos.seeBasicInformation)) {
+			return ah.getAccounts();
+		} else throw new SecurityException();
+	}
+	
+	public double seeLOCLimit(LineOfCredit a, double limit) {
+		if (m_esPermissions.contains(acos.adjustLOCLimit)) {
+			return a.getLimit();
+		} else throw new SecurityException();
+	}
+	
+	public void adjustLOCLimit(LineOfCredit a, double limit) throws InsufficientCreditAvailableException {
+		if (m_esPermissions.contains(acos.adjustLOCLimit)) {
+			a.setLimit(limit);
+		} else throw new SecurityException();
+	}
+	
+	public Transaction[] listTransactions(Account a) throws InsufficientCreditAvailableException {
+		if (m_esPermissions.contains(acos.listTransactions)) {
+			return a.getTransactions();
+		} else throw new SecurityException();
+	}	
+
 }
