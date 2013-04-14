@@ -177,6 +177,7 @@ public abstract class Account implements Comparable<Account> {
 	
 	private final void securityTransactionValidator(Transaction t) {
 		// TODO: What if the account is closed but has a positive balance?
+		//System.out.println("\t\tSTV: "+this.m_dtClosed+"\t"+t.m_aTarget.hashCode()+"\t"+this.hashCode());
 		if (this.m_dtClosed != null || t.m_aTarget != this)
 				throw new SecurityException();
 		//if (t.m_agAgent != this) throw new SecurityException();
@@ -244,16 +245,10 @@ public abstract class Account implements Comparable<Account> {
 			this.m_dtLastUpdated=cutoff;
 			onUpdate(cutoff, pb);
 			
-			for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {
-				Account target = null;
-				if ((target = RuntimeAPI.getAccount(trans.m_lTargetAccount)) != null && !target.isClosed()) {
+			if (!this.isClosed()) {				
+				for(AutomatedTransaction trans:this.m_aatAutomatedTransactions) {					
 					try {
-						Transaction local = new Transaction(ms_agent, this, -Math.abs(trans.m_dAmount), String.format("Automated Transaction: %s", trans.m_sDescription));
-						Transaction outgoing = new Transaction(ms_agent, target, Math.abs(trans.m_dAmount), String.format("Automated Transaction from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
-						this.simulateTransaction(local);
-						target.simulateTransaction(outgoing);
-						this.forcePostTransaction(local);
-						target.forcePostTransaction(outgoing);
+						transfer(trans.m_lTargetAccount, trans.m_dAmount, String.format("Automated Transaction: %s", trans.m_sDescription));
 					} catch (TransactionValidationException | SecurityException e) {
 						// TODO: Should we charge customer a fee?
 						new InternalTransaction(0D, String.format("Failed Automated Transaction for %.02f: %s", -Math.abs(trans.m_dAmount), trans.m_sDescription));
@@ -261,11 +256,22 @@ public abstract class Account implements Comparable<Account> {
 					}
 				}
 			}
-			
 		}
 		
 		onUpdate();
 		
+	}
+	
+	final public void transfer(long destination, double amount, String description) throws TransactionValidationException {
+		Account target;
+		if ((target = RuntimeAPI.getAccount(destination)) != null && !target.isClosed()) {
+			Transaction local = new Transaction(ms_agent, this, -Math.abs(amount), description);
+			Transaction outgoing = new Transaction(ms_agent, target, Math.abs(amount), String.format("Payment from %s, %s", this.m_ahOwner.getLastName(), this.m_ahOwner.getFirstName()));
+			this.simulateTransaction(local);
+			target.simulateTransaction(outgoing);
+			this.forcePostTransaction(local);
+			target.forcePostTransaction(outgoing);
+		}
 	}
 	
 	abstract protected void onUpdate(DateTime cycle, PeriodBalance pb);

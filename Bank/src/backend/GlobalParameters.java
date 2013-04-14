@@ -1,7 +1,7 @@
 package backend;
 
 public enum GlobalParameters {
-	RATE_SAVINGS(0.05D, "Interest for Savings Accounts"),  // Marginal rage. 0.1 means 10% interest.
+	RATE_SAVINGS(0.01D, "Interest for Savings Accounts"),  // Marginal rage. 0.1 means 10% interest.
 	RATE_CD_6M(0.02D, "Interest for 6-Month CD"), 
 	RATE_CD_1Y(0.025D, "Interest for 1-Year CD"),
 	RATE_CD_2Y(0.028D, "Interest for 2-Year CD"),
@@ -20,8 +20,8 @@ public enum GlobalParameters {
 	LOC_MAXIMUM_BALANCE(0D, "LOC Maximum Balance"),
 	LOC_MINIMUM_PAYMENT(20D, "LOC Minimum Payment per Month"), // The bank asks you to monthly pay 10% of what you have spent 
 	LOC_MINIMUM_PAYMENT_FRACTION(0.2D, "LOC Minimum Payment Fraction per Month"),
-	LOC_LATE_PENALTY(-20D, "LOC Account Late Panalty Fee per Mont"), // Fees are negative
-	LOAN_LATE_PENALTY(-25D, "Loan Account Late Panalty Fee per Month"); // Fees are negative
+	LOC_LATE_PENALTY(-20D, "LOC Account Late Penalty Fee per Month"), // Fees are negative
+	LOAN_LATE_PENALTY(-25D, "Loan Account Late Penalty Fee per Month"); // Fees are negative
 	
 	private double m_dValue;
 	private final String m_sDescription;	

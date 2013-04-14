@@ -19,6 +19,7 @@ import account.AccountType;
 import account.AutomatedTransaction;
 import account.Transaction;
 import account.TransactionValidationException;
+import account.Loan;
 import account.CD.CD_type;
 import backend.Agent;
 import backend.GlobalParameters;
@@ -51,8 +52,7 @@ public class LoanTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		GlobalParameters.CD_MINIMUM_BALANCE.set(5000);
-		GlobalParameters.RATE_CD_6M.set(.12);
+		GlobalParameters.LOAN_LATE_PENALTY.set(-50);
 		
 		u = new Customer[2];
 		
@@ -77,16 +77,12 @@ public class LoanTest {
 			u[0].getAccounts()[0].postTransaction(t1);
 		}
 		
-		Transaction t2 = new Transaction(benefactor, u1a[0], 10000.00, "$10k Gift");
-
-		if (t2 != null) {
-			u[1].getAccounts()[0].postTransaction(t2);
-		}
+		System.out.println("Principal: "+(Double)params.get(AccountParameters.PRINCIPAL)+" / "+(Short)params.get(AccountParameters.INSTALLMENTS));
+		System.out.println("MMP: "+((Loan)u1a[0]).minimumMonthlyPayment);
 		
-		AutomatedTransaction at1 = new AutomatedTransaction(1000, u1a[0].getAccountNumber(), "Some payment");
+		AutomatedTransaction at1 = new AutomatedTransaction(((Loan)u1a[0]).minimumMonthlyPayment, u1a[0].getAccountNumber(), "Some payment");
 		
 		u0a[0].setupAutomatedTransaction(at1);		
-		
 		
 	}
 
@@ -99,19 +95,19 @@ public class LoanTest {
 		u[1].getAccounts()[0].close();
 	}
 	
-	@Test
+	/*@Test
 	public void initialBalance() {
-		Account[] u0a = u[0].getAccounts();
+		Account[] u1a = u[1].getAccounts();
 		
-		assertEquals(1000000.00, u0a[0].getBalance(), 0);
-	}
+		assertEquals(-9E4, u1a[0].getBalance(), 0);
+	}*/
 
 	@Test
-	public void cancelledAutomatedTransaction() {
+	public void automatedTransaction() {
 		Account[] u0a = u[0].getAccounts();
 		Account[] u1a = u[1].getAccounts();
 		
-		u0a[0].cancelAutomatedTransaction(0);
+		//u0a[0].cancelAutomatedTransaction(0);
 		
 		DateTime dt_orig = RuntimeAPI.now();		
 		RuntimeAPI.shiftTime(22594900L);
@@ -140,6 +136,7 @@ public class LoanTest {
 		if (t2 != null) {
 			try {
 				u1a[0].postTransaction(t2);
+				fail("Cannot debit from Loan");
 			} catch (TransactionValidationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

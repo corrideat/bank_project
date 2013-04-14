@@ -7,7 +7,7 @@ import backend.RuntimeAPI;
 
 public class Loan extends InterestChargingAccount {
 	final public double minimumMonthlyPayment;
-	final private double principal;
+	final public double principal;
 
 	public Loan(final double principal, final short installments, final double offset, final long number, final AccountHolder owner) throws InsufficientCreditAvailableException {
 		super(AccountType.LOAN, RuntimeAPI.InterestRate.LOAN, offset, number, owner, true);
@@ -17,7 +17,7 @@ public class Loan extends InterestChargingAccount {
 		RuntimeAPI.adjustCap(-principal);
 		new InternalTransaction(-principal, "Principal");
 		// Formula from: http://ncalculators.com/loan/installment-loan-payoff-calculator.htm
-		minimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D), -1D) * 100D)/100D;
+		minimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D*installments), -1D) * 100D)/100D;
 		this.principal = principal;
 	}
 
