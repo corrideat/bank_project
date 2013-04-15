@@ -53,7 +53,7 @@ public class MailboxFrame extends JFrame {
 		textPane.setEditable(false);
 		scrollPane.setViewportView(textPane);
 		
-		//textPane.setText(CustomerFrame.currentAccount.getStatements());
+		textPane.setText(CustomerFrame.user.m_mbMailbox.getMessages()[0].toString());
 	
 	}
 }

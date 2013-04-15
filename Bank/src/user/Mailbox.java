@@ -13,4 +13,8 @@ public class Mailbox {
 	final public void send(Message m) {
 		m_amMessages.add(m);
 	}
+	
+	final public Message[] getMessages() {
+		return m_amMessages.toArray(new Message[0]);
+	}
 }

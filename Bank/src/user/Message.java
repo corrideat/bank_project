@@ -12,4 +12,8 @@ public class Message {
 		m_sContent = content;
 		m_aAccountConcerned = account; // May be left blank
 	}
+	
+	public String toString() {
+		return m_sContent;
+	}
 }

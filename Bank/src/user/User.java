@@ -24,7 +24,7 @@ public abstract class User implements AccountHolder, Comparable<User> {
 	final DateTime m_dtRecordCreationDate;
 	final int m_iSSN;
 	final public Privileges m_ePrivileges;
-	final Mailbox m_mbMailbox;
+	public final Mailbox m_mbMailbox;
 	static Random random = new SecureRandom();
 	final private Authentication m_oAuthObject;
 	
