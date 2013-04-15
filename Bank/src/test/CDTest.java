@@ -54,8 +54,6 @@ public class CDTest {
 	@Before
 	public void setUp() throws Exception {
 		GlobalParameters.CD_MINIMUM_BALANCE.set(5000);
-		GlobalParameters.RATE_CD_6M.set(.12);
-		
 		u = new Customer[2];
 		
 		u[0] = accountManager.m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "Lasuchis1961", "fahg8VeeG5ai", 218656057, AccountType.CHECKING, null);

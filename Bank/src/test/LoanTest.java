@@ -52,7 +52,6 @@ public class LoanTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		GlobalParameters.RATE_LOAN.set(.24D);
 		GlobalParameters.LOAN_LATE_PENALTY.set(-50);
 		
 		u = new Customer[2];

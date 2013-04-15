@@ -58,7 +58,6 @@ public class SavingsTest {
 		u[0] = accountManager.m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "Lasuchis1961", "fahg8VeeG5ai", 218656057, AccountType.CHECKING, null);
 		u[1] = accountManager.m_ePrivileges.createCustomer("Deborah", "Sweeny", new DateTime(1973, 10, 11), "Begadd", "eiZaegh4ATh", 775442720, AccountType.SAVINGS, null);
 		
-		GlobalParameters.RATE_SAVINGS.set(.01);
 		GlobalParameters.SAVINGS_FEE.set(0);
 		GlobalParameters.SAVINGS_MINIMUM_GRATIS_BALANCE.set(0);
 		
@@ -117,8 +116,7 @@ public class SavingsTest {
 		
 		DateTime dt_orig = RuntimeAPI.now();		
 		RuntimeAPI.shiftTime(22594900L);
-		
-		GlobalParameters.RATE_SAVINGS.set(.02);
+
 		RuntimeAPI.shiftTime(30000000L);
 		DateTime dt_final = RuntimeAPI.now();
 		
