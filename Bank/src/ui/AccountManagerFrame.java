@@ -14,7 +14,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JSeparator;
 
+import backend.InsufficientCreditAvailableException;
+
 import account.Account;
+import account.LineOfCredit;
 
 import user.Customer;
 import user.User;
@@ -94,9 +97,11 @@ public class AccountManagerFrame extends JFrame {
 		contentPane.add(btnNewCustomer);
 		
 		loanCap = new JTextField();
+		loanCap.setEditable(false);
 		loanCap.setBounds(241, 219, 79, 20);
 		contentPane.add(loanCap);
 		loanCap.setColumns(10);
+		loanCap.setText(backend.Core.currentCap+"");
 		
 		JLabel lblLoanLimit = new JLabel("Loan Cap:");
 		lblLoanLimit.setBounds(163, 222, 56, 14);
@@ -108,6 +113,21 @@ public class AccountManagerFrame extends JFrame {
 		limit.setColumns(10);
 		
 		JButton btnChangeLimit = new JButton("Change");
+		btnChangeLimit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (currentAccount instanceof LineOfCredit){
+					try {
+						((LineOfCredit) currentAccount).setLimit(Double.parseDouble(limit.getText()));
+					} catch (NumberFormatException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InsufficientCreditAvailableException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		btnChangeLimit.setBounds(214, 172, 89, 23);
 		contentPane.add(btnChangeLimit);
 		
@@ -160,6 +180,11 @@ public class AccountManagerFrame extends JFrame {
 				currentAccount = (Account)accounts.getSelectedItem();
 				SSN = user.m_ePrivileges.seeSSN((Customer)customer.getSelectedItem());
 				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + "SSN: " + SSN + "\n" + currentAccount.toString2());
+				if (currentAccount instanceof LineOfCredit){
+					limit.setText(((LineOfCredit) currentAccount).getLimit()+"");
+				}else{
+					limit.setText("");
+				}
 			}
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -171,6 +196,11 @@ public class AccountManagerFrame extends JFrame {
 				currentAccount = (Account)accounts.getSelectedItem();
 				SSN = user.m_ePrivileges.seeSSN((Customer)customer.getSelectedItem());
 				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + "SSN: " + SSN + "\n" + currentAccount.toString2());
+				if (currentAccount instanceof LineOfCredit){
+					limit.setText(((LineOfCredit) currentAccount).getLimit()+"");
+				}else{
+					limit.setText("");
+				}
 			}
 		});
 		accounts.setBounds(86, 46, 139, 20);

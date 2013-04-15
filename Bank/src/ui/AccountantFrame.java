@@ -17,11 +17,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 
 import user.User;
+import backend.*;
 
 public class AccountantFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField loanCap;
 	public static User user;
 
 	/**
@@ -46,7 +47,7 @@ public class AccountantFrame extends JFrame {
 	public AccountantFrame() {
 		setTitle("Accountant");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 303, 340);
+		setBounds(100, 100, 303, 264);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -56,7 +57,40 @@ public class AccountantFrame extends JFrame {
 		lblAccountType.setBounds(13, 14, 112, 14);
 		contentPane.add(lblAccountType);
 		
-		JComboBox<String> comboBox = new JComboBox();
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(13, 66, 258, 67);
+		contentPane.add(scrollPane);
+		
+		final JTextPane textPane = new JTextPane();
+		scrollPane.setViewportView(textPane);
+		
+		final JComboBox<String> comboBox = new JComboBox();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String output = "";
+				if (comboBox.getSelectedItem().equals("All")){
+					output += "Total: " + backend.Core.TotalBankBalance() + "\n";
+				}else if (comboBox.getSelectedItem().equals("Saving")){
+					output += "Total: " + backend.Core.SavingsBalanceSum() + "\n";
+					output += "Average: " + backend.Core.AllSavingsBalanceAvg() + "\n";
+				}else if (comboBox.getSelectedItem().equals("CD")){
+					output += "Total: " + backend.Core.CDBalanceSum() + "\n";
+					output += "Average: " + backend.Core.AllCDBalanceAvg() + "\n";
+				}else if (comboBox.getSelectedItem().equals("Loan")){
+					output += "Total: " + backend.Core.LoanBalanceSum() + "\n";
+					output += "Average: " + backend.Core.AllLoanBalanceAvg() + "\n";
+				}else if (comboBox.getSelectedItem().equals("Checking")){
+					output += "Total: " + backend.Core.CheckingBalanceSum() + "\n";
+					output += "Average: " + backend.Core.AllCheckingBalanceAvg() + "\n";
+				}else if (comboBox.getSelectedItem().equals("LOC")){
+					output += "Total Balances: " + backend.Core.LOCBalanceSum() + "\n";
+					output += "Total Limits: " + backend.Core.SumLOCLimits() + "\n";
+					output += "Average: " + backend.Core.AllLOCBalanceAvg() + "\n";
+				}
+				
+				textPane.setText(output);	
+			}
+		});
 		comboBox.setBounds(132, 11, 139, 20);
 		contentPane.add(comboBox);
 		comboBox.addItem("All");
@@ -71,14 +105,6 @@ public class AccountantFrame extends JFrame {
 		lblAccountStatistics.setBounds(13, 41, 106, 14);
 		contentPane.add(lblAccountStatistics);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(13, 61, 260, 154);
-		contentPane.add(scrollPane);
-		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
-		
 		JButton button = new JButton("Logout");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,28 +114,42 @@ public class AccountantFrame extends JFrame {
 				dispose();
 			}
 		});
-		button.setBounds(99, 275, 89, 23);
+		button.setBounds(102, 193, 89, 23);
 		contentPane.add(button);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(-17, 226, 316, 2);
+		separator.setBounds(-14, 144, 316, 2);
 		contentPane.add(separator);
 		
 		JLabel lblLoanCap = new JLabel("Loan Cap:");
-		lblLoanCap.setBounds(21, 239, 74, 14);
+		lblLoanCap.setBounds(24, 157, 74, 14);
 		contentPane.add(lblLoanCap);
 		
-		textField = new JTextField();
-		textField.setBounds(87, 236, 101, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		loanCap = new JTextField();
+		loanCap.setBounds(90, 154, 101, 20);
+		contentPane.add(loanCap);
+		loanCap.setColumns(10);
+		loanCap.setText(backend.Core.currentCap+"");
 		
 		JButton btnSet = new JButton("Set");
-		btnSet.setBounds(200, 235, 71, 23);
+		btnSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					backend.Core.currentCap = Double.parseDouble(loanCap.getText());
+					loanCap.setText(backend.Core.currentCap+"");
+				} catch (NumberFormatException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnSet.setBounds(203, 153, 71, 23);
 		contentPane.add(btnSet);
 		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(-17, 264, 316, 2);
+		separator_1.setBounds(-14, 182, 316, 2);
 		contentPane.add(separator_1);
+		
+		
 	}
 }
