@@ -19,6 +19,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 
+import backend.Agent;
+import backend.GlobalParameters;
+
 import date.DateTime;
 
 import account.Account;
@@ -38,7 +41,7 @@ public class TellerFrame extends JFrame {
 	private JTextField autoAmount;
 	public static User user;
 	public static Account currentAccount;
-	private JTextField textField;
+	private JTextField description;
 
 	/**
 	 * Launch the application.
@@ -63,7 +66,7 @@ public class TellerFrame extends JFrame {
 		setTitle("Teller");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 248, 434);
+		setBounds(100, 100, 238, 406);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -93,10 +96,6 @@ public class TellerFrame extends JFrame {
 		depositAmount.setBounds(10, 194, 91, 20);
 		contentPane.add(depositAmount);
 		
-		JRadioButton rdbtnWavieServiceCharge = new JRadioButton("Waive Service Charge?");
-		rdbtnWavieServiceCharge.setBounds(32, 343, 186, 23);
-		contentPane.add(rdbtnWavieServiceCharge);
-		
 		JLabel lblAutomaticTransaction = new JLabel("Automatic Transaction");
 		lblAutomaticTransaction.setBounds(10, 225, 156, 14);
 		contentPane.add(lblAutomaticTransaction);
@@ -116,7 +115,7 @@ public class TellerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnNewButton.setBounds(80, 373, 89, 23);
+		btnNewButton.setBounds(128, 343, 91, 23);
 		contentPane.add(btnNewButton);
 		
 		JSeparator separator = new JSeparator();
@@ -191,6 +190,10 @@ public class TellerFrame extends JFrame {
 		accounts.setBounds(79, 39, 139, 20);
 		contentPane.add(accounts);
 		
+		final JComboBox<Account> autoDestination = new JComboBox<Account>();
+		autoDestination.setBounds(89, 250, 133, 20);
+		contentPane.add(autoDestination);
+		
 		JButton btnDeposit = new JButton("Deposit");
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -223,24 +226,44 @@ public class TellerFrame extends JFrame {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//user.m_ePrivileges.setupAutomaticTransaction(accounts.getSelectedItem(),autoDestination.getSelectedItem(),description.getText());
-				
+				try {
+					user.m_ePrivileges.setupAutomaticTransaction((Account)accounts.getSelectedItem(), ((Account)autoDestination.getSelectedItem()).getAccountNumber(),description.getText(), Double.parseDouble(autoAmount.getText()));
+				} catch (NumberFormatException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnAdd.setBounds(127, 311, 91, 23);
 		contentPane.add(btnAdd);
 		
-		textField = new JTextField();
-		textField.setBounds(89, 281, 133, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		description = new JTextField();
+		description.setBounds(89, 281, 133, 20);
+		contentPane.add(description);
+		description.setColumns(10);
 		
-		final JComboBox<Account> autoDestination = new JComboBox<Account>();
-		autoDestination.setBounds(89, 250, 133, 20);
-		contentPane.add(autoDestination);
+		
 		
 		JLabel lblDescription = new JLabel("Description:");
 		lblDescription.setBounds(10, 284, 97, 14);
 		contentPane.add(lblDescription);
+		
+		JButton btnNewButton_1 = new JButton("Service Fee");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					double fee = GlobalParameters.TELLER_INTERACTION_FEE.get();
+					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+					agent.m_ePrivileges.serviceFee(agent,currentAccount,-fee);
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+					
+				} catch (TransactionValidationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnNewButton_1.setBounds(10, 343, 108, 23);
+		contentPane.add(btnNewButton_1);
 	}
 }

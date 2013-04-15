@@ -78,6 +78,14 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 	
+	public void serviceFee(Agent ag, Account a, double amount) throws TransactionValidationException {
+		if (m_esPermissions.contains(acos.withdraw)) {
+			if (amount < 0) throw new IllegalArgumentException();	
+			Transaction t = new Transaction(ag, a, -amount, "Service Fee");		
+			a.postTransaction(t);
+		} else throw new SecurityException();
+	}
+	
 	public void transfer(Agent ag, Account origin, long destination, double amount) throws TransactionValidationException {
 		if (m_esPermissions.contains(acos.deposit) && m_esPermissions.contains(acos.withdraw)) {
 			if (amount < 0) throw new IllegalArgumentException();

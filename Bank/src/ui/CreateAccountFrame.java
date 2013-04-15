@@ -155,7 +155,7 @@ public class CreateAccountFrame extends JFrame {
 				try {
 					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
 				} catch (InsufficientCreditAvailableException e1) {
-					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure their is sufficient creedit.", "Account Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure their is sufficient credit.", "Account Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1){
 					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure your inputs are correct.", "Account Error", JOptionPane.ERROR_MESSAGE);
 				}

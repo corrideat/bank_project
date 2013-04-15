@@ -14,18 +14,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JSeparator;
 
+import account.Account;
+
+import user.Customer;
 import user.User;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class AccountManagerFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField loanCap;
+	private JTextField limit;
 	public static User user;
+	public static Account currentAccount;
+	private int SSN;
 
 	/**
 	 * Launch the application.
@@ -56,18 +62,10 @@ public class AccountManagerFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		textField = new JTextField();
-		textField.setBounds(86, 12, 139, 20);
-		textField.setColumns(10);
-		contentPane.add(textField);
-		
-		JLabel lblCustomer = new JLabel("Customer #:");
+		JLabel lblCustomer = new JLabel("Customer:");
 		lblCustomer.setBounds(10, 15, 85, 14);
 		contentPane.add(lblCustomer);
 		
-		JButton button = new JButton("Access");
-		button.setBounds(235, 11, 85, 23);
-		contentPane.add(button);
 		
 		JLabel label_1 = new JLabel("Account Information");
 		label_1.setBounds(10, 77, 152, 14);
@@ -77,45 +75,41 @@ public class AccountManagerFrame extends JFrame {
 		label_2.setBounds(10, 49, 66, 14);
 		contentPane.add(label_2);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(86, 46, 139, 20);
-		contentPane.add(comboBox);
-		
-		JButton btnNewButton = new JButton("New");
-		btnNewButton.setBounds(235, 45, 85, 23);
-		contentPane.add(btnNewButton);
+		JButton btnNewAccount = new JButton("New");
+		btnNewAccount.setBounds(235, 45, 85, 23);
+		contentPane.add(btnNewAccount);
 		
 		JSeparator separator = new JSeparator();
 		separator.setBounds(0, 203, 352, 2);
 		contentPane.add(separator);
 		
-		JButton btnNewButton_1 = new JButton("New Customer");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton btnNewCustomer = new JButton("New Customer");
+		btnNewCustomer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CreateCustomerFrame userFrame = new CreateCustomerFrame();
 				userFrame.setVisible(true);
 			}
 		});
-		btnNewButton_1.setBounds(10, 218, 131, 23);
-		contentPane.add(btnNewButton_1);
+		btnNewCustomer.setBounds(10, 218, 131, 23);
+		contentPane.add(btnNewCustomer);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(241, 219, 79, 20);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
+		loanCap = new JTextField();
+		loanCap.setBounds(241, 219, 79, 20);
+		contentPane.add(loanCap);
+		loanCap.setColumns(10);
 		
 		JLabel lblLoanLimit = new JLabel("Loan Cap:");
 		lblLoanLimit.setBounds(163, 222, 56, 14);
 		contentPane.add(lblLoanLimit);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(108, 173, 86, 20);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
+		limit = new JTextField();
+		limit.setBounds(108, 173, 86, 20);
+		contentPane.add(limit);
+		limit.setColumns(10);
 		
-		JButton btnChange = new JButton("Change");
-		btnChange.setBounds(214, 172, 89, 23);
-		contentPane.add(btnChange);
+		JButton btnChangeLimit = new JButton("Change");
+		btnChangeLimit.setBounds(214, 172, 89, 23);
+		contentPane.add(btnChangeLimit);
 		
 		JLabel lblCreditLimit = new JLabel("Credit Limit:");
 		lblCreditLimit.setBounds(32, 176, 89, 14);
@@ -141,8 +135,47 @@ public class AccountManagerFrame extends JFrame {
 		scrollPane.setBounds(10, 96, 310, 66);
 		contentPane.add(scrollPane);
 		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
+		final JTextPane accountPane = new JTextPane();
+		accountPane.setEditable(false);
+		scrollPane.setViewportView(accountPane);
+		
+		final JComboBox<User> customer = new JComboBox<User>();
+		customer.setBounds(86, 12, 139, 20);
+		contentPane.add(customer);
+		for (int i =0; i < backend.Core.m_auUsers.values().toArray().length; i++){
+			if (backend.Core.m_auUsers.values().toArray()[i] instanceof Customer)	
+				customer.addItem((User)backend.Core.m_auUsers.values().toArray()[i]);
+		}
+		
+		final JComboBox<Account> accounts = new JComboBox<Account>();
+		accounts.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent arg0) {						
+				accounts.removeAllItems();
+				
+				for (int i = 0; i < ((Customer)customer.getSelectedItem()).getAccounts().length; i++){
+					accounts.addItem(((Customer)customer.getSelectedItem()).getAccounts()[i]);
+				}
+				
+				currentAccount = (Account)accounts.getSelectedItem();
+				SSN = user.m_ePrivileges.seeSSN((Customer)customer.getSelectedItem());
+				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + "SSN: " + SSN + "\n" + currentAccount.toString2());
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				
+				for (int i = 0; i < ((Customer)customer.getSelectedItem()).getAccounts().length; i++){
+					accounts.addItem(((Customer)customer.getSelectedItem()).getAccounts()[i]);
+				}
+				
+				currentAccount = (Account)accounts.getSelectedItem();
+				SSN = user.m_ePrivileges.seeSSN((Customer)customer.getSelectedItem());
+				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + "SSN: " + SSN + "\n" + currentAccount.toString2());
+			}
+		});
+		accounts.setBounds(86, 46, 139, 20);
+		contentPane.add(accounts);
+		
+		
 	}
 }
