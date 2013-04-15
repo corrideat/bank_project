@@ -166,6 +166,46 @@ public class Core {
 	}
 		return sum;
 	}	
+	
+	public static String FormatedAllCheckingBalanceAvg(){
+		return "The average of all checking account balances is " + Core.AllCheckingBalanceAvg();
+	}
+	public static String FormatedAllSavingsBalanceAvg(){
+		return "The average of all savings account balances is " + Core.AllSavingsBalanceAvg();
+	}
+	public static String FormatedAllCDBalanceAvg(){
+		return "The average of all CD account balances is " + Core.AllCDBalanceAvg();
+	}
+	public static String FormatedAllCheckingLoanAvg(){
+		return "The average of all loan account balances is " + Core.AllLoanBalanceAvg();
+	}
+	public static String FormatedAllLOCBalanceAvg(){
+
+		return "The average of all line of credit account balances is " + Core.AllLOCBalanceAvg();
+	}
+
+	public static String FormatedCheckingBalanceSum(){
+		return "The sum of all checking account balances is " + Core.CheckingBalanceSum();
+	}
+	public static String FormatedSavingsBalanceSum(){
+		return "The sum of all savings account balances is " + Core.SavingsBalanceSum();
+	}
+	public static String FormatedCDBalanceSum(){
+		return "The sum of all CD account balances is " + Core.CDBalanceSum();
+	}	
+	public static String FormatedLoanBalanceSum(){
+		return "The sum of all loan account balances is " + Core.LoanBalanceSum();
+	}	
+	public static String FormatedLOCBalanceSum(){
+		return "The sum of all line of credit account balances is " + Core.LOCBalanceSum();
+	}	
+
+	public static String FormatedLOCLimitBalanceSum(){
+		return "The sum of all line of credit account limits is " + Core.SumLOCLimits();
+	}
+	public static String FormatedEntireBankBalance(){
+		return "The sum of all the bank's account balances is " + Core.TotalBankBalance();
+	}
 
 	public static void save() {
 
@@ -181,6 +221,8 @@ public class Core {
 			a.update();
 		}
 	}
+	
+	
 
 }
 	
