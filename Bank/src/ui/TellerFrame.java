@@ -39,7 +39,7 @@ public class TellerFrame extends JFrame {
 	private JTextField withdrawalAmount;
 	private JTextField depositAmount;
 	private JTextField autoAmount;
-	public static User user;
+	private User user;
 	public static Account currentAccount;
 	private JTextField description;
 
@@ -50,7 +50,7 @@ public class TellerFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TellerFrame frame = new TellerFrame();
+					TellerFrame frame = new TellerFrame(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -61,8 +61,10 @@ public class TellerFrame extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @param user 
 	 */
-	public TellerFrame() {
+	public TellerFrame(final User user) {
+		this.user = user;
 		setTitle("Teller");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

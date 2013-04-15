@@ -23,7 +23,7 @@ public class AccountantFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField loanCap;
-	public static User user;
+	private User user;
 
 	/**
 	 * Launch the application.
@@ -32,7 +32,7 @@ public class AccountantFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AccountantFrame frame = new AccountantFrame();
+					AccountantFrame frame = new AccountantFrame(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,7 +44,8 @@ public class AccountantFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AccountantFrame() {
+	public AccountantFrame(final User user) {
+		this.user = user;
 		setTitle("Accountant");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 303, 264);
@@ -129,14 +130,14 @@ public class AccountantFrame extends JFrame {
 		loanCap.setBounds(90, 154, 101, 20);
 		contentPane.add(loanCap);
 		loanCap.setColumns(10);
-		loanCap.setText(backend.Core.currentCap+"");
+		loanCap.setText(String.valueOf(user.m_ePrivileges.seeCap()));
 		
 		JButton btnSet = new JButton("Set");
 		btnSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					backend.Core.currentCap = Double.parseDouble(loanCap.getText());
-					loanCap.setText(backend.Core.currentCap+"");
+					user.m_ePrivileges.setCap(Double.parseDouble(loanCap.getText()));
+					loanCap.setText(String.valueOf(user.m_ePrivileges.seeCap()));
 				} catch (NumberFormatException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

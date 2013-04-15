@@ -85,12 +85,12 @@ public class MainFrame extends JFrame {
 				} else if (!user.authenticate(username, pass)) {
 					JOptionPane.showMessageDialog(null, "Login unsuccessful. Wrong password.", "Login Error", JOptionPane.ERROR_MESSAGE);
 				} else {
-				
-					JFrame userFrame = new AccountantFrame();
 					
-					if (user instanceof Teller){					// Teller
-						userFrame = new TellerFrame();
-						TellerFrame.user = user;
+					JFrame userFrame;
+				
+					if (user instanceof Teller) {					// Teller
+						userFrame = new TellerFrame(user);
+//						TellerFrame.user = user;
 					}else if (user instanceof Customer){			// Customer
 						CustomerFrame.user = user;
 						userFrame = new CustomerFrame();
@@ -101,14 +101,15 @@ public class MainFrame extends JFrame {
 						userFrame = new AccountManagerFrame();
 						AccountManagerFrame.user = user;
 					}else if (user instanceof Accountant){			// Accountant
-						userFrame = new AccountantFrame();
-						AccountantFrame.user = user;
+						userFrame = new AccountantFrame(user);
 					}else if (user instanceof Auditor){				// Auditor
 						userFrame = new AuditorFrame();
 						AuditorFrame.user = user;
 					}else if (user instanceof OperationManager){	// Operation Manager
 						userFrame = new OperationManagerFrame();
 						OperationManagerFrame.user = user;
+					} else {
+						return;
 					}
 					
 					userFrame.setVisible(true);
