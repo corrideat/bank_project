@@ -23,7 +23,7 @@ public class AccountantFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField loanCap;
-	private User user;
+	public static User user;
 
 	/**
 	 * Launch the application.
@@ -32,7 +32,7 @@ public class AccountantFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AccountantFrame frame = new AccountantFrame(null);
+					AccountantFrame frame = new AccountantFrame();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,8 +44,8 @@ public class AccountantFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AccountantFrame(final User user) {
-		this.user = user;
+	public AccountantFrame() {
+		
 		setTitle("Accountant");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 303, 264);

@@ -97,6 +97,7 @@ public class AccountManagerFrame extends JFrame {
 		btnNewCustomer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CreateCustomerFrame userFrame = new CreateCustomerFrame();
+				CreateCustomerFrame.user = user;
 				userFrame.setVisible(true);
 			}
 		});
@@ -212,6 +213,19 @@ public class AccountManagerFrame extends JFrame {
 		});
 		accounts.setBounds(86, 46, 139, 20);
 		contentPane.add(accounts);
+		
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				customer.removeAllItems();
+				for (int i =0; i < backend.Core.m_auUsers.values().toArray().length; i++){
+					if (backend.Core.m_auUsers.values().toArray()[i] instanceof Customer)	
+						customer.addItem((User)backend.Core.m_auUsers.values().toArray()[i]);
+				}
+			}
+		});
+		btnRefresh.setBounds(235, 11, 89, 23);
+		contentPane.add(btnRefresh);
 		
 		
 	}

@@ -89,8 +89,8 @@ public class MainFrame extends JFrame {
 					JFrame userFrame;
 				
 					if (user instanceof Teller) {					// Teller
-						userFrame = new TellerFrame(user);
-//						TellerFrame.user = user;
+						userFrame = new TellerFrame();
+						TellerFrame.user = user;
 					}else if (user instanceof Customer){			// Customer
 						CustomerFrame.user = user;
 						userFrame = new CustomerFrame();
@@ -101,7 +101,7 @@ public class MainFrame extends JFrame {
 						userFrame = new AccountManagerFrame();
 						AccountManagerFrame.user = user;
 					}else if (user instanceof Accountant){			// Accountant
-						userFrame = new AccountantFrame(user);
+						userFrame = new AccountantFrame();
 					}else if (user instanceof Auditor){				// Auditor
 						userFrame = new AuditorFrame();
 						AuditorFrame.user = user;

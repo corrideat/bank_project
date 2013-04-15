@@ -280,6 +280,13 @@ public class CustomerFrame extends JFrame {
 		
 		
 		JButton btnNewButton = new JButton();
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MailboxFrame mail = new MailboxFrame();
+				MailboxFrame.user = user;
+				mail.setVisible(true);
+			}
+		});
 		btnNewButton.setIcon(new ImageIcon(CustomerFrame.class.getResource("/com/sun/java/swing/plaf/windows/icons/NewFolder.gif")));
 		btnNewButton.setBounds(236, 11, 36, 23);
 		contentPane.add(btnNewButton);

@@ -28,6 +28,7 @@ import account.CD.CD_type;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.EnumMap;
+import java.util.Random;
 
 public class CreateAccountFrame extends JFrame {
 
@@ -82,7 +83,7 @@ public class CreateAccountFrame extends JFrame {
 		accountTypeBox.addItem(account.AccountType.CD);
 		accountTypeBox.addItem(account.AccountType.LOC);
 		
-		JLabel lblPrincipal = new JLabel("Principal:");
+		JLabel lblPrincipal = new JLabel("Balance/Principle:");
 		lblPrincipal.setBounds(10, 42, 121, 14);
 		contentPane.add(lblPrincipal);
 		
@@ -166,7 +167,9 @@ public class CreateAccountFrame extends JFrame {
 				params.put(AccountParameters.CD_TYPE, (account.CD.CD_type)lengthBox.getSelectedItem());
 				
 				try {
-					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
+					Random generator = new Random();
+					int rand = generator.nextInt();
+					backend.Core.m_aaAccounts.put((long)rand, user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params));
 					JOptionPane.showMessageDialog(null, "Creation successful.", "Account Creation", JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				} catch (InsufficientCreditAvailableException e1) {

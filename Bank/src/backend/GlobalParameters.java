@@ -49,4 +49,8 @@ public enum GlobalParameters {
 	public void set(final Double v) {
 		m_dValue = v.doubleValue();
 	}
+	
+	public String toString(){
+		return this.describe();
+	}
 }

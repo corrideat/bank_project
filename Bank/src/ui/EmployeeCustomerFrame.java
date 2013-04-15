@@ -70,20 +70,20 @@ public class EmployeeCustomerFrame extends JFrame {
 				JFrame userFrame = new AccountantFrame();
 				
 				if (user instanceof Teller){					// Teller
-					userFrame = new TellerFrame();
 					TellerFrame.user = user;
+					userFrame = new TellerFrame();					
 				}else if (user instanceof AccountManager){		// Account Manager
-					userFrame = new AccountManagerFrame();
 					AccountManagerFrame.user = user;
+					userFrame = new AccountManagerFrame();
 				}else if (user instanceof Accountant){			// Accountant
-					userFrame = new AccountantFrame();
 					AccountantFrame.user = user;
+					userFrame = new AccountantFrame();
 				}else if (user instanceof Auditor){				// Auditor
-					userFrame = new AuditorFrame();
 					AuditorFrame.user = user;
+					userFrame = new AuditorFrame();
 				}else if (user instanceof OperationManager){	// Operation Manager
-					userFrame = new OperationManagerFrame();
 					OperationManagerFrame.user = user;
+					userFrame = new OperationManagerFrame();
 				}
 				
 				userFrame.setVisible(true);
