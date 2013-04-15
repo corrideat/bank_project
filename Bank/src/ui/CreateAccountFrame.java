@@ -16,18 +16,22 @@ import javax.swing.SwingConstants;
 import javax.swing.JEditorPane;
 import javax.swing.JButton;
 
+import backend.InsufficientCreditAvailableException;
+
 import account.Account;
+import account.AccountParameters;
 import account.AccountType;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.EnumMap;
 
 public class CreateAccountFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField balancePrinciple;
+	private JTextField principal;
 	public static User user;
-	private JTextField interestRate;
+	private JTextField offset;
 	private JTextField installments;
 	private JTextField limit;
 	private JTextField length;
@@ -66,33 +70,33 @@ public class CreateAccountFrame extends JFrame {
 		lblAccountType.setBounds(10, 11, 87, 14);
 		contentPane.add(lblAccountType);
 		
-		final JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(141, 8, 101, 20);
-		contentPane.add(comboBox);
+		final JComboBox accountTypeBox = new JComboBox();
+		accountTypeBox.setBounds(141, 8, 101, 20);
+		contentPane.add(accountTypeBox);
 		
-		JLabel lblBalance = new JLabel("Balance/Prinicple:");
-		lblBalance.setBounds(10, 42, 121, 14);
-		contentPane.add(lblBalance);
+		JLabel lblPrincipal = new JLabel("Principal:");
+		lblPrincipal.setBounds(10, 42, 121, 14);
+		contentPane.add(lblPrincipal);
 		
-		balancePrinciple = new JTextField();
-		balancePrinciple.setText("0.00");
-		balancePrinciple.setBounds(141, 39, 101, 20);
-		contentPane.add(balancePrinciple);
-		balancePrinciple.setColumns(10);
+		principal = new JTextField();
+		principal.setText("0.00");
+		principal.setBounds(141, 39, 101, 20);
+		contentPane.add(principal);
+		principal.setColumns(10);
 		
-		interestRate = new JTextField();
-		interestRate.setBounds(141, 70, 101, 20);
-		contentPane.add(interestRate);
-		interestRate.setColumns(10);
+		offset = new JTextField();
+		offset.setBounds(141, 70, 101, 20);
+		contentPane.add(offset);
+		offset.setColumns(10);
 		
 		installments = new JTextField();
 		installments.setBounds(141, 101, 101, 20);
 		contentPane.add(installments);
 		installments.setColumns(10);
 		
-		JLabel lblInterestRate = new JLabel("Interest Rate:");
-		lblInterestRate.setBounds(10, 73, 121, 14);
-		contentPane.add(lblInterestRate);
+		JLabel lblOffset = new JLabel("Interest Rate Offset:");
+		lblOffset.setBounds(10, 73, 121, 14);
+		contentPane.add(lblOffset);
 		
 		JLabel lblInstallments = new JLabel("Installments:");
 		lblInstallments.setBounds(10, 104, 101, 14);
@@ -103,10 +107,9 @@ public class CreateAccountFrame extends JFrame {
 		contentPane.add(limit);
 		limit.setColumns(10);
 		
-		length = new JTextField();
-		length.setBounds(141, 163, 101, 20);
-		contentPane.add(length);
-		length.setColumns(10);
+		final JComboBox lengthBox = new JComboBox();
+		lengthBox.setBounds(141, 163, 101, 20);
+		contentPane.add(lengthBox);
 		
 		JLabel lblLimit = new JLabel("Limit:");
 		lblLimit.setBounds(10, 135, 72, 14);
@@ -117,7 +120,7 @@ public class CreateAccountFrame extends JFrame {
 		contentPane.add(lblLength);
 		
 		JEditorPane dtrpnOnlyTheField = new JEditorPane();
-		dtrpnOnlyTheField.setText("Only the fields pertainingto your account type will be used.");
+		dtrpnOnlyTheField.setText("Only the fields pertaining to your account type will be used.");
 		dtrpnOnlyTheField.setBounds(261, 8, 142, 54);
 		contentPane.add(dtrpnOnlyTheField);
 		
@@ -140,14 +143,17 @@ public class CreateAccountFrame extends JFrame {
 		JButton btnCreateAccount = new JButton("Create Account");
 		btnCreateAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// this is where the accounts need to be made the variables are as follows:
-				// balancePrinciple, interestRate, installments, limit, length
-				// use the .getText(variable) method and change it into doubles if you need to [Double.parseDouble(textField.getText())]
+				// I'm assuming each box gives an object of the correct type. 
+				EnumMap<AccountParameters, Object> params = new EnumMap<AccountParameters, Object>(AccountParameters.class);
+				params.put(AccountParameters.INSTALLMENTS, Double.parseDouble(installments.getText()));
+				params.put(AccountParameters.OFFSET, Double.parseDouble(offset.getText()));
+				params.put(AccountParameters.PRINCIPAL, Double.parseDouble(principal.getText()));
+				params.put(AccountParameters.CD_TYPE, (account.CD.CD_type)lengthBox.getSelectedItem());
 				
-				if ((Object)comboBox.getSelectedItem() == AccountType.SAVINGS){
-						//make saving account
-				}else if(){
-					//etc. etc.
+				try {
+					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
+				} catch (InsufficientCreditAvailableException e1) {
+					// This should be the error window
 				}
 			}
 		});
