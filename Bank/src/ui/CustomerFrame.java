@@ -20,6 +20,7 @@ import date.DateTime;
 import backend.RuntimeAPI;
 
 import account.Account;
+import account.CD;
 import account.Transaction;
 import account.TransactionValidationException;
 
@@ -30,6 +31,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class CustomerFrame extends JFrame {
 
@@ -201,7 +206,14 @@ public class CustomerFrame extends JFrame {
 					}
 					textPane_1.setText(history);
 				} catch (NumberFormatException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "Transfer unsuccessful. Please make sure your input is correct.", "Transfer Error", JOptionPane.ERROR_MESSAGE);
+					
+					textPane.setText(currentAccount.toString2());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
 					e1.printStackTrace();
 				} catch (TransactionValidationException e1) {
 					// TODO Auto-generated catch block
@@ -217,26 +229,30 @@ public class CustomerFrame extends JFrame {
 		lblMarkFradulentTransaction.setBounds(10, 349, 190, 14);
 		contentPane.add(lblMarkFradulentTransaction);
 		
-		final JComboBox comboBox_3 = new JComboBox();
-		comboBox_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JComboBox<Transaction> cb = (JComboBox)e.getSource();
-				for (int i =0; i < currentAccount.getTransactions().length; i++){
-					cb.addItem(currentAccount.getTransactions()[i]);
+		final JComboBox<Transaction> comboBox_3 = new JComboBox<Transaction>();
+		comboBox_3.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				//comboBox_3.removeAllItems();
+				for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+					comboBox_3.addItem(currentAccount.getTransactions()[i]);
 				}
 			}
 		});
-		comboBox_3.setBounds(10, 372, 154, 20);
+		comboBox_3.setBounds(10, 372, 262, 20);
 		contentPane.add(comboBox_3);
-		
+//		for (int i =0; i < currentAccount.getTransactions().length; i++){
+//			comboBox_3.addItem(currentAccount.getTransactions()[i]);
+//		}
+//		
 		
 		JButton btnMark = new JButton("Mark");
 		btnMark.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				user.m_ePrivileges.reportedFraudulent((Transaction)comboBox_3.getSelectedItem());
+				((Transaction)comboBox_3.getSelectedItem()).flagAsFraudulent();
 			}
 		});
-		btnMark.setBounds(183, 371, 89, 23);
+		btnMark.setBounds(39, 403, 89, 23);
 		contentPane.add(btnMark);
 		
 		JButton btnNewButton = new JButton();
@@ -253,7 +269,7 @@ public class CustomerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnLogout.setBounds(97, 406, 89, 23);
+		btnLogout.setBounds(167, 403, 89, 23);
 		contentPane.add(btnLogout);
 	}
 }
