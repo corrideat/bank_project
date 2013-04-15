@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -96,7 +97,7 @@ public class CustomerFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<Account> cb = (JComboBox)e.getSource();
 				currentAccount = RuntimeAPI.getAccount((long)cb.getSelectedItem());
-				textPane.setText(currentAccount.toString());
+				textPane.setText(currentAccount.toString2());
 				String history = "";
 				for (int i =0; i < currentAccount.getTransactions().length; i++){
 					history += currentAccount.getTransactions()[i].toString() + "\n";
@@ -128,17 +129,36 @@ public class CustomerFrame extends JFrame {
 				try {
 					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
 					agent.m_ePrivileges.withdraw(agent,currentAccount,Double.parseDouble(textField.getText()));
-					textPane.setText(currentAccount.toString());
+					
+					textPane.setText(currentAccount.toString2());
 					String history = "";
 					for (int i =0; i < currentAccount.getTransactions().length; i++){
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					
 				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(null, "Withdrawal unsuccessful. Please make sure your input is correct.", "Withdrawal Error", JOptionPane.ERROR_MESSAGE);
+					
+					textPane.setText(currentAccount.toString2());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
 					
 				} catch (TransactionValidationException e1) {
+					JOptionPane.showMessageDialog(null, "Withdrawal unsuccessful. The transacation was unable to be completed.", "Withdrawal Error", JOptionPane.ERROR_MESSAGE);
+					
+					textPane.setText(currentAccount.toString2());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
 					
 				}
+				
 			}
 		});
 		button.setBounds(111, 136, 89, 23);
@@ -150,7 +170,7 @@ public class CustomerFrame extends JFrame {
 				try {
 					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
 					agent.m_ePrivileges.deposit(agent,currentAccount,Double.parseDouble(textField_1.getText()));
-					textPane.setText(currentAccount.toString());
+					textPane.setText(currentAccount.toString2());
 					String history = "";
 					for (int i =0; i < currentAccount.getTransactions().length; i++){
 						history += currentAccount.getTransactions()[i].toString() + "\n";
@@ -174,29 +194,21 @@ public class CustomerFrame extends JFrame {
 		lblTransferFunds.setBounds(10, 294, 117, 14);
 		contentPane.add(lblTransferFunds);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(49, 319, 91, 20);
-		contentPane.add(comboBox_1);
-		
 		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setBounds(49, 350, 91, 20);
+		comboBox_2.setBounds(49, 319, 223, 20);
 		contentPane.add(comboBox_2);
 		
-		JLabel lblFrom = new JLabel("From:");
-		lblFrom.setBounds(10, 322, 46, 14);
-		contentPane.add(lblFrom);
-		
 		JLabel lblTo = new JLabel("To:");
-		lblTo.setBounds(10, 353, 23, 14);
+		lblTo.setBounds(10, 322, 23, 14);
 		contentPane.add(lblTo);
 		
 		JLabel lblAmount = new JLabel("Amount: ");
-		lblAmount.setBounds(150, 322, 71, 14);
+		lblAmount.setBounds(10, 353, 71, 14);
 		contentPane.add(lblAmount);
 		
 		textField_2 = new JTextField();
 		textField_2.setText("0.00");
-		textField_2.setBounds(204, 319, 79, 20);
+		textField_2.setBounds(64, 350, 79, 20);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		

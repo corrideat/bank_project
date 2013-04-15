@@ -83,7 +83,7 @@ public class MainFrame extends JFrame {
 				if (user == null) {
 					JOptionPane.showMessageDialog(null, "Login unsuccessful. User not found.", "Login Error", JOptionPane.ERROR_MESSAGE);
 				} else if (!user.authenticate(username, pass)) {
-					JOptionPane.showMessageDialog(null, "Login unsuccessful. Wrong credentials.", "Login Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Login unsuccessful. Wrong password.", "Login Error", JOptionPane.ERROR_MESSAGE);
 				} else {
 				
 					JFrame userFrame = new AccountantFrame();

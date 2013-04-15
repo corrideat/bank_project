@@ -478,6 +478,27 @@ public abstract class Account implements Comparable<Account> {
 			return String.format("%d\tACCOUNT", this.getAccountNumber());
 		}
 	}
+	
+	final public String toString2() {
+		switch(this.m_atType) {
+		case LOAN:
+			return String.format("%.2f\tLOAN\t$%.03f\t%.02f%%/%d.", this.getBalance(), ((Loan)this).m_dPrincipal, ((Loan)this).getAccountRate()*100, ((Loan)this).m_iInstallments);
+		case LOC:
+			return String.format("%.2f\tLC\t$%.03f\t%.02f%%.", this.getBalance(), ((LineOfCredit)this).m_dCreditLimit, ((LineOfCredit)this).getAccountRate()*100);
+		case SAVINGS:
+			return String.format("%.2f\tSAVINGS", this.getBalance());
+		case CD:
+			if (((CD)this).m_eType.getDuration() % 12 == 0) {
+				return String.format("%.2f\t%dY CD %.02f%%", this.getBalance(), ((CD)this).m_eType.getDuration()/12, ((CD)this).getAccountRate()*100);
+			} else {
+				return String.format("%.2f\t%dM CD %.02f%%", this.getBalance(), ((CD)this).m_eType.getDuration(), ((CD)this).getAccountRate()*100);
+			}
+		case CHECKING:
+			return String.format("%.2f\tCHECKING", this.getBalance());
+		default:
+			return String.format("%.2f\tACCOUNT", this.getBalance());
+		}
+	}
 
 	@Override
 	public int compareTo(Account o) {
