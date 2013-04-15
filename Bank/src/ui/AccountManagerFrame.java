@@ -79,6 +79,13 @@ public class AccountManagerFrame extends JFrame {
 		contentPane.add(label_2);
 		
 		JButton btnNewAccount = new JButton("New");
+		btnNewAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CreateAccountFrame newFrame = new CreateAccountFrame();
+				CreateAccountFrame.user = user;
+				newFrame.setVisible(true);
+			}
+		});
 		btnNewAccount.setBounds(235, 45, 85, 23);
 		contentPane.add(btnNewAccount);
 		

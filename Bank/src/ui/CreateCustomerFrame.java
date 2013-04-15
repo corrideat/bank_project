@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
+import backend.InsufficientCreditAvailableException;
 import backend.RuntimeAPI;
 
 import date.DateTime;
@@ -19,6 +20,14 @@ import user.Customer;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.EnumMap;
+
+import javax.swing.JComboBox;
+
+import account.AccountParameters;
+import account.AccountType;
+import account.CD.CD_type;
+import javax.swing.JEditorPane;
 
 public class CreateCustomerFrame extends JFrame {
 
@@ -35,6 +44,23 @@ public class CreateCustomerFrame extends JFrame {
 	private JTextField textField_6;
 	private JLabel label_1;
 	private JTextField textField_7;
+	private JLabel label_2;
+	private JComboBox<AccountType> comboBox;
+	private JLabel label_3;
+	private JTextField textField_8;
+	private JTextField textField_9;
+	private JTextField textField_10;
+	private JLabel label_4;
+	private JLabel label_5;
+	private JTextField textField_11;
+	private JComboBox<CD_type> lengthBox;
+	private JLabel label_6;
+	private JLabel label_7;
+	private JEditorPane editorPane;
+	private JLabel label_8;
+	private JLabel label_9;
+	private JLabel label_10;
+	private JLabel label_11;
 
 	/**
 	 * Launch the application.
@@ -58,7 +84,7 @@ public class CreateCustomerFrame extends JFrame {
 	public CreateCustomerFrame() {
 		setTitle("Create Customer");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 238, 268);
+		setBounds(100, 100, 682, 270);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -122,6 +148,25 @@ public class CreateCustomerFrame extends JFrame {
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				//create account 
+				EnumMap<AccountParameters, Object> params = new EnumMap<AccountParameters, Object>(AccountParameters.class);
+				if(!installments.getText().equals("")){params.put(AccountParameters.INSTALLMENTS, Double.parseDouble(installments.getText()));}
+				if(!offset.getText().equals("")){params.put(AccountParameters.OFFSET, Double.parseDouble(offset.getText()));}
+				if(!principal.getText().equals("")){params.put(AccountParameters.PRINCIPAL, Double.parseDouble(principal.getText()));}
+				params.put(AccountParameters.CD_TYPE, (account.CD.CD_type)lengthBox.getSelectedItem());
+				
+				try {
+					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
+					JOptionPane.showMessageDialog(null, "Creation successful.", "Account Creation", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
+				} catch (InsufficientCreditAvailableException e1) {
+					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure their is sufficient credit.", "Account Error", JOptionPane.ERROR_MESSAGE);
+				} catch (Exception e1){
+					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure your inputs are correct.", "Account Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
+				
+								
 				//Customer newC = new Customer(textField.getText(), textField_1.getText(), new DateTime(Integer.parseInt(textField_2.getText()), Integer.parseInt(textField_6.getText()), Integer.parseInt(textField_7.getText())), Integer.parseInt(textField_3.getText()), textField_4.getText(), textField_5.getText());
 				if(RuntimeAPI.registerUser(textField_4.getText(), newC)){
 					
@@ -132,7 +177,7 @@ public class CreateCustomerFrame extends JFrame {
 				}
 			}
 		});
-		btnCreate.setBounds(14, 196, 89, 23);
+		btnCreate.setBounds(211, 196, 89, 23);
 		contentPane.add(btnCreate);
 		
 		btnCancel = new JButton("Cancel");
@@ -141,7 +186,7 @@ public class CreateCustomerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnCancel.setBounds(117, 196, 89, 23);
+		btnCancel.setBounds(310, 196, 89, 23);
 		contentPane.add(btnCancel);
 		
 		label = new JLabel("/");
@@ -161,5 +206,85 @@ public class CreateCustomerFrame extends JFrame {
 		textField_7.setColumns(10);
 		textField_7.setBounds(189, 71, 23, 20);
 		contentPane.add(textField_7);
+		
+		label_2 = new JLabel("Account Type:");
+		label_2.setBounds(238, 13, 87, 14);
+		contentPane.add(label_2);
+		
+		comboBox = new JComboBox<AccountType>();
+		comboBox.setBounds(369, 10, 101, 20);
+		contentPane.add(comboBox);
+		
+		label_3 = new JLabel("Principal:");
+		label_3.setBounds(238, 44, 121, 14);
+		contentPane.add(label_3);
+		
+		textField_8 = new JTextField();
+		textField_8.setText("0.00");
+		textField_8.setColumns(10);
+		textField_8.setBounds(369, 41, 101, 20);
+		contentPane.add(textField_8);
+		
+		textField_9 = new JTextField();
+		textField_9.setColumns(10);
+		textField_9.setBounds(369, 72, 101, 20);
+		contentPane.add(textField_9);
+		
+		textField_10 = new JTextField();
+		textField_10.setColumns(10);
+		textField_10.setBounds(369, 103, 101, 20);
+		contentPane.add(textField_10);
+		
+		label_4 = new JLabel("Interest Rate Offset:");
+		label_4.setBounds(238, 75, 121, 14);
+		contentPane.add(label_4);
+		
+		label_5 = new JLabel("Installments:");
+		label_5.setBounds(238, 106, 101, 14);
+		contentPane.add(label_5);
+		
+		textField_11 = new JTextField();
+		textField_11.setColumns(10);
+		textField_11.setBounds(369, 134, 101, 20);
+		contentPane.add(textField_11);
+		
+		lengthBox = new JComboBox<CD_type>();
+		lengthBox.setBounds(369, 165, 101, 20);
+		contentPane.add(lengthBox);
+		lengthBox.addItem(account.CD.CD_type.CD_6M);
+		lengthBox.addItem(account.CD.CD_type.CD_1Y);
+		lengthBox.addItem(account.CD.CD_type.CD_2Y);
+		lengthBox.addItem(account.CD.CD_type.CD_3Y);
+		lengthBox.addItem(account.CD.CD_type.CD_4Y);
+		lengthBox.addItem(account.CD.CD_type.CD_5Y);
+		
+		label_6 = new JLabel("Limit:");
+		label_6.setBounds(238, 137, 72, 14);
+		contentPane.add(label_6);
+		
+		label_7 = new JLabel("Length:");
+		label_7.setBounds(238, 168, 87, 14);
+		contentPane.add(label_7);
+		
+		editorPane = new JEditorPane();
+		editorPane.setText("Only the fields pertaining to your account type will be used.");
+		editorPane.setBounds(489, 10, 142, 54);
+		contentPane.add(editorPane);
+		
+		label_8 = new JLabel("(Loan/LoC)");
+		label_8.setBounds(480, 75, 94, 14);
+		contentPane.add(label_8);
+		
+		label_9 = new JLabel("(Loan)");
+		label_9.setBounds(480, 106, 79, 14);
+		contentPane.add(label_9);
+		
+		label_10 = new JLabel("(CD)");
+		label_10.setBounds(480, 137, 46, 14);
+		contentPane.add(label_10);
+		
+		label_11 = new JLabel("(CD)");
+		label_11.setBounds(480, 168, 46, 14);
+		contentPane.add(label_11);
 	}
 }

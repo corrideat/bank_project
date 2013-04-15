@@ -23,6 +23,7 @@ import backend.InsufficientCreditAvailableException;
 import account.Account;
 import account.AccountParameters;
 import account.AccountType;
+import account.CD.CD_type;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -72,9 +73,14 @@ public class CreateAccountFrame extends JFrame {
 		lblAccountType.setBounds(10, 11, 87, 14);
 		contentPane.add(lblAccountType);
 		
-		final JComboBox accountTypeBox = new JComboBox();
+		final JComboBox<AccountType> accountTypeBox = new JComboBox<AccountType>();
 		accountTypeBox.setBounds(141, 8, 101, 20);
 		contentPane.add(accountTypeBox);
+		accountTypeBox.addItem(account.AccountType.CHECKING);
+		accountTypeBox.addItem(account.AccountType.SAVINGS);
+		accountTypeBox.addItem(account.AccountType.LOAN);
+		accountTypeBox.addItem(account.AccountType.CD);
+		accountTypeBox.addItem(account.AccountType.LOC);
 		
 		JLabel lblPrincipal = new JLabel("Principal:");
 		lblPrincipal.setBounds(10, 42, 121, 14);
@@ -109,9 +115,16 @@ public class CreateAccountFrame extends JFrame {
 		contentPane.add(limit);
 		limit.setColumns(10);
 		
-		final JComboBox lengthBox = new JComboBox();
+		final JComboBox<CD_type> lengthBox = new JComboBox<CD_type>();
 		lengthBox.setBounds(141, 163, 101, 20);
 		contentPane.add(lengthBox);
+		lengthBox.addItem(account.CD.CD_type.CD_6M);
+		lengthBox.addItem(account.CD.CD_type.CD_1Y);
+		lengthBox.addItem(account.CD.CD_type.CD_2Y);
+		lengthBox.addItem(account.CD.CD_type.CD_3Y);
+		lengthBox.addItem(account.CD.CD_type.CD_4Y);
+		lengthBox.addItem(account.CD.CD_type.CD_5Y);
+		
 		
 		JLabel lblLimit = new JLabel("Limit:");
 		lblLimit.setBounds(10, 135, 72, 14);
@@ -147,17 +160,20 @@ public class CreateAccountFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// I'm assuming each box gives an object of the correct type. 
 				EnumMap<AccountParameters, Object> params = new EnumMap<AccountParameters, Object>(AccountParameters.class);
-				params.put(AccountParameters.INSTALLMENTS, Double.parseDouble(installments.getText()));
-				params.put(AccountParameters.OFFSET, Double.parseDouble(offset.getText()));
-				params.put(AccountParameters.PRINCIPAL, Double.parseDouble(principal.getText()));
+				if(!installments.getText().equals("")){params.put(AccountParameters.INSTALLMENTS, Double.parseDouble(installments.getText()));}
+				if(!offset.getText().equals("")){params.put(AccountParameters.OFFSET, Double.parseDouble(offset.getText()));}
+				if(!principal.getText().equals("")){params.put(AccountParameters.PRINCIPAL, Double.parseDouble(principal.getText()));}
 				params.put(AccountParameters.CD_TYPE, (account.CD.CD_type)lengthBox.getSelectedItem());
 				
 				try {
 					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
+					JOptionPane.showMessageDialog(null, "Creation successful.", "Account Creation", JOptionPane.INFORMATION_MESSAGE);
+					dispose();
 				} catch (InsufficientCreditAvailableException e1) {
 					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure their is sufficient credit.", "Account Error", JOptionPane.ERROR_MESSAGE);
 				} catch (Exception e1){
 					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure your inputs are correct.", "Account Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
 				}
 			}
 		});
