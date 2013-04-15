@@ -20,6 +20,7 @@ import date.DateTime;
 import backend.RuntimeAPI;
 
 import account.Account;
+import account.Transaction;
 import account.TransactionValidationException;
 
 import user.Teller;
@@ -34,7 +35,6 @@ public class CustomerFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
-	private JTextField textField_1;
 	private JTextField textField_2;
 	public static User user;
 	public static Account currentAccount;
@@ -62,7 +62,7 @@ public class CustomerFrame extends JFrame {
 		setTitle("Customer");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 301, 496);
+		setBounds(100, 100, 301, 471);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -85,7 +85,7 @@ public class CustomerFrame extends JFrame {
 		scrollPane.setViewportView(textPane);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 219, 262, 64);
+		scrollPane_1.setBounds(10, 187, 262, 64);
 		contentPane.add(scrollPane_1);
 		
 		final JTextPane textPane_1 = new JTextPane();
@@ -116,12 +116,6 @@ public class CustomerFrame extends JFrame {
 		textField.setColumns(10);
 		textField.setBounds(10, 137, 91, 20);
 		contentPane.add(textField);
-		
-		textField_1 = new JTextField();
-		textField_1.setText("0.00");
-		textField_1.setColumns(10);
-		textField_1.setBounds(10, 169, 91, 20);
-		contentPane.add(textField_1);
 		
 		JButton button = new JButton("Withdraw");
 		button.addActionListener(new ActionListener() {
@@ -164,68 +158,60 @@ public class CustomerFrame extends JFrame {
 		button.setBounds(111, 136, 89, 23);
 		contentPane.add(button);
 		
-		JButton button_1 = new JButton("Deposit");
-		button_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
-					agent.m_ePrivileges.deposit(agent,currentAccount,Double.parseDouble(textField_1.getText()));
-					textPane.setText(currentAccount.toString2());
-					String history = "";
-					for (int i =0; i < currentAccount.getTransactions().length; i++){
-						history += currentAccount.getTransactions()[i].toString() + "\n";
-					}
-					textPane_1.setText(history);
-				} catch (NumberFormatException e1) {
-					
-				} catch (TransactionValidationException e1) {
-					
-				}
-			}
-		});
-		button_1.setBounds(111, 168, 89, 23);
-		contentPane.add(button_1);
-		
 		JLabel lblAccountHistory = new JLabel("Account History");
-		lblAccountHistory.setBounds(10, 200, 106, 14);
+		lblAccountHistory.setBounds(10, 168, 106, 14);
 		contentPane.add(lblAccountHistory);
 		
 		JLabel lblTransferFunds = new JLabel("Transfer Funds");
-		lblTransferFunds.setBounds(10, 294, 117, 14);
+		lblTransferFunds.setBounds(10, 262, 117, 14);
 		contentPane.add(lblTransferFunds);
 		
 		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setBounds(49, 319, 223, 20);
+		comboBox_2.setBounds(49, 287, 223, 20);
 		contentPane.add(comboBox_2);
 		
 		JLabel lblTo = new JLabel("To:");
-		lblTo.setBounds(10, 322, 23, 14);
+		lblTo.setBounds(10, 290, 23, 14);
 		contentPane.add(lblTo);
 		
 		JLabel lblAmount = new JLabel("Amount: ");
-		lblAmount.setBounds(10, 353, 71, 14);
+		lblAmount.setBounds(10, 321, 71, 14);
 		contentPane.add(lblAmount);
 		
 		textField_2 = new JTextField();
 		textField_2.setText("0.00");
-		textField_2.setBounds(64, 350, 79, 20);
+		textField_2.setBounds(64, 318, 79, 20);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		
 		JButton btnTransfer = new JButton("Transfer");
-		btnTransfer.setBounds(164, 349, 108, 23);
+		btnTransfer.setBounds(164, 317, 108, 23);
 		contentPane.add(btnTransfer);
 		
 		JLabel lblMarkFradulentTransaction = new JLabel("Mark Fradulent Transaction");
-		lblMarkFradulentTransaction.setBounds(10, 381, 190, 14);
+		lblMarkFradulentTransaction.setBounds(10, 349, 190, 14);
 		contentPane.add(lblMarkFradulentTransaction);
 		
-		JComboBox comboBox_3 = new JComboBox();
-		comboBox_3.setBounds(10, 404, 139, 20);
+		final JComboBox comboBox_3 = new JComboBox();
+		comboBox_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<Transaction> cb = (JComboBox)e.getSource();
+				for (int i =0; i < currentAccount.getTransactions().length; i++){
+					cb.addItem(currentAccount.getTransactions()[i]);
+				}
+			}
+		});
+		comboBox_3.setBounds(10, 372, 139, 20);
 		contentPane.add(comboBox_3);
 		
+		
 		JButton btnMark = new JButton("Mark");
-		btnMark.setBounds(164, 403, 89, 23);
+		btnMark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				user.m_ePrivileges.reportedFraudulent((Transaction)comboBox_3.getSelectedItem());
+			}
+		});
+		btnMark.setBounds(164, 371, 89, 23);
 		contentPane.add(btnMark);
 		
 		JButton btnNewButton = new JButton();
@@ -242,7 +228,7 @@ public class CustomerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnLogout.setBounds(97, 438, 89, 23);
+		btnLogout.setBounds(97, 406, 89, 23);
 		contentPane.add(btnLogout);
 	}
 }
