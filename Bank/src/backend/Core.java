@@ -42,6 +42,131 @@ public class Core {
 		loginFrame.setVisible(true);
 	}
 	
+	//the following will return the average balance of each type of account currently in existence
+	public static double AllCheckingBalanceAvg() {
+		double totalOfBalances=0;
+		int accountCount = 0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Checking){
+			totalOfBalances = totalOfBalances + CurrentAccount.getBalance();
+		    accountCount = accountCount + 1;
+		    }
+	}
+		return totalOfBalances/accountCount; 
+	}
+	public static double AllSavingsBalanceAvg() {
+		double totalOfBalances=0;
+		int accountCount = 0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Savings){
+			totalOfBalances = totalOfBalances + CurrentAccount.getBalance();
+		    accountCount = accountCount + 1;
+		    }
+	}
+		return totalOfBalances/accountCount; 
+	}	
+	public static double AllCDBalanceAvg() {
+		double totalOfBalances=0;
+		int accountCount = 0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof CD){
+			totalOfBalances = totalOfBalances + CurrentAccount.getBalance();
+		    accountCount = accountCount + 1;
+		    }
+	}
+		return totalOfBalances/accountCount; 
+	}	
+	public static double AllLoanBalanceAvg() {
+		double totalOfBalances=0;
+		int accountCount = 0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Loan){
+			totalOfBalances = totalOfBalances + CurrentAccount.getBalance();
+		    accountCount = accountCount + 1;
+		    }
+	}
+		return totalOfBalances/accountCount; 
+	}
+	public static double AllLOCBalanceAvg() {
+		double totalOfBalances=0;
+		int accountCount = 0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof LineOfCredit){
+			totalOfBalances = totalOfBalances + CurrentAccount.getBalance();
+		    accountCount = accountCount + 1;
+		    }
+	}
+		return totalOfBalances/accountCount; 
+	}	
+
+	//the following will return the total sum of balances of each type of account currently in existence
+	public static double CheckingBalanceSum() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Checking){
+		    sum = sum + CurrentAccount.getBalance();
+		    }
+	}
+		return sum;
+	}
+	public static double SavingsBalanceSum() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Savings){
+		    sum = sum + CurrentAccount.getBalance();
+		    }
+	}
+		return sum;
+	}
+	public static double CDBalanceSum() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof CD){
+		    sum = sum + CurrentAccount.getBalance();
+		    }
+	}
+		return sum;
+	}	
+	public static double LoanBalanceSum() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof Loan){
+		    sum = sum + CurrentAccount.getBalance();
+		    }
+	}
+		return sum;
+	}	
+	public static double LOCBalanceSum() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof LineOfCredit){
+		    sum = sum + CurrentAccount.getBalance();
+		    }
+	}
+		return sum;
+	}	
+	
+	//will return the sum of credit limits of all Line Of Credit accounts
+	public static double SumLOCLimits() {
+		double totalOfLimits=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    if (CurrentAccount instanceof LineOfCredit){
+		    LineOfCredit CurrentLOC=(LineOfCredit) CurrentAccount;
+			totalOfLimits = totalOfLimits + CurrentLOC.getLimit();
+		    }
+	}
+		return totalOfLimits;
+	}
+	
+	//will return the sum of ALL accounts' balances
+	public static double TotalBankBalance() {
+		double sum=0;
+		for (Account CurrentAccount : m_aaAccounts.values()) {
+		    sum = sum + CurrentAccount.getBalance();
+	}
+		return sum;
+	}	
+	
 	public static void save() {
 		
 	}
