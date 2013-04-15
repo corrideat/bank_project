@@ -106,9 +106,9 @@ public class MainFrame extends JFrame {
 					}else if (user instanceof Auditor){				// Auditor
 						userFrame = new AuditorFrame();
 						AuditorFrame.user = user;
-	//				}else if (user instanceof OperationManager){	// Operation Manager
-	//					userFrame = new OperationManagerFrame();
-	//					OperationManagerFrame.user = user;
+					}else if (user instanceof OperationManager){	// Operation Manager
+						userFrame = new OperationManagerFrame();
+						OperationManagerFrame.user = user;
 					}
 					
 					userFrame.setVisible(true);

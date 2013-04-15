@@ -34,8 +34,8 @@ import java.awt.event.ItemEvent;
 public class CustomerFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_2;
+	private JTextField withdrawalAmount;
+	private JTextField transferAmount;
 	public static User user;
 	public static Account currentAccount;
 
@@ -111,18 +111,18 @@ public class CustomerFrame extends JFrame {
 			comboBox.addItem(user.getAccounts()[i].getAccountNumber());
 		}
 		
-		textField = new JTextField();
-		textField.setText("0.00");
-		textField.setColumns(10);
-		textField.setBounds(10, 137, 91, 20);
-		contentPane.add(textField);
+		withdrawalAmount = new JTextField();
+		withdrawalAmount.setText("0.00");
+		withdrawalAmount.setColumns(10);
+		withdrawalAmount.setBounds(10, 137, 91, 20);
+		contentPane.add(withdrawalAmount);
 		
 		JButton button = new JButton("Withdraw");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
-					agent.m_ePrivileges.withdraw(agent,currentAccount,Double.parseDouble(textField.getText()));
+					agent.m_ePrivileges.withdraw(agent,currentAccount,Double.parseDouble(withdrawalAmount.getText()));
 					
 					textPane.setText(currentAccount.toString2());
 					String history = "";
@@ -166,9 +166,12 @@ public class CustomerFrame extends JFrame {
 		lblTransferFunds.setBounds(10, 262, 117, 14);
 		contentPane.add(lblTransferFunds);
 		
-		JComboBox comboBox_2 = new JComboBox();
+		final JComboBox<Account> comboBox_2 = new JComboBox<Account>();
 		comboBox_2.setBounds(49, 287, 223, 20);
 		contentPane.add(comboBox_2);
+		for (int i =0; i < backend.Core.m_aaAccounts.values().toArray().length; i++){
+			comboBox_2.addItem((Account)backend.Core.m_aaAccounts.values().toArray()[i]);
+		}
 		
 		JLabel lblTo = new JLabel("To:");
 		lblTo.setBounds(10, 290, 23, 14);
@@ -178,13 +181,35 @@ public class CustomerFrame extends JFrame {
 		lblAmount.setBounds(10, 321, 71, 14);
 		contentPane.add(lblAmount);
 		
-		textField_2 = new JTextField();
-		textField_2.setText("0.00");
-		textField_2.setBounds(64, 318, 79, 20);
-		contentPane.add(textField_2);
-		textField_2.setColumns(10);
+		transferAmount = new JTextField();
+		transferAmount.setText("0.00");
+		transferAmount.setBounds(64, 318, 79, 20);
+		contentPane.add(transferAmount);
+		transferAmount.setColumns(10);
 		
 		JButton btnTransfer = new JButton("Transfer");
+		btnTransfer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+				
+				try {
+					agent.m_ePrivileges.transfer(agent,currentAccount,((Account)comboBox_2.getSelectedItem()).getAccountNumber(),Double.parseDouble(transferAmount.getText()));
+					textPane.setText(currentAccount.toString2());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
+				} catch (NumberFormatException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (TransactionValidationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
 		btnTransfer.setBounds(164, 317, 108, 23);
 		contentPane.add(btnTransfer);
 		
@@ -201,7 +226,7 @@ public class CustomerFrame extends JFrame {
 				}
 			}
 		});
-		comboBox_3.setBounds(10, 372, 139, 20);
+		comboBox_3.setBounds(10, 372, 154, 20);
 		contentPane.add(comboBox_3);
 		
 		
@@ -211,7 +236,7 @@ public class CustomerFrame extends JFrame {
 				user.m_ePrivileges.reportedFraudulent((Transaction)comboBox_3.getSelectedItem());
 			}
 		});
-		btnMark.setBounds(164, 371, 89, 23);
+		btnMark.setBounds(183, 371, 89, 23);
 		contentPane.add(btnMark);
 		
 		JButton btnNewButton = new JButton();
