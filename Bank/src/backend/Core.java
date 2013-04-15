@@ -22,14 +22,18 @@ public class Core {
 
 	public static void main(String[] args) {
 		new AccountManager("Patricia", "Rhodes", new DateTime(1951, 1, 17), 202549277, "accountmanager", "password");
-		new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+		Agent ag = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
 		new Auditor("Michael", "Schneider", new DateTime(1965, 4, 23), 808960670, "auditor", "password");
-		new AccountManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password");
-		new AccountManager("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password");
+		new OperationManager("Donna", "Wash", new DateTime(1947, 12, 20), 491669260, "operationmanager", "password");
+		new Accountant("Brian", "Tyree", new DateTime(1984, 11, 8), 765572580, "accountant", "password");
 		
 		try {
-			m_auUsers.get("accountmanager").m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "customer1", "password", 218656057, AccountType.CHECKING, null);
+			Customer c = m_auUsers.get("accountmanager").m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "customer1", "password", 218656057, AccountType.CHECKING, null);
+			c.getAccounts()[0].postTransaction(new Transaction(ag, c.getAccounts()[0], 1E6, "$1M Initial Deposit"));
 		} catch (InsufficientCreditAvailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransactionValidationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
