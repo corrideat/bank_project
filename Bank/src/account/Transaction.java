@@ -27,6 +27,13 @@ public class Transaction {
 		return true;
 	}
 	
+	public boolean isFlagged(){
+		if (m_dtReportedFraudulent != null)
+			return true;
+		else
+			return false;
+	}
+	
 	final public boolean overturn() {
 		if (overturned) {
 			return false;

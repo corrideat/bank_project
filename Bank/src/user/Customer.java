@@ -23,7 +23,7 @@ public class Customer extends User implements AccountHolder {
 		this.assignAccount(a);
 	}
 	
-	protected Customer(final String firstName, final String lastName, final DateTime birthday,
+	protected Customer(final String firstName, final String lastName, final DateTime birthday,		
 			final int ssn, final String username, final String password) {
 		super(firstName, lastName, birthday, ssn, Privileges.CUSTOMER, username, password);
 		m_aAccounts = new ArrayList<Account>();

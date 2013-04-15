@@ -1,5 +1,6 @@
 package backend;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,18 +38,63 @@ public class Core {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//save();
 		
 		JFrame loginFrame = new MainFrame();
 		loginFrame.setVisible(true);
 	}
 	
-	public static void save() {
-		
-	}
-	
-	public static void load() {
-		
-	}
+//	public static void save() {
+//		try{
+//			FileOutputStream foStream = new FileOutputStream("database");			//create file output stream
+//			
+//			Long[] keys1 = new Long[m_aaAccounts.size()];
+//			Account[] values1 = new Account[m_aaAccounts.size()];
+//			int index1 = 0;
+//			for (Map.Entry<Long, Account> mapEntry : m_aaAccounts.entrySet()) {
+//			    keys1[index1] = mapEntry.getKey();
+//			    values1[index1] = mapEntry.getValue();
+//			    index1++;
+//			}
+//			
+//			
+//			ObjectOutputStream ooStream1 = new ObjectOutputStream(foStream);			//direct object to file
+//			ooStream1.writeObject(keys1);											//write file
+//			ObjectOutputStream ooStream2 = new ObjectOutputStream(foStream);			//direct object to file
+//			ooStream2.writeObject(values1);											//write file
+//			
+//			String[] keys2 = new String[m_auUsers.size()];
+//			User[] values2 = new User[m_auUsers.size()];
+//			int index2 = 0;
+//			for (Map.Entry<String, User> mapEntry : m_auUsers.entrySet()) {
+//			    keys1[index2] = mapEntry.getKey();
+//			    values1[index2] = mapEntry.getValue();
+//			    index2++;
+//			}
+//			
+//			ObjectOutputStream ooStream3 = new ObjectOutputStream(foStream);			//direct object to file
+//			ooStream3.writeObject(m_auUsers);											//write file
+//			ObjectOutputStream ooStream4 = new ObjectOutputStream(foStream);			//direct object to file
+//			ooStream4.writeObject(m_auUsers);											//write file
+//			foStream.flush();														//clear file output stream
+//			foStream.close();														//close file output stream
+//		}catch (IOException e){	
+//			System.out.println("Error during output of files: " + e.toString());	//print any exception
+//		}
+//	}
+//	
+//	public static void load() {
+//		try{
+//			FileInputStream fiStream = new FileInputStream("database");				//create file input stream
+//			ObjectInputStream oiStream1 = new ObjectInputStream(fiStream);			//create object input stream
+//			m_aaAccounts = (HashMap<Long, Account>) oiStream1.readObject();						//write file to program
+//			ObjectInputStream oiStream2 = new ObjectInputStream(fiStream);			//create object input stream
+//			m_auUsers = (HashMap<String, User>) oiStream2.readObject();						//write file to program
+//			fiStream.close();														//close file input stream
+//		}catch (Exception e){
+//			System.out.println("Error during input of files: " + e.toString());		//print any exception
+//		}	
+//	}
 
 	public static void timeShiftNotification() {
 		System.out.println(Core.m_dtCurrentTime);

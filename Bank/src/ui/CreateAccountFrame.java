@@ -11,6 +11,8 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import user.User;
+
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.JEditorPane;
@@ -153,7 +155,9 @@ public class CreateAccountFrame extends JFrame {
 				try {
 					user.m_ePrivileges.createAccount(user, (AccountType)accountTypeBox.getSelectedItem(), params);
 				} catch (InsufficientCreditAvailableException e1) {
-					// This should be the error window
+					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure their is sufficient creedit.", "Account Error", JOptionPane.ERROR_MESSAGE);
+				} catch (Exception e1){
+					JOptionPane.showMessageDialog(null, "Creation unsuccessful. Please make sure your inputs are correct.", "Account Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

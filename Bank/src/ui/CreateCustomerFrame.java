@@ -121,11 +121,12 @@ public class CreateCustomerFrame extends JFrame {
 		btnCreate = new JButton("Create");
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Customer newC = new Customer(textField.getText(), textField_1.getText(), new DateTime(Integer.parseInt(textField_2.getText()), Integer.parseInt(textField_6.getText()), Integer.parseInt(textField_7.getText())), Integer.parseInt(textField_3.getText()), textField_4.getText(), textField_5.getText());
+				
+				//Customer newC = new Customer(textField.getText(), textField_1.getText(), new DateTime(Integer.parseInt(textField_2.getText()), Integer.parseInt(textField_6.getText()), Integer.parseInt(textField_7.getText())), Integer.parseInt(textField_3.getText()), textField_4.getText(), textField_5.getText());
 				if(RuntimeAPI.registerUser(textField_4.getText(), newC)){
-					CreateAccountFrame accountFrame = new CreateAccountFrame();
-					CreateAccountFrame.user = newC;
-					accountFrame.setVisible(true);
+					
+					
+					
 				}else{
 					JOptionPane.showMessageDialog(null, "Unable to create account. Username is taken or not all information is correct.", "Error", JOptionPane.ERROR_MESSAGE);
 				}

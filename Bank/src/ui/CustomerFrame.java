@@ -116,6 +116,30 @@ public class CustomerFrame extends JFrame {
 			comboBox.addItem(user.getAccounts()[i].getAccountNumber());
 		}
 		
+		final JComboBox<Transaction> comboBox_3 = new JComboBox<Transaction>();
+		comboBox_3.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+					comboBox_3.addItem(currentAccount.getTransactions()[i]);
+				}
+			}
+		});
+		comboBox_3.setBounds(10, 372, 262, 20);
+		contentPane.add(comboBox_3);
+		for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+			comboBox_3.addItem(currentAccount.getTransactions()[i]);
+		}
+	
+		JButton btnMark = new JButton("Mark");
+		btnMark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				((Transaction)comboBox_3.getSelectedItem()).flagAsFraudulent();
+			}
+		});
+		btnMark.setBounds(39, 403, 89, 23);
+		contentPane.add(btnMark);
+		
 		withdrawalAmount = new JTextField();
 		withdrawalAmount.setText("0.00");
 		withdrawalAmount.setColumns(10);
@@ -135,6 +159,9 @@ public class CustomerFrame extends JFrame {
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 					
 				} catch (NumberFormatException e1) {
 					JOptionPane.showMessageDialog(null, "Withdrawal unsuccessful. Please make sure your input is correct.", "Withdrawal Error", JOptionPane.ERROR_MESSAGE);
@@ -145,6 +172,9 @@ public class CustomerFrame extends JFrame {
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 					
 				} catch (TransactionValidationException e1) {
 					JOptionPane.showMessageDialog(null, "Withdrawal unsuccessful. The transacation was unable to be completed.", "Withdrawal Error", JOptionPane.ERROR_MESSAGE);
@@ -155,6 +185,9 @@ public class CustomerFrame extends JFrame {
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 					
 				}
 				
@@ -205,6 +238,9 @@ public class CustomerFrame extends JFrame {
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 				} catch (NumberFormatException e1) {
 					JOptionPane.showMessageDialog(null, "Transfer unsuccessful. Please make sure your input is correct.", "Transfer Error", JOptionPane.ERROR_MESSAGE);
 					
@@ -214,9 +250,21 @@ public class CustomerFrame extends JFrame {
 						history += currentAccount.getTransactions()[i].toString() + "\n";
 					}
 					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 					e1.printStackTrace();
 				} catch (TransactionValidationException e1) {
-					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(null, "Transfer unsuccessful. Please make sure this transfer is valid.", "Transfer Error", JOptionPane.ERROR_MESSAGE);
+					textPane.setText(currentAccount.toString2());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
+					for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
+						comboBox_3.addItem(currentAccount.getTransactions()[i]);
+					}
 					e1.printStackTrace();
 				}
 				
@@ -229,31 +277,7 @@ public class CustomerFrame extends JFrame {
 		lblMarkFradulentTransaction.setBounds(10, 349, 190, 14);
 		contentPane.add(lblMarkFradulentTransaction);
 		
-		final JComboBox<Transaction> comboBox_3 = new JComboBox<Transaction>();
-		comboBox_3.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				//comboBox_3.removeAllItems();
-				for (int i = comboBox_3.getItemCount(); i < currentAccount.getTransactions().length; i++){
-					comboBox_3.addItem(currentAccount.getTransactions()[i]);
-				}
-			}
-		});
-		comboBox_3.setBounds(10, 372, 262, 20);
-		contentPane.add(comboBox_3);
-//		for (int i =0; i < currentAccount.getTransactions().length; i++){
-//			comboBox_3.addItem(currentAccount.getTransactions()[i]);
-//		}
-//		
 		
-		JButton btnMark = new JButton("Mark");
-		btnMark.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				((Transaction)comboBox_3.getSelectedItem()).flagAsFraudulent();
-			}
-		});
-		btnMark.setBounds(39, 403, 89, 23);
-		contentPane.add(btnMark);
 		
 		JButton btnNewButton = new JButton();
 		btnNewButton.setIcon(new ImageIcon(CustomerFrame.class.getResource("/com/sun/java/swing/plaf/windows/icons/NewFolder.gif")));
