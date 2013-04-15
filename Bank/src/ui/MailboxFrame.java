@@ -4,12 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 
 import user.*;
+
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MailboxFrame extends JFrame {
 
@@ -39,21 +45,38 @@ public class MailboxFrame extends JFrame {
 		setResizable(false);
 		setTitle("Mailbox");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 314, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 11, 424, 250);
-		contentPane.add(scrollPane);
+		final JComboBox<Message> message = new JComboBox<Message>();
+		message.setBounds(15, 11, 178, 20);
+		contentPane.add(message);
+		for (int i = 0; i < CustomerFrame.user.m_mbMailbox.getMessages().length;i++){
+			message.addItem(CustomerFrame.user.m_mbMailbox.getMessages()[i]);
+		}
 		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		scrollPane.setViewportView(textPane);
+		final JTextPane textPane = new JTextPane();
+		textPane.setBounds(15, 42, 277, 219);
+		contentPane.add(textPane);
 		
-		textPane.setText(CustomerFrame.user.m_mbMailbox.getMessages()[0].toString());
+		JButton btnNewButton = new JButton("Refresh");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					textPane.setText(message.getSelectedItem().toString());
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Unable to retrieve mail.", "Mail Error", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				}
+			}
+		});
+		btnNewButton.setBounds(203, 10, 89, 23);
+		contentPane.add(btnNewButton);
+		
+		
 	
 	}
 }
