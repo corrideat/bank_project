@@ -1,15 +1,8 @@
 package backend;
 
 public enum GlobalParameters {
-	RATE_SAVINGS(0.01D, "Interest for Savings Accounts"),  // Marginal rage. 0.1 means 10% interest.
-	RATE_CD_6M(0.02D, "Interest for 6-Month CD"), 
-	RATE_CD_1Y(0.025D, "Interest for 1-Year CD"),
-	RATE_CD_2Y(0.028D, "Interest for 2-Year CD"),
-	RATE_CD_3Y(0.03D, "Interest for 3-Year CD"),
-	RATE_CD_4Y(0.03D, "Interest for 4-Year CD"),
-	RATE_CD_5Y(0.03D, "Interest for 5-Year CD"),
-	RATE_LOAN(0.07D, "Interest for Loan"),
-	RATE_LOC(0.25D, "Interest for LOC"), // 
+	MASTER_RATE_SAVINGS(0.01D, "Master Savings Rate"),  // Marginal rage. 0.1 means 10% interest.
+	MASTER_RATE_LOAN(0.07D, "Interest for Loan"),
 	SAVINGS_FEE(-5D, "Savings Account Fee"), // Fees are negative
 	SAVINGS_MINIMUM_GRATIS_BALANCE(100D, "Free Minimum Balance for Savings Accounts"),
 	CHECKING_MINIMUM_BALANCE(-20D, "Minimum Allowable Balance for Checking Accounts"),
@@ -41,22 +34,6 @@ public enum GlobalParameters {
 	}
 	
 	public void set(final double v) {
-		/* Enforce interest rate relations */
-		if (this == RATE_SAVINGS) {
-			if (v >= RATE_CD_6M.m_dValue) throw new IllegalArgumentException();
-		} else if (this == RATE_CD_6M) {
-			if (v <= RATE_SAVINGS.m_dValue || v >= RATE_CD_1Y.m_dValue) throw new IllegalArgumentException();
-		}  else if (this == RATE_CD_1Y) {
-			if (v <= RATE_CD_6M.m_dValue || v >= RATE_CD_2Y.m_dValue) throw new IllegalArgumentException();
-		} else if (this == RATE_CD_2Y) {
-			if (v <= RATE_CD_1Y.m_dValue || v >= RATE_CD_3Y.m_dValue) throw new IllegalArgumentException();
-		} else if (this == RATE_CD_3Y) {
-			if (v <= RATE_CD_2Y.m_dValue || v >= RATE_CD_4Y.m_dValue) throw new IllegalArgumentException();
-		} else if (this == RATE_CD_4Y) {
-			if (v <= RATE_CD_3Y.m_dValue || v >= RATE_CD_5Y.m_dValue) throw new IllegalArgumentException();
-		}  else if (this == RATE_CD_5Y) {
-			if (v <= RATE_CD_4Y.m_dValue) throw new IllegalArgumentException();
-		}
 		m_dValue = v;
 	}
 	

@@ -40,23 +40,23 @@ public final class RuntimeAPI {
 		public double getRate() {
 			switch(this) {
 			case SAVINGS:
-				return GlobalParameters.RATE_SAVINGS.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get();
 			case CD_6M:
-				return GlobalParameters.RATE_CD_6M.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.02;
 			case CD_1Y:
-				return GlobalParameters.RATE_CD_1Y.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.04;
 			case CD_2Y:
-				return GlobalParameters.RATE_CD_2Y.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.06;
 			case CD_3Y:
-				return GlobalParameters.RATE_CD_3Y.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.07;
 			case CD_4Y:
-				return GlobalParameters.RATE_CD_4Y.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.08;
 			case CD_5Y:
-				return GlobalParameters.RATE_CD_5Y.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.09;
 			case LOAN:
-				return GlobalParameters.RATE_LOAN.get();
+				return GlobalParameters.MASTER_RATE_LOAN.get();
 			case LOC:
-				return GlobalParameters.RATE_LOC.get();
+				return GlobalParameters.MASTER_RATE_LOAN.get()+.14;
 			default:
 				return 0D;
 			}
