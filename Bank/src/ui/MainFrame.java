@@ -92,8 +92,8 @@ public class MainFrame extends JFrame {
 						userFrame = new TellerFrame();
 						TellerFrame.user = user;
 					}else if (user instanceof Customer){			// Customer
-						userFrame = new CustomerFrame();
 						CustomerFrame.user = user;
+						userFrame = new CustomerFrame();
 					}else if (user instanceof EmployeeCustomer){	// Customer Employee
 						userFrame = new EmployeeCustomerFrame();
 						EmployeeCustomerFrame.user = user;

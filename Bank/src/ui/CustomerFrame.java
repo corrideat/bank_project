@@ -14,10 +14,14 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.ImageIcon;
 
+import date.DateTime;
+
 import backend.RuntimeAPI;
 
 import account.Account;
+import account.TransactionValidationException;
 
+import user.Teller;
 import user.User;
 
 import java.awt.event.ActionListener;
@@ -83,17 +87,21 @@ public class CustomerFrame extends JFrame {
 		scrollPane_1.setBounds(10, 219, 262, 64);
 		contentPane.add(scrollPane_1);
 		
-		JTextPane textPane_1 = new JTextPane();
+		final JTextPane textPane_1 = new JTextPane();
 		textPane_1.setEditable(false);
 		scrollPane_1.setViewportView(textPane_1);
 		
-		JComboBox comboBox = new JComboBox();
+		JComboBox<Long> comboBox = new JComboBox<Long>();
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JComboBox cb = (JComboBox)e.getSource();
+				JComboBox<Account> cb = (JComboBox)e.getSource();
 				currentAccount = RuntimeAPI.getAccount((long)cb.getSelectedItem());
 				textPane.setText(currentAccount.toString());
-				for 
+				String history = "";
+				for (int i =0; i < currentAccount.getTransactions().length; i++){
+					history += currentAccount.getTransactions()[i].toString() + "\n";
+				}
+				textPane_1.setText(history);
 			}
 		});
 		comboBox.setBounds(75, 12, 139, 20);
@@ -117,13 +125,44 @@ public class CustomerFrame extends JFrame {
 		JButton button = new JButton("Withdraw");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+					agent.m_ePrivileges.withdraw(agent,currentAccount,Double.parseDouble(textField.getText()));
+					textPane.setText(currentAccount.toString());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
+				} catch (NumberFormatException e1) {
+					
+				} catch (TransactionValidationException e1) {
+					
+				}
 			}
 		});
 		button.setBounds(111, 136, 89, 23);
 		contentPane.add(button);
 		
 		JButton button_1 = new JButton("Deposit");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+					agent.m_ePrivileges.deposit(agent,currentAccount,Double.parseDouble(textField_1.getText()));
+					textPane.setText(currentAccount.toString());
+					String history = "";
+					for (int i =0; i < currentAccount.getTransactions().length; i++){
+						history += currentAccount.getTransactions()[i].toString() + "\n";
+					}
+					textPane_1.setText(history);
+				} catch (NumberFormatException e1) {
+					
+				} catch (TransactionValidationException e1) {
+					
+				}
+			}
+		});
 		button_1.setBounds(111, 168, 89, 23);
 		contentPane.add(button_1);
 		
