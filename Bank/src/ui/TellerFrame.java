@@ -19,16 +19,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 
+import account.Account;
+
+import user.Customer;
 import user.User;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class TellerFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
 	public static User user;
+	public static Account currentAccount;
 
 	/**
 	 * Launch the application.
@@ -53,47 +58,34 @@ public class TellerFrame extends JFrame {
 		setTitle("Teller");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 248, 438);
+		setBounds(100, 100, 248, 412);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		textField = new JTextField();
-		textField.setBounds(84, 11, 139, 20);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
 		JLabel lblCustomer = new JLabel("Customer:");
-		lblCustomer.setBounds(15, 14, 91, 14);
+		lblCustomer.setBounds(10, 14, 91, 14);
 		contentPane.add(lblCustomer);
 		
-		JButton btnAccess = new JButton("Access");
-		btnAccess.setBounds(108, 39, 91, 23);
-		contentPane.add(btnAccess);
-		
 		JLabel lblAccountInformation = new JLabel("Account Information");
-		lblAccountInformation.setBounds(15, 101, 156, 14);
+		lblAccountInformation.setBounds(10, 70, 156, 14);
 		contentPane.add(lblAccountInformation);
 		
 		JLabel lblAccount = new JLabel("Account:");
-		lblAccount.setBounds(15, 73, 91, 14);
+		lblAccount.setBounds(10, 42, 91, 14);
 		contentPane.add(lblAccount);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(84, 70, 139, 20);
-		contentPane.add(comboBox);
 		
 		textField_1 = new JTextField();
 		textField_1.setText("0.00");
-		textField_1.setBounds(15, 193, 91, 20);
+		textField_1.setBounds(10, 162, 91, 20);
 		contentPane.add(textField_1);
 		textField_1.setColumns(10);
 		
 		textField_2 = new JTextField();
 		textField_2.setText("0.00");
 		textField_2.setColumns(10);
-		textField_2.setBounds(15, 225, 91, 20);
+		textField_2.setBounds(10, 194, 91, 20);
 		contentPane.add(textField_2);
 		
 		JButton btnWithdraw = new JButton("Withdraw");
@@ -101,39 +93,39 @@ public class TellerFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});
-		btnWithdraw.setBounds(116, 192, 89, 23);
+		btnWithdraw.setBounds(111, 161, 89, 23);
 		contentPane.add(btnWithdraw);
 		
 		JButton btnDeposit = new JButton("Deposit");
-		btnDeposit.setBounds(116, 224, 89, 23);
+		btnDeposit.setBounds(111, 193, 89, 23);
 		contentPane.add(btnDeposit);
 		
 		JRadioButton rdbtnWavieServiceCharge = new JRadioButton("Waive Service Charge?");
-		rdbtnWavieServiceCharge.setBounds(15, 348, 186, 23);
+		rdbtnWavieServiceCharge.setBounds(10, 317, 186, 23);
 		contentPane.add(rdbtnWavieServiceCharge);
 		
 		JLabel lblAutomaticTransaction = new JLabel("Automatic Transaction");
-		lblAutomaticTransaction.setBounds(15, 256, 156, 14);
+		lblAutomaticTransaction.setBounds(10, 225, 156, 14);
 		contentPane.add(lblAutomaticTransaction);
 		
 		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(15, 281, 91, 20);
+		comboBox_1.setBounds(14, 250, 91, 20);
 		comboBox_1.addItem("Deposit");
 		comboBox_1.addItem("Withdraw");
 		contentPane.add(comboBox_1);
 		
-		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setBounds(116, 281, 107, 20);
-		contentPane.add(comboBox_2);
+		JComboBox autoTime = new JComboBox();
+		autoTime.setBounds(119, 250, 107, 20);
+		contentPane.add(autoTime);
 		
 		JButton btnAdd = new JButton("Add");
-		btnAdd.setBounds(141, 312, 56, 23);
+		btnAdd.setBounds(144, 281, 56, 23);
 		contentPane.add(btnAdd);
 		
 		textField_3 = new JTextField();
 		textField_3.setText("0.00");
 		textField_3.setColumns(10);
-		textField_3.setBounds(15, 312, 91, 20);
+		textField_3.setBounds(14, 281, 91, 20);
 		contentPane.add(textField_3);
 		
 		JButton btnNewButton = new JButton("Logout");
@@ -145,7 +137,7 @@ public class TellerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnNewButton.setBounds(76, 378, 89, 23);
+		btnNewButton.setBounds(71, 347, 89, 23);
 		contentPane.add(btnNewButton);
 		
 		JSeparator separator = new JSeparator();
@@ -153,11 +145,36 @@ public class TellerFrame extends JFrame {
 		contentPane.add(separator);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(15, 120, 208, 62);
+		scrollPane.setBounds(10, 89, 208, 62);
 		contentPane.add(scrollPane);
 		
-		JTextPane textPane = new JTextPane();
-		scrollPane.setViewportView(textPane);
-		textPane.setEditable(false);
+		final JTextPane accountPane = new JTextPane();
+		scrollPane.setViewportView(accountPane);
+		accountPane.setEditable(false);
+		
+		final JComboBox<User> customer = new JComboBox<User>();
+		customer.setBounds(79, 11, 139, 20);
+		contentPane.add(customer);
+		for (int i =0; i < backend.Core.m_auUsers.values().toArray().length; i++){
+			if (backend.Core.m_auUsers.values().toArray()[i] instanceof Customer)	
+				customer.addItem((User)backend.Core.m_auUsers.values().toArray()[i]);
+		}
+		
+		final JComboBox accounts = new JComboBox();
+		accounts.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				accounts.removeAllItems();
+				
+				for (int i = 0; i < ((Customer)customer.getSelectedItem()).getAccounts().length; i++){
+					accounts.addItem(((Customer)customer.getSelectedItem()).getAccounts()[i]);
+				}
+				
+				currentAccount = (Account)accounts.getSelectedItem();
+				accountPane.setText(user.toString() + "\n" + currentAccount.toString2());
+			}
+		});
+		accounts.setBounds(79, 39, 139, 20);
+		contentPane.add(accounts);
 	}
 }

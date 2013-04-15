@@ -130,7 +130,7 @@ public class AuditorFrame extends JFrame {
 				}
 				
 				currentAccount = (Account)accounts.getSelectedItem();
-				accountPane.setText(currentAccount.toString2());
+				accountPane.setText(user.toString() + "\n" + currentAccount.toString2());
 				String history = "";
 				for (int i =0; i < currentAccount.getTransactions().length; i++){
 					if (!currentAccount.getTransactions()[i].isFlagged()){
@@ -145,7 +145,7 @@ public class AuditorFrame extends JFrame {
 			public void focusLost(FocusEvent e) {
 				
 				currentAccount = (Account)accounts.getSelectedItem();
-				accountPane.setText(currentAccount.toString2());
+				accountPane.setText(user.toString() + "\n" + currentAccount.toString2());
 				String history = "";
 				for (int i =0; i < currentAccount.getTransactions().length; i++){
 					if (!currentAccount.getTransactions()[i].isFlagged()){
@@ -186,7 +186,7 @@ public class AuditorFrame extends JFrame {
 					user.m_ePrivileges.overturnTransaction((Transaction)transactions.getSelectedItem());
 					
 					currentAccount = (Account)accounts.getSelectedItem();
-					accountPane.setText(currentAccount.toString2());
+					accountPane.setText(user.toString() + "\n" + currentAccount.toString2());
 					String history = "";
 					for (int i =0; i < currentAccount.getTransactions().length; i++){
 						if (!currentAccount.getTransactions()[i].isFlagged()){
