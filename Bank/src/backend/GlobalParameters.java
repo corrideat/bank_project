@@ -1,8 +1,17 @@
 package backend;
 
 public enum GlobalParameters {
-	MASTER_RATE_SAVINGS(0.01D, "Master Savings Rate"),  // Marginal rage. 0.1 means 10% interest.
-	MASTER_RATE_LOAN(0.07D, "Interest for Loan"),
+	MASTER_RATE_SAVINGS(0.01D, "Master Savings Interest Rate"),  // Marginal rage. 0.1 means 10% interest.
+	OFFSET_RATE_SAVINGS(0D, "Savings offset from Master Savings Rate"),
+	OFFSET_RATE_CD6M(.02D, "6M CD offset from Savings Rate"),
+	OFFSET_RATE_CD1Y(.02D, "1Y CD offset from 6M CD Rate"),
+	OFFSET_RATE_CD2Y(.02D, "2Y CD offset from 1Y CD Rate"),
+	OFFSET_RATE_CD3Y(.015D, "3Y CD offset from 2Y CD Rate"),
+	OFFSET_RATE_CD4Y(.01D, "4Y CD offset from 3Y CD Rate"),
+	OFFSET_RATE_CD5Y(.01D, "5Y CD offset from 4Y CD Rate"),
+	MASTER_RATE_LOAN(0.07D, "Master Loan Interest"),
+	OFFSET_RATE_LOAN(0D, "Loan offset from Master Loan Interest"),
+	OFFSET_RATE_LOC(.15D, "Line of Credit Offset from Loan"),
 	SAVINGS_FEE(-5D, "Savings Account Fee"), // Fees are negative
 	SAVINGS_MINIMUM_GRATIS_BALANCE(100D, "Free Minimum Balance for Savings Accounts"),
 	CHECKING_MINIMUM_BALANCE(-20D, "Minimum Allowable Balance for Checking Accounts"),

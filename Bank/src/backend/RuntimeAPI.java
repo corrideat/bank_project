@@ -40,23 +40,23 @@ public final class RuntimeAPI {
 		public double getRate() {
 			switch(this) {
 			case SAVINGS:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get();
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get();
 			case CD_6M:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.02;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get();
 			case CD_1Y:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.04;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get()+GlobalParameters.OFFSET_RATE_CD1Y.get();
 			case CD_2Y:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.06;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get()+GlobalParameters.OFFSET_RATE_CD1Y.get()+GlobalParameters.OFFSET_RATE_CD2Y.get();
 			case CD_3Y:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.07;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get()+GlobalParameters.OFFSET_RATE_CD1Y.get()+GlobalParameters.OFFSET_RATE_CD2Y.get()+GlobalParameters.OFFSET_RATE_CD3Y.get();
 			case CD_4Y:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.08;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get()+GlobalParameters.OFFSET_RATE_CD1Y.get()+GlobalParameters.OFFSET_RATE_CD2Y.get()+GlobalParameters.OFFSET_RATE_CD3Y.get()+GlobalParameters.OFFSET_RATE_CD4Y.get();
 			case CD_5Y:
-				return GlobalParameters.MASTER_RATE_SAVINGS.get()+.09;
+				return GlobalParameters.MASTER_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_SAVINGS.get()+GlobalParameters.OFFSET_RATE_CD6M.get()+GlobalParameters.OFFSET_RATE_CD1Y.get()+GlobalParameters.OFFSET_RATE_CD2Y.get()+GlobalParameters.OFFSET_RATE_CD3Y.get()+GlobalParameters.OFFSET_RATE_CD4Y.get()+GlobalParameters.OFFSET_RATE_CD5Y.get();
 			case LOAN:
-				return GlobalParameters.MASTER_RATE_LOAN.get();
+				return GlobalParameters.MASTER_RATE_LOAN.get()+GlobalParameters.OFFSET_RATE_LOAN.get();
 			case LOC:
-				return GlobalParameters.MASTER_RATE_LOAN.get()+.14;
+				return GlobalParameters.MASTER_RATE_LOAN.get()+GlobalParameters.OFFSET_RATE_LOAN.get()+GlobalParameters.OFFSET_RATE_LOC.get();
 			default:
 				return 0D;
 			}
