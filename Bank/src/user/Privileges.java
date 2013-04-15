@@ -117,6 +117,14 @@ public enum Privileges {
 		} else throw new SecurityException();
 	}
 	
+	public void sendStatements() {
+		if (m_esPermissions.contains(acos.sendNotices)) {
+			for(Account a:Core.m_aaAccounts.values()) {
+				a.prepareStatement();
+			}
+		} else throw new SecurityException();
+	}
+	
 	public void setGlobalParameter(GlobalParameters gp, double value) {
 		if (m_esPermissions.contains(acos.setGlobalParameters)) {
 			gp.set(value);
