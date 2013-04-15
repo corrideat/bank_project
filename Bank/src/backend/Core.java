@@ -29,7 +29,7 @@ public class Core {
 		
 		try {
 			Customer c = m_auUsers.get("accountmanager").m_ePrivileges.createCustomer("George", "West", new DateTime(1961, 8, 12), "customer1", "password", 218656057, AccountType.CHECKING, null);
-			c.getAccounts()[0].postTransaction(new Transaction(ag, c.getAccounts()[0], 1E6, "$1M Initial Deposit"));
+			c.getAccounts()[0].postTransaction(new Transaction(ag, c.getAccounts()[0], 1E6, "Deposit"));
 		} catch (InsufficientCreditAvailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

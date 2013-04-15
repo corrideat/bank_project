@@ -65,7 +65,7 @@ public enum Privileges {
 	public void deposit(Agent ag, Account a, double amount) throws TransactionValidationException {
 		if (m_esPermissions.contains(acos.deposit)) {
 			if (amount < 0) throw new IllegalArgumentException();
-			Transaction t = new Transaction(ag, a, amount, "Deposit - $" + amount + ", " + RuntimeAPI.now().toString());		// more descriptive info
+			Transaction t = new Transaction(ag, a, amount, "Deposit");		
 			a.postTransaction(t);
 		} else throw new SecurityException();
 	}
@@ -73,7 +73,7 @@ public enum Privileges {
 	public void withdraw(Agent ag, Account a, double amount) throws TransactionValidationException {
 		if (m_esPermissions.contains(acos.withdraw)) {
 			if (amount < 0) throw new IllegalArgumentException();	
-			Transaction t = new Transaction(ag, a, -amount, "Withdrawal - $" + amount + ", " + RuntimeAPI.now().toString());		// more descriptive info
+			Transaction t = new Transaction(ag, a, -amount, "Withdrawal");		
 			a.postTransaction(t);
 		} else throw new SecurityException();
 	}

@@ -46,7 +46,12 @@ public class Transaction {
 	}
 	
 	public final String toString() {
-		return m_sDescription;
+		//return m_sDescription;
+		if (this.m_dAmount > 0D) {
+			return (String.format("%d/%d/%d - %s: %.03f", this.m_dtTime.getMonth(), this.m_dtTime.getDay(), this.m_dtTime.getYear(), this.m_sDescription, Math.abs(this.m_dAmount)));
+		} else {
+			return (String.format("%d/%d/%d - %s: %.03f", this.m_dtTime.getMonth(), this.m_dtTime.getDay(), this.m_dtTime.getYear(), this.m_sDescription, Math.abs(this.m_dAmount)));
+		}
 	}
 
 }
