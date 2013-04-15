@@ -42,6 +42,14 @@ public class DateTime {
 			return String.format("%tB %td %tY, %tH:%tM:%tS", m_calendar, m_calendar, m_calendar, m_calendar, m_calendar, m_calendar);
 	}
 	
+	public String toString2() {
+		//return String.format("%tB %d %tY, %d:%tM:%tM", getMonth(), getDay(), getYear(), getHour(), getMinute(), getSecond());
+		if (m_calendar.get(Calendar.ERA)==GregorianCalendar.BC) {
+			return String.format("%tB %td %tY", m_calendar, m_calendar, m_calendar);
+		} else
+			return String.format("%tB %td %tY", m_calendar, m_calendar, m_calendar);
+	}
+	
 	private int get(final TimeUnits type) {
 		int itype=0;
 		

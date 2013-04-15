@@ -19,9 +19,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 
+import date.DateTime;
+
 import account.Account;
+import account.TransactionValidationException;
 
 import user.Customer;
+import user.Teller;
 import user.User;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -29,11 +33,12 @@ import java.awt.event.FocusEvent;
 public class TellerFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
+	private JTextField withdrawalAmount;
+	private JTextField depositAmount;
+	private JTextField autoAmount;
 	public static User user;
 	public static Account currentAccount;
+	private JTextField textField;
 
 	/**
 	 * Launch the application.
@@ -58,7 +63,7 @@ public class TellerFrame extends JFrame {
 		setTitle("Teller");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 248, 412);
+		setBounds(100, 100, 248, 434);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -76,57 +81,31 @@ public class TellerFrame extends JFrame {
 		lblAccount.setBounds(10, 42, 91, 14);
 		contentPane.add(lblAccount);
 		
-		textField_1 = new JTextField();
-		textField_1.setText("0.00");
-		textField_1.setBounds(10, 162, 91, 20);
-		contentPane.add(textField_1);
-		textField_1.setColumns(10);
+		withdrawalAmount = new JTextField();
+		withdrawalAmount.setText("0.00");
+		withdrawalAmount.setBounds(10, 162, 91, 20);
+		contentPane.add(withdrawalAmount);
+		withdrawalAmount.setColumns(10);
 		
-		textField_2 = new JTextField();
-		textField_2.setText("0.00");
-		textField_2.setColumns(10);
-		textField_2.setBounds(10, 194, 91, 20);
-		contentPane.add(textField_2);
-		
-		JButton btnWithdraw = new JButton("Withdraw");
-		btnWithdraw.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnWithdraw.setBounds(111, 161, 89, 23);
-		contentPane.add(btnWithdraw);
-		
-		JButton btnDeposit = new JButton("Deposit");
-		btnDeposit.setBounds(111, 193, 89, 23);
-		contentPane.add(btnDeposit);
+		depositAmount = new JTextField();
+		depositAmount.setText("0.00");
+		depositAmount.setColumns(10);
+		depositAmount.setBounds(10, 194, 91, 20);
+		contentPane.add(depositAmount);
 		
 		JRadioButton rdbtnWavieServiceCharge = new JRadioButton("Waive Service Charge?");
-		rdbtnWavieServiceCharge.setBounds(10, 317, 186, 23);
+		rdbtnWavieServiceCharge.setBounds(32, 343, 186, 23);
 		contentPane.add(rdbtnWavieServiceCharge);
 		
 		JLabel lblAutomaticTransaction = new JLabel("Automatic Transaction");
 		lblAutomaticTransaction.setBounds(10, 225, 156, 14);
 		contentPane.add(lblAutomaticTransaction);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(14, 250, 91, 20);
-		comboBox_1.addItem("Deposit");
-		comboBox_1.addItem("Withdraw");
-		contentPane.add(comboBox_1);
-		
-		JComboBox autoTime = new JComboBox();
-		autoTime.setBounds(119, 250, 107, 20);
-		contentPane.add(autoTime);
-		
-		JButton btnAdd = new JButton("Add");
-		btnAdd.setBounds(144, 281, 56, 23);
-		contentPane.add(btnAdd);
-		
-		textField_3 = new JTextField();
-		textField_3.setText("0.00");
-		textField_3.setColumns(10);
-		textField_3.setBounds(14, 281, 91, 20);
-		contentPane.add(textField_3);
+		autoAmount = new JTextField();
+		autoAmount.setText("0.00");
+		autoAmount.setColumns(10);
+		autoAmount.setBounds(10, 312, 91, 20);
+		contentPane.add(autoAmount);
 		
 		JButton btnNewButton = new JButton("Logout");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -137,7 +116,7 @@ public class TellerFrame extends JFrame {
 				dispose();
 			}
 		});
-		btnNewButton.setBounds(71, 347, 89, 23);
+		btnNewButton.setBounds(80, 373, 89, 23);
 		contentPane.add(btnNewButton);
 		
 		JSeparator separator = new JSeparator();
@@ -160,10 +139,35 @@ public class TellerFrame extends JFrame {
 				customer.addItem((User)backend.Core.m_auUsers.values().toArray()[i]);
 		}
 		
+		
+		JButton btnWithdraw = new JButton("Withdraw");
+		btnWithdraw.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+					agent.m_ePrivileges.withdraw(agent,currentAccount,Double.parseDouble(withdrawalAmount.getText()));
+	
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+				} catch (NumberFormatException e) {
+					
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+					e.printStackTrace();
+				} catch (TransactionValidationException e) {
+					
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+					e.printStackTrace();
+				}
+			}
+		});
+		btnWithdraw.setBounds(111, 161, 89, 23);
+		contentPane.add(btnWithdraw);
+		
+		
+		
 		final JComboBox accounts = new JComboBox();
 		accounts.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(FocusEvent arg0) {
+			public void focusGained(FocusEvent arg0) {						
 				accounts.removeAllItems();
 				
 				for (int i = 0; i < ((Customer)customer.getSelectedItem()).getAccounts().length; i++){
@@ -171,10 +175,72 @@ public class TellerFrame extends JFrame {
 				}
 				
 				currentAccount = (Account)accounts.getSelectedItem();
-				accountPane.setText(user.toString() + "\n" + currentAccount.toString2());
+				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				
+				for (int i = 0; i < ((Customer)customer.getSelectedItem()).getAccounts().length; i++){
+					accounts.addItem(((Customer)customer.getSelectedItem()).getAccounts()[i]);
+				}
+				
+				currentAccount = (Account)accounts.getSelectedItem();
+				accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
 			}
 		});
 		accounts.setBounds(79, 39, 139, 20);
 		contentPane.add(accounts);
+		
+		JButton btnDeposit = new JButton("Deposit");
+		btnDeposit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Teller agent = new Teller("Alice", "Colby", new DateTime(1963, 5, 10), 256880460, "teller", "password");
+					agent.m_ePrivileges.deposit(agent,currentAccount,Double.parseDouble(withdrawalAmount.getText()));
+	
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+				} catch (NumberFormatException e1) {
+					
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+					e1.printStackTrace();
+				} catch (TransactionValidationException e1) {
+					
+					accountPane.setText(((Customer)customer.getSelectedItem()).toString() + "\n" + currentAccount.toString2());
+					e1.printStackTrace();
+				}
+			}
+		});
+		btnDeposit.setBounds(111, 193, 89, 23);
+		contentPane.add(btnDeposit);
+		for (int i =0; i < backend.Core.m_aaAccounts.values().toArray().length; i++){
+			autoDestination.addItem((Account)backend.Core.m_aaAccounts.values().toArray()[i]);
+		}
+		
+		JLabel lblDestination = new JLabel("Destination:");
+		lblDestination.setBounds(10, 253, 97, 14);
+		contentPane.add(lblDestination);
+		
+		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//user.m_ePrivileges.setupAutomaticTransaction(accounts.getSelectedItem(),autoDestination.getSelectedItem(),description.getText());
+				
+			}
+		});
+		btnAdd.setBounds(127, 311, 91, 23);
+		contentPane.add(btnAdd);
+		
+		textField = new JTextField();
+		textField.setBounds(89, 281, 133, 20);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		final JComboBox<Account> autoDestination = new JComboBox<Account>();
+		autoDestination.setBounds(89, 250, 133, 20);
+		contentPane.add(autoDestination);
+		
+		JLabel lblDescription = new JLabel("Description:");
+		lblDescription.setBounds(10, 284, 97, 14);
+		contentPane.add(lblDescription);
 	}
 }

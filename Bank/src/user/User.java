@@ -268,7 +268,7 @@ public abstract class User implements AccountHolder, Comparable<User> {
 		} else if (this instanceof Auditor) {
 			pos = "Auditor";
 		}
-		return this.m_sLastName+", "+this.m_sFirstName+" - "+this.m_dtBirthday+" : "+pos;
+		return this.m_sLastName+", "+this.m_sFirstName+" - "+this.m_dtBirthday.toString2()+" : "+pos;
 	}
 	
 	abstract AccountHolder getAH();
