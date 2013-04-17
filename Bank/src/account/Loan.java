@@ -20,7 +20,11 @@ final public class Loan extends InterestChargingAccount {
 		RuntimeAPI.adjustCap(-principal);
 		new InternalTransaction(-principal, "Principal");
 		// Formula from: http://ncalculators.com/loan/installment-loan-payoff-calculator.htm
-		m_dMinimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D*installments), -1D) * 100D)/100D;
+		if (this.getAccountRate()==0) {
+			m_dMinimumMonthlyPayment =  Math.ceil((principal/(double)installments)*100D)/100D;
+		} else {
+			m_dMinimumMonthlyPayment = Math.ceil(principal * (this.getAccountRate()/12D) * Math.pow(1D - Math.pow(1D+this.getAccountRate()/12D, -1D*installments), -1D) * 100D)/100D;
+		}
 		this.m_dPrincipal = principal;
 		this.m_iInstallments = installments;
 		this.m_bHasGraceElapsed = false;

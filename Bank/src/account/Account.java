@@ -78,7 +78,7 @@ public abstract class Account implements Comparable<Account> {
 
 		public InternalTransaction(final Account target, final double amount,
 				final String description) {
-			super(ms_agent, Account.this, amount, description);
+			super(ms_agent, target, amount, description);
 			try {
 				target.postTransaction(this);
 			} catch (TransactionValidationException e) {
@@ -118,9 +118,9 @@ public abstract class Account implements Comparable<Account> {
 			boolean transferred = false;
 			if (accounts.length > 1) {
 				for (Account a : accounts) {
-					if (a != this && a.m_atType == AccountType.CHECKING) {
-						new InternalTransaction(this.m_dBalance, String.format(
-								"Account %d Close Transfer %.02d",
+					if (a != this && a.m_atType == AccountType.CHECKING && !a.m_bToBeClosed && !a.isClosed()) {
+						new InternalTransaction(a, this.m_dBalance, String.format(
+								"Account %d Close Transfer %.02f",
 								this.m_lAccountNumber, this.m_dBalance));
 						transferred = true;
 						break;
@@ -128,10 +128,10 @@ public abstract class Account implements Comparable<Account> {
 				}
 				if (!transferred) {
 					for (Account a : accounts) {
-						if (a != this && a.m_atType == AccountType.SAVINGS) {
-							new InternalTransaction(this.m_dBalance,
+						if (a != this && a.m_atType == AccountType.SAVINGS && !a.m_bToBeClosed && !a.isClosed()) {
+							new InternalTransaction(a, this.m_dBalance,
 									String.format(
-											"Account %d Close Transfer %.02d",
+											"Account %d Close Transfer %.02f",
 											this.m_lAccountNumber,
 											this.m_dBalance));
 							transferred = true;
@@ -141,10 +141,10 @@ public abstract class Account implements Comparable<Account> {
 				}
 				if (!transferred) {
 					for (Account a : accounts) {
-						if (a != this && a.m_atType == AccountType.LOC) {
-							new InternalTransaction(this.m_dBalance,
+						if (a != this && a.m_atType == AccountType.LOC && !a.m_bToBeClosed && !a.isClosed()) {
+							new InternalTransaction(a, this.m_dBalance,
 									String.format(
-											"Account %d Close Transfer %.02d",
+											"Account %d Close Transfer %.02f",
 											this.m_lAccountNumber,
 											this.m_dBalance));
 							transferred = true;
@@ -154,10 +154,10 @@ public abstract class Account implements Comparable<Account> {
 				}
 				if (!transferred) {
 					for (Account a : accounts) {
-						if (a != this && a.m_atType == AccountType.LOAN) {
-							new InternalTransaction(this.m_dBalance,
+						if (a != this && a.m_atType == AccountType.LOAN && !a.m_bToBeClosed && !a.isClosed()) {
+							new InternalTransaction(a, this.m_dBalance,
 									String.format(
-											"Account %d Close Transfer %.02d",
+											"Account %d Close Transfer %.02f",
 											this.m_lAccountNumber,
 											this.m_dBalance));
 							transferred = true;
@@ -167,7 +167,7 @@ public abstract class Account implements Comparable<Account> {
 				}
 				if (!transferred) {
 					new InternalTransaction(this.m_dBalance, String.format(
-							"Account %d Close Check Mailed for %.02d",
+							"Account %d Close Check Mailed for %.02f",
 							this.m_lAccountNumber, this.m_dBalance));
 				}
 			}
@@ -262,7 +262,7 @@ public abstract class Account implements Comparable<Account> {
 
 	private final void securityTransactionValidator(Transaction t) {
 		// System.out.println("\t\tSTV: "+this.m_dtClosed+"\t"+t.m_aTarget.hashCode()+"\t"+this.hashCode());
-		if (this.m_dtClosed != null || t.m_aTarget != this) {
+		if (this.m_dtClosed != null || t.m_aTarget != this || Double.isNaN(t.m_dAmount) || Double.isInfinite(t.m_dAmount)) {
 			throw new SecurityException();
 		}
 	}
@@ -288,10 +288,10 @@ public abstract class Account implements Comparable<Account> {
 					+ pb.starting_balance + "\t" + pb.average_balance + "\t"
 					+ pb.ending_balance);
 			m_dLastUpdatedBalance = pb.ending_balance;
-			this.m_dtLastUpdated = cutoff;
-			onUpdate(cutoff, pb);
+			this.m_dtLastUpdated = cutoff;			
 
 			if (!this.isClosed()) {
+				onUpdate(cutoff, pb);
 				for (AutomatedTransaction trans : this.m_aatAutomatedTransactions) {
 					try {
 						transfer(Account.ms_atAgent, trans.m_lTargetAccount,
@@ -310,7 +310,7 @@ public abstract class Account implements Comparable<Account> {
 			}
 		}
 
-		onUpdate();
+		if (!this.isClosed()) onUpdate();
 
 	}
 
@@ -367,7 +367,7 @@ public abstract class Account implements Comparable<Account> {
 	}
 
 	public void cancelAutomatedTransaction(int at_index) {
-		if (at_index < 0 || at_index >= m_aatAutomatedTransactions.size()) {
+		if (at_index >= 0 && at_index < m_aatAutomatedTransactions.size()) {
 			m_aatAutomatedTransactions.remove(at_index);
 		} else {
 			throw new IllegalArgumentException();
